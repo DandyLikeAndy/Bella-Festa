@@ -28,7 +28,7 @@ gulp.task('server', function () {
     })
 });
 
-gulp.task ('build', ['html', 'sass', 'js']);
+gulp.task ('build', ['html', 'sass', 'js', 'images']);
 
 gulp.task('html', function () {
     gulp.src(params.htmlSrc)
@@ -37,18 +37,6 @@ gulp.task('html', function () {
         .pipe(reload({stream: true}));
 });
 
-/*gulp.task('css', function () {
-    getFileNames.then(function (files) {//html2bl
-        console.log(files);
-        gulp.src(files.css)
-            .pipe(concat('styles.css'))
-            //.pipe(autoprefixer({browsers: ['last 2 versions']}))
-            //.pipe(urlAdjust({prepend: './images/'}))
-            .pipe(gulp.dest(params.out))
-            .pipe(reload({stream: true}));
-    })
-        .done();
-});*/
 
 gulp.task('sass', function () {
     getFileNames.then(function (files) {//html2bl
@@ -59,7 +47,7 @@ gulp.task('sass', function () {
             .pipe(rename('styles.css'))
             .pipe(gulp.dest(params.out))
             //.pipe(autoprefixer({browsers: ['last 2 versions']}))
-            //.pipe(urlAdjust({prepend: './images/'}))
+            .pipe(urlAdjust({prepend: './images/'}))
             .pipe(reload({stream: true}));
     })
         .done();
@@ -72,6 +60,14 @@ gulp.task('js', function () {
             .pipe(concat('app.js'))
             .pipe(gulp.dest(params.out))
             .pipe(reload({stream: true})); //browserSync
+    })
+        .done();
+});
+
+gulp.task('images', function () {
+    getFileNames.then(function(source) {
+        gulp.src(source.dirs.map(dir => dir + '/*.{jpg,png,svg}'))
+            .pipe(gulp.dest(path.join(params.out + '/images/')));
     })
         .done();
 });
