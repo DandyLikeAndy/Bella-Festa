@@ -28,7 +28,7 @@ gulp.task('server', function () {
     })
 });
 
-gulp.task ('build', ['html', 'sass', 'js', 'images']);
+gulp.task ('build', ['html', 'sass', 'js', 'images', 'fontStyle']);
 
 gulp.task('html', function () {
     gulp.src(params.htmlSrc)
@@ -70,6 +70,16 @@ gulp.task('images', function () {
             .pipe(gulp.dest(path.join(params.out + '/images/')));
     })
         .done();
+});
+
+gulp.task('fontStyle', function() {
+    return gulp.src(['app/libs/fontello/css/animation.css', 'app/libs/fontello/css/fontello.css'])
+        .pipe(concat('fontello.css'))
+        .pipe(gulp.dest(params.out))
+        //.pipe(rename({suffix: '.min'}))
+        //.pipe(csso())
+        .pipe(gulp.dest('assets/fontello/css'))
+        .pipe(notify({ message: 'Fontello styles task complete' }));
 });
 
 gulp.watch('app/*.html', ['html']);
