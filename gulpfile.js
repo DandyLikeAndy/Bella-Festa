@@ -53,21 +53,6 @@ gulp.task('sass', function () {
         .done();
 });
 
-/*gulp.task('sass', function () {
-    getFileNames.then(function (files) {//html2bl
-        console.log('sass dirs', files.dirs );
-        gulp.src(files.dirs.map(dir => dir + '*.scss'))
-            .pipe(concat('styles.scss'))
-            .pipe(sass().on('error', sass.logError))
-            .pipe(rename('styles.css'))
-            .pipe(gulp.dest(params.out))
-            //.pipe(autoprefixer({browsers: ['last 2 versions']}))
-            .pipe(urlAdjust({prepend: './images/'}))
-            .pipe(reload({stream: true}));
-    })
-        .done();
-});*/
-
 gulp.task('js', function () {
     getFileNames.then(function (source) {
         console.log('JS dirs', source.dirs);
