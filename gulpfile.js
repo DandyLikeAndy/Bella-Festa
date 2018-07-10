@@ -16,7 +16,8 @@ let gulp = require('gulp'),
 let params = { //html2bl and others
     out: 'dist',
     htmlSrc: 'app/index.html',
-    levels: ['app/library.blocks', 'app/common.blocks']
+    levels: ['app/library.blocks', 'app/common.blocks'],
+    extCssFiles: 'scss'
 },
     getFileNames = html2bl.getFileNames(params);//html2bl
 
@@ -41,6 +42,7 @@ gulp.task('html', function () {
 gulp.task('sass', function () {
     getFileNames.then(function (files) {//html2bl
         console.log('sass dirs', files.dirs );
+        console.log('dirs', files );
         gulp.src(files.dirs.map(dir => dir + '/**/*.scss'))
             .pipe(concat('styles.scss'))
             .pipe(sass().on('error', sass.logError))
