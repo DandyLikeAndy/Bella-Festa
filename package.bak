@@ -8,10 +8,6 @@
   },
   "author": "DandyLikeAndy",
   "license": "ISC",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/DandyLikeAndy/Bella-Festa.git"
-  },
   "devDependencies": {
     "browser-sync": "^2.23.6",
     "del": "^3.0.0",
@@ -23,7 +19,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^3.1.0",
     "gulp-uglify": "^3.0.0",
-    "html2bl": "git://github.com/DandyLikeAndy/html2bl.git",
+    "html2bl": "git://github.com/dab/html2bl.git",
     "mathsass": "^0.10.1"
   }
 }
