@@ -6,6 +6,7 @@ let gulp = require('gulp'),
     reload = browserSync.reload, //browserSync
     html2bl = require('html2bl'),
     path = require('path'), //html2bl
+    fs = require("fs"),
     urlAdjust = require('gulp-css-url-adjuster'),
     autoprefixer = require('gulp-autoprefixer'),
     uglify = require('gulp-uglify'),
@@ -39,12 +40,35 @@ gulp.task('html', function () {
 });
 
 
-gulp.task('sass', function () {
-    getFileNames.then(function (files) {//html2bl
-        console.log('sass dirs', files.dirs );
-        console.log('dirs', files );
-        gulp.src(files.dirs.map(dir => dir + '/**/*.scss'))
-            .pipe(concat('styles.scss'))
+// gulp.task('sass', function () {
+//     getFileNames.then(function (files) {//html2bl
+//         console.log('sass dirs', files.dirs );
+//         console.log('dirs', files );
+//         gulp.src(files.dirs.map(dir => dir + '/**/*.scss'))
+//             .pipe(concat('styles.scss'))
+//             .pipe(sass().on('error', sass.logError))
+//             .pipe(rename('styles.css'))
+//             .pipe(gulp.dest(params.out))
+//             //.pipe(autoprefixer({browsers: ['last 2 versions']}))
+//             .pipe(urlAdjust({prepend: './images/'}))
+//             .pipe(reload({stream: true}));
+//     })
+//         .done();
+// });
+
+gulp.task('sass', function() {
+    getFileNames.then(function(files) {//html2bl
+
+        let strModules = '';
+        files.scss.forEach( function(absPath){
+            strModules += '@import "' + path.relative('app', absPath) + '";\n'; 
+        } );
+
+        console.log('strModules', strModules);
+
+        fs.writeFileSync("app/_modules.scss", strModules);
+
+        gulp.src('app/main.scss')
             .pipe(sass().on('error', sass.logError))
             .pipe(rename('styles.css'))
             .pipe(gulp.dest(params.out))
@@ -53,7 +77,9 @@ gulp.task('sass', function () {
             .pipe(reload({stream: true}));
     })
         .done();
+        //strModules = relPaths.forEach(function(relPath))
 });
+
 
 gulp.task('js', function () {
     getFileNames.then(function (source) {
@@ -80,9 +106,10 @@ gulp.task('fontStyle', function() {
         .pipe(gulp.dest(params.out))
         //.pipe(rename({suffix: '.min'}))
         //.pipe(csso())
-        .pipe(gulp.dest('assets/fontello/css'))
-        .pipe(notify({ message: 'Fontello styles task complete' }));
+        .pipe(gulp.dest(params.out));
+        //.pipe(notify({ message: 'Fontello styles task complete' }));
 });
+
 
 gulp.watch('app/*.html', ['html']);
 gulp.watch(params.levels.map( level => level + '/**/*.scss' ), ['sass']);
