@@ -60,9 +60,9 @@ gulp.task('sass', function() {
     getFileNames.then(function(files) {//html2bl
 
         let strModules = '';
-        files.scss.forEach( function(absPath){
-            strModules += '@import "' + path.relative('app', absPath) + '";\n'; 
-        } );
+        files.scss.forEach(function (absPath) {
+            strModules += '@import "' + path.relative('app', absPath).replace(/\/|\\/g, '/') + '";\n';
+        });
 
         console.log('strModules', strModules);
 
