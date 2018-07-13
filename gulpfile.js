@@ -42,8 +42,6 @@ gulp.task('html', function () {
 
 // gulp.task('sass', function () {
 //     getFileNames.then(function (files) {//html2bl
-//         console.log('sass dirs', files.dirs );
-//         console.log('dirs', files );
 //         gulp.src(files.dirs.map(dir => dir + '/**/*.scss'))
 //             .pipe(concat('styles.scss'))
 //             .pipe(sass().on('error', sass.logError))
@@ -57,14 +55,14 @@ gulp.task('html', function () {
 // });
 
 gulp.task('sass', function() {
-    getFileNames.then(function(files) {//html2bl
+    getFileNames.then(function(files) {
 
         let strModules = '';
         files.scss.forEach(function (absPath) {
-            strModules += '@import "' + path.relative('app', absPath).replace(/\/|\\/g, '/') + '";\n';
+            strModules += '@import "' + path.relative('app', absPath).replace(/\\/g, '/') + '";\n';
         });
 
-        console.log('strModules', strModules);
+        //console.log('strModules', strModules);
 
         fs.writeFileSync("app/_modules.scss", strModules);
 
@@ -77,13 +75,12 @@ gulp.task('sass', function() {
             .pipe(reload({stream: true}));
     })
         .done();
-        //strModules = relPaths.forEach(function(relPath))
 });
 
 
 gulp.task('js', function () {
     getFileNames.then(function (source) {
-        console.log('JS dirs', source.dirs);
+        //console.log('JS dirs', source.dirs);
         gulp.src(source.dirs.map(dir => dir + '/**/*.js'))
             .pipe(concat('app.js'))
             .pipe(gulp.dest(params.out))
