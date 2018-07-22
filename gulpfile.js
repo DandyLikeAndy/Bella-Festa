@@ -15,11 +15,13 @@ let gulp = require('gulp'),
     sass = require('gulp-sass');
 
 let params = { //html2bl and others
-    out: 'dist',
-    htmlSrc: 'app/index.html',
-    levels: ['app/library.blocks', 'app/common.blocks'],
-    extCssFiles: 'scss'
-},
+        out: 'dist',
+        htmlSrc: 'app/pages.html/index.html',
+        levels: ['app/blocks/library.blocks', 'app/blocks/common.blocks'],
+        extCssFiles: 'scss',
+        sassDir: "app/sass",
+        fontelloDir: "app/libs/fontello"
+    },
     getFileNames = html2bl.getFileNames(params);//html2bl
 
 gulp.task('default', ['server', 'build']);
@@ -30,7 +32,7 @@ gulp.task('server', function () {
     })
 });
 
-gulp.task ('build', ['html', 'sass', 'js', 'images', 'fontStyle']);
+gulp.task ('build', ['html', 'sass', 'js', 'images', 'fontello']);
 
 gulp.task('html', function () {
     gulp.src(params.htmlSrc)
@@ -59,14 +61,14 @@ gulp.task('sass', function() {
 
         let strModules = '';
         files.scss.forEach(function (absPath) {
-            strModules += '@import "' + path.relative('app', absPath).replace(/\\/g, '/') + '";\n';
+            strModules += '@import "' + path.relative(params.sassDir, absPath).replace(/\\/g, '/') + '";\n';
         });
 
-        //console.log('strModules', strModules);
+        console.log('strModules', strModules);
 
-        fs.writeFileSync("app/_modules.scss", strModules);
+        fs.writeFileSync(params.sassDir + "/_modules.scss", strModules);
 
-        gulp.src('app/main.scss')
+        gulp.src('app/SASS/main.scss')
             .pipe(sass().on('error', sass.logError))
             .pipe(rename('styles.css'))
             .pipe(gulp.dest(params.out))
@@ -97,8 +99,8 @@ gulp.task('images', function () {
         .done();
 });
 
-gulp.task('fontStyle', function() {
-    return gulp.src(['app/libs/fontello/css/animation.css', 'app/libs/fontello/css/fontello.css'])
+gulp.task('fontello', function() {
+    return gulp.src([params.fontelloDir + '/css/animation.css', params.fontelloDir + '/css/fontello.css'])
         .pipe(concat('fontello.css'))
         .pipe(gulp.dest(params.out))
         //.pipe(rename({suffix: '.min'}))
