@@ -68,12 +68,12 @@ gulp.task('sass', function() {
 
         fs.writeFileSync(params.sassDir + "/_modules.scss", strModules);
 
-        gulp.src('app/SASS/main.scss')
+        gulp.src(params.sassDir + '/main.scss')
             .pipe(sass().on('error', sass.logError))
             .pipe(rename('styles.css'))
-            .pipe(gulp.dest(params.out))
             //.pipe(autoprefixer({browsers: ['last 2 versions']}))
             .pipe(urlAdjust({prepend: './images/'}))
+            .pipe(gulp.dest(params.out))
             .pipe(reload({stream: true}));
     })
         .done();

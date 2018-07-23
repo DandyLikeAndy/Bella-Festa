@@ -1,2 +1,17 @@
+.page {
+  background-color: #ccc;
+}
+
 .header {
-  display: flex; }
+  display: flex;
+}
+
+.logo {
+  background-image: url("./images/logo_color.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.logo_theme-color-70 {
+  background-image: url("./images/logo_color_70.svg");
+}
