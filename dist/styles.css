@@ -1,9 +1,88 @@
+@import url("https://fonts.googleapis.com/css?family=PT+Sans:400,700&subset=cyrillic,cyrillic-ext");
+
 .page {
+  font-family: 'PT Sans', sans-serif;
   background-color: #ccc;
 }
 
 .header {
+  display: block;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+  height: 126px;
+}
+
+@media (min-width: 480px) {
+  .header {
+    width: 100%;
+  }
+}
+
+@media (min-width: 768px) {
+  .header {
+    width: 100%;
+  }
+}
+
+@media (min-width: 992px) {
+  .header {
+    width: 962px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .header {
+    width: 1170px;
+  }
+}
+
+@media (min-width: 1800px) {
+  .header {
+    width: 1770px;
+  }
+}
+
+.header__row {
   display: flex;
+  flex-wrap: wrap;
+  margin-left: -15px;
+  margin-right: -15px;
+  height: 100%;
+  justify-content: center;
+}
+
+.header__row > * {
+  flex-basis: 100%;
+}
+
+.header__logo-img {
+  height: 100%;
+}
+
+@media (min-width: 768px) {
+  .header__logo-img {
+    flex: 0 0 8.33333%;
+    max-width: 8.33333%;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+}
+
+.header__logo-text {
+  height: 100%;
+  background-color: white;
+}
+
+@media (min-width: 768px) {
+  .header__logo-text {
+    flex: 0 0 41.66667%;
+    max-width: 41.66667%;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
 }
 
 .logo {

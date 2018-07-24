@@ -1,3 +1,29 @@
 .header {
-  display: flex;
+  @include container();
+
+  height: #{$grid-height*7};
+
+  &__row {
+    @include row();
+
+    height: 100%;
+    justify-content: center;
+  }
+
+  &__logo-img {
+    //@include col();
+    @include col($base-breakpoint-name, 1);
+
+    height: 100%;
+  }
+
+  &__logo-text {
+    //@include col();
+    @include col($base-breakpoint-name, 5);
+    height: 100%;
+    //
+    background-color: white;
+  }
 }
+
+

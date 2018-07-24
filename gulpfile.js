@@ -20,7 +20,8 @@ let params = { //html2bl and others
         levels: ['app/blocks/library.blocks', 'app/blocks/common.blocks'],
         extCssFiles: 'scss',
         sassDir: "app/sass",
-        fontelloDir: "app/libs/fontello"
+        fontelloDir: "app/libs/fontello",
+        imgDir: "images"
     },
     getFileNames = html2bl.getFileNames(params);//html2bl
 
@@ -65,6 +66,7 @@ gulp.task('sass', function() {
         });
 
         console.log('strModules', strModules);
+        console.log('files', files);
 
         fs.writeFileSync(params.sassDir + "/_modules.scss", strModules);
 
@@ -72,7 +74,7 @@ gulp.task('sass', function() {
             .pipe(sass().on('error', sass.logError))
             .pipe(rename('styles.css'))
             //.pipe(autoprefixer({browsers: ['last 2 versions']}))
-            .pipe(urlAdjust({prepend: './images/'}))
+            .pipe(urlAdjust({prepend: './' + params.imgDir + '/'}))
             .pipe(gulp.dest(params.out))
             .pipe(reload({stream: true}));
     })
@@ -94,7 +96,7 @@ gulp.task('js', function () {
 gulp.task('images', function () {
     getFileNames.then(function(source) {
         gulp.src(source.dirs.map(dir => dir + '/*.{jpg,png,svg}'))
-            .pipe(gulp.dest(path.join(params.out + '/images/')));
+            .pipe(gulp.dest(path.join(params.out + '/' + params.imgDir)));
     })
         .done();
 });
@@ -110,6 +112,6 @@ gulp.task('fontello', function() {
 });
 
 
-gulp.watch('app/*.html', ['html']);
+gulp.watch(params.htmlSrc, ['html']);
 gulp.watch(params.levels.map( level => level + '/**/*.scss' ), ['sass']);
 
