@@ -20,9 +20,19 @@
   &__logo-text {
     //@include col();
     @include col($base-breakpoint-name, 5);
+
     height: 100%;
+    text-align: center;
     //
     background-color: white;
+  }
+
+  &__logo-name {
+    font-size: 58px;
+  }
+
+  &__logo-occupation {
+    font-size: 38px;
   }
 }
 

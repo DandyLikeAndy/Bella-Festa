@@ -73,6 +73,7 @@
 
 .header__logo-text {
   height: 100%;
+  text-align: center;
   background-color: white;
 }
 
@@ -83,6 +84,14 @@
     padding-left: 15px;
     padding-right: 15px;
   }
+}
+
+.header__logo-name {
+  font-size: 58px;
+}
+
+.header__logo-occupation {
+  font-size: 38px;
 }
 
 .logo {

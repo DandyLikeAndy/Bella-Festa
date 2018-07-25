@@ -21,6 +21,7 @@ let params = { //html2bl and others
         extCssFiles: 'scss',
         sassDir: "app/sass",
         fontelloDir: "app/libs/fontello",
+        fontsDir: "app/libs/fonts",
         imgDir: "images"
     },
     getFileNames = html2bl.getFileNames(params);//html2bl
@@ -33,7 +34,7 @@ gulp.task('server', function () {
     })
 });
 
-gulp.task ('build', ['html', 'sass', 'js', 'images', 'fontello']);
+gulp.task ('build', ['html', 'sass', 'js', 'images', 'fonts', 'fontello']);
 
 gulp.task('html', function () {
     gulp.src(params.htmlSrc)
@@ -99,6 +100,11 @@ gulp.task('images', function () {
             .pipe(gulp.dest(path.join(params.out + '/' + params.imgDir)));
     })
         .done();
+});
+
+gulp.task('fonts', function() {
+    return gulp.src([params.fontsDir + '/*.*', '!' + params.fontsDir + '/*.txt' ])
+        .pipe(gulp.dest(params.out + '/fonts'))
 });
 
 gulp.task('fontello', function() {
