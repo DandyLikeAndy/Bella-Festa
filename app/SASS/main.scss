@@ -1,8 +1,11 @@
-//imort variables
+//import variables
 @import "variables";
 
 //import mixin;
 @import "mixins/grid-mixins";
+
+//import common settings
+@import "settings";
 
 //import bem blocks
 @import "modules";

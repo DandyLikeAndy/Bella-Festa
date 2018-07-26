@@ -1,25 +1,6 @@
-//temp
-@import url('https://fonts.googleapis.com/css?family=PT+Sans:400,700&subset=cyrillic,cyrillic-ext');
-// @font-face {
-//     font-family: PT Sans; 
-//     src: url(/fonts/PT_Sans-Web-Regular.ttf); 
-//     font-style: normal;
-//    }
-// @font-face {
-//     font-family: PT Sans; 
-//     src: url(/fonts/PT_Sans-Web-Bold.ttf); 
-//     font-style:  normal;
-//     font-weight: bold;
-//    }
-// @font-face {
-//     font-family: PT Sans; 
-//     src: url(/fonts/PT_Sans-Web-Italic.ttf);
-//     font-style:  italic;
-//    }
 .page {
     font-family: 'PT Sans', sans-serif;
+    height: 100%;
     //temp
-    background-color: #ccc;
-    
-
+    background: url(page.jpg) center top no-repeat;
 }

@@ -1,5 +1,5 @@
 'use strict';
-let gulp = require('gulp'),
+const gulp = require('gulp'),
     concat = require('gulp-concat'),
     rename = require('gulp-rename'),
     browserSync = require('browser-sync').create(),
@@ -24,7 +24,7 @@ let params = { //html2bl and others
         fontsDir: "app/libs/fonts",
         imgDir: "images"
     },
-    getFileNames = html2bl.getFileNames(params);//html2bl
+    getFileNames = html2bl.getFileNames(params); //html2bl
 
 gulp.task('default', ['server', 'build']);
 
@@ -34,15 +34,18 @@ gulp.task('server', function () {
     })
 });
 
-gulp.task ('build', ['html', 'sass', 'js', 'images', 'fonts', 'fontello']);
+gulp.task('build', ['clean', 'html', 'sass', 'js', 'images', 'fonts', 'fontello']);
+
+
 
 gulp.task('html', function () {
-    gulp.src(params.htmlSrc)
+    return gulp.src(params.htmlSrc)
         .pipe(rename('index.html'))
         .pipe(gulp.dest(params.out))
-        .pipe(reload({stream: true}));
+        .pipe(reload({
+            stream: true
+        }));
 });
-
 
 // gulp.task('sass', function () {
 //     getFileNames.then(function (files) {//html2bl
@@ -58,66 +61,73 @@ gulp.task('html', function () {
 //         .done();
 // });
 
-gulp.task('sass', function() {
-    getFileNames.then(function(files) {
+gulp.task('sass', function () {
+    return getFileNames.then(function (files) {
+            let strModules = '';
+            files.scss.forEach(function (absPath) { //collect @imports bem blocks
+                strModules += '@import "' + path.relative(params.sassDir, absPath).replace(/\\/g, '/') + '";\n';
+            });
 
-        let strModules = '';
-        files.scss.forEach(function (absPath) {
-            strModules += '@import "' + path.relative(params.sassDir, absPath).replace(/\\/g, '/') + '";\n';
-        });
+            console.log('files', files);
+            //write to file _modules.scss imports of bem blocks
+            fs.writeFileSync(params.sassDir + "/_modules.scss", strModules);
 
-        console.log('strModules', strModules);
-        console.log('files', files);
-
-        fs.writeFileSync(params.sassDir + "/_modules.scss", strModules);
-
-        gulp.src(params.sassDir + '/main.scss')
-            .pipe(sass().on('error', sass.logError))
-            .pipe(rename('styles.css'))
-            //.pipe(autoprefixer({browsers: ['last 2 versions']}))
-            .pipe(urlAdjust({prepend: './' + params.imgDir + '/'}))
-            .pipe(gulp.dest(params.out))
-            .pipe(reload({stream: true}));
-    })
+            gulp.src(params.sassDir + '/main.scss')
+                .pipe(sass().on('error', sass.logError))
+                .pipe(rename('styles.css'))
+                //.pipe(autoprefixer({browsers: ['last 2 versions']}))
+                .pipe(urlAdjust({
+                    //prependRelative for image (images must be in the block folder)
+                    prependRelative: './' + params.imgDir + '/'
+                }))
+                .pipe(gulp.dest(params.out))
+                .pipe(reload({
+                    stream: true
+                }));
+        })
+        //make the script works only once at the loading, https://github.com/cujojs/when/blob/HEAD/docs/api.md#promisedone
         .done();
 });
 
 
 gulp.task('js', function () {
-    getFileNames.then(function (source) {
-        //console.log('JS dirs', source.dirs);
-        gulp.src(source.dirs.map(dir => dir + '/**/*.js'))
-            .pipe(concat('app.js'))
-            .pipe(gulp.dest(params.out))
-            .pipe(reload({stream: true})); //browserSync
-    })
+    return getFileNames.then(function (source) {
+            gulp.src(source.dirs.map(dir => dir + '/**/*.js'))
+                .pipe(concat('app.js'))
+                .pipe(gulp.dest(params.out))
+                .pipe(reload({
+                    stream: true
+                })); //browserSync
+        })
         .done();
 });
 
 gulp.task('images', function () {
-    getFileNames.then(function(source) {
-        gulp.src(source.dirs.map(dir => dir + '/*.{jpg,png,svg}'))
-            .pipe(gulp.dest(path.join(params.out + '/' + params.imgDir)));
-    })
+    return getFileNames.then(function (source) {
+            gulp.src(source.dirs.map(dir => dir + '/*.{jpg,png,svg}'))
+                .pipe(gulp.dest(path.join(params.out + '/' + params.imgDir)));
+        })
         .done();
 });
 
-gulp.task('fonts', function() {
-    return gulp.src([params.fontsDir + '/*.*', '!' + params.fontsDir + '/*.txt' ])
+gulp.task('fonts', function () {
+    return gulp.src([params.fontsDir + '/*.*', '!' + params.fontsDir + '/*.txt'])
         .pipe(gulp.dest(params.out + '/fonts'))
 });
 
-gulp.task('fontello', function() {
+gulp.task('fontello', function () {
     return gulp.src([params.fontelloDir + '/css/animation.css', params.fontelloDir + '/css/fontello.css'])
         .pipe(concat('fontello.css'))
         .pipe(gulp.dest(params.out))
         //.pipe(rename({suffix: '.min'}))
-        //.pipe(csso())
+        //.pipe(csso())g
         .pipe(gulp.dest(params.out));
         //.pipe(notify({ message: 'Fontello styles task complete' }));
 });
 
+gulp.task('clean', function () {
+    return del.sync(params.out); // Удаляем папку dist перед сборкой
+});
 
 gulp.watch(params.htmlSrc, ['html']);
-gulp.watch(params.levels.map( level => level + '/**/*.scss' ), ['sass']);
-
+gulp.watch(params.levels.map(level => level + '/**/*.scss'), ['sass']);
