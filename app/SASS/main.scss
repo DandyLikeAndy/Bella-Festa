@@ -1,8 +1,9 @@
-//import variables
-@import "variables";
-
 //import mixin;
 @import "mixins/grid-mixins";
+@import "mixins/grid";
+
+//import variables
+@import "variables";
 
 //import common settings
 @import "settings";
