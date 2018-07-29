@@ -1,48 +1,49 @@
+$grid-rows: 6; //количество ячеек сетки по высоте
+$height-logotype: $grid-height*$grid-rows; //высота строки логотипа
+$logo-name-font-size: $base-font-size*$grid-rows/3;
+$occupation-font-size: $base-font-size*$grid-rows/4;
+
+
 .header {
-  $height: $grid-height*7;
-
-
-
   box-sizing: border-box;
-  height: $height;
-  padding-top: $gutter-top*.5;
-  padding-bottom: $gutter-top*.5;
+  padding-top: $grid-height*.5;
+  padding-bottom: $grid-height*.5;
 
-  &__row {
-
+  &__logotype {
+    //flex
     display: flex;
     justify-content: center;
-    align-content: center;
+    align-items: center;
     box-sizing: border-box;
     padding-left: $grid-gutter-width/2;
     padding-right: $grid-gutter-width/2;
-    height: 100%;
     max-width: $max-breakpoint;
-
   }
 
   &__logo-img {
     box-sizing: border-box;
-    height: $height - $grid-gutter-width/2;
-    margin-right: $grid-gutter-width;
-    width: $height - $grid-gutter-width/2;
+    height: $height-logotype - $grid-gutter-width/2;
+    width: $height-logotype - $grid-gutter-width/2;
+    margin-right: $grid-gutter-width*0.8;
 }
 
   &__logo-text {
-    //height: 100%;
     text-align: center;
     color: white;
+    display: inline-block;
+    padding-bottom: .5em;
   }
 
   &__logo-name {
-    font-size: $base-font-size*2.5;
-    border-bottom: 4px solid white;
-    line-height: 1em;
+    font-size: $logo-name-font-size;
+    border-bottom: 3px solid white;
+    line-height: 1.05em;
+    padding: 0 .5em 0;
   }
 
   &__logo-occupation {
-    font-size: $base-font-size*1.7;
-    line-height: .9em;
+    font-size: $occupation-font-size;
+    line-height: .95em;
     letter-spacing: 0.03em;
   }
 }

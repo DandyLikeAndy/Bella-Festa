@@ -23,52 +23,53 @@ body {
   margin: 0;
 }
 
+.page {
+  font-family: 'PT Sans', sans-serif;
+  height: 100%;
+  background: url("./images/page.jpg") center top no-repeat;
+}
+
 .header {
   box-sizing: border-box;
-  height: 126px;
   padding-top: 9px;
   padding-bottom: 9px;
 }
 
-.header__row {
+.header__logotype {
   display: flex;
   justify-content: center;
-  align-content: center;
+  align-items: center;
   box-sizing: border-box;
   padding-left: 15px;
   padding-right: 15px;
-  height: 100%;
   max-width: 1600px;
 }
 
 .header__logo-img {
   box-sizing: border-box;
-  height: 111px;
-  margin-right: 30px;
-  width: 111px;
+  height: 93px;
+  width: 93px;
+  margin-right: 24px;
 }
 
 .header__logo-text {
   text-align: center;
   color: white;
+  display: inline-block;
+  padding-bottom: .5em;
 }
 
 .header__logo-name {
-  font-size: 50px;
-  border-bottom: 4px solid white;
-  line-height: 1em;
+  font-size: 40px;
+  border-bottom: 3px solid white;
+  line-height: 1.05em;
+  padding: 0 .5em 0;
 }
 
 .header__logo-occupation {
-  font-size: 34px;
-  line-height: .9em;
+  font-size: 30px;
+  line-height: .95em;
   letter-spacing: 0.03em;
-}
-
-.page {
-  font-family: 'PT Sans', sans-serif;
-  height: 100%;
-  background: url("./images/page.jpg") center top no-repeat;
 }
 
 .logo {

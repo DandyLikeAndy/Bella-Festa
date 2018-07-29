@@ -13,17 +13,20 @@
     "url": "https://github.com/DandyLikeAndy/Bella-Festa.git"
   },
   "devDependencies": {
-    "browser-sync": "^2.23.6",
+    "browser-sync": "^2.24.6",
     "del": "^3.0.0",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^5.0.0",
     "gulp-concat": "^2.6.1",
     "gulp-css-url-adjuster": "^0.2.3",
     "gulp-notify": "^3.2.0",
-    "gulp-rename": "^1.2.2",
-    "gulp-sass": "^3.1.0",
-    "gulp-uglify": "^3.0.0",
+    "gulp-rename": "^1.4.0",
+    "gulp-sass": "^3.2.1",
+    "gulp-uglify": "^3.0.1",
     "html2bl": "git://github.com/DandyLikeAndy/html2bl.git",
     "mathsass": "^0.10.1"
+  },
+  "dependencies": {
+    "npm": "^6.2.0"
   }
 }
