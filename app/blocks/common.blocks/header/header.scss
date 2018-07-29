@@ -1,5 +1,6 @@
 $grid-rows: 6; //количество ячеек сетки по высоте
 $height-logotype: $grid-height*$grid-rows; //высота строки логотипа
+$height-img-logotype: $height-logotype - $grid-gutter-width/2; //высота изображения логотипа
 $logo-name-font-size: $base-font-size*$grid-rows/3;
 $occupation-font-size: $base-font-size*$grid-rows/4;
 
@@ -8,37 +9,41 @@ $occupation-font-size: $base-font-size*$grid-rows/4;
   box-sizing: border-box;
   padding-top: $grid-height*.5;
   padding-bottom: $grid-height*.5;
+  white-space: nowrap;
 
+
+//строка логотипа
   &__logotype {
     //flex
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-sizing: border-box;
-    padding-left: $grid-gutter-width/2;
-    padding-right: $grid-gutter-width/2;
-    max-width: $max-breakpoint;
+    //todo
+    @include flex-container(map-get($grid-breakpoints, $base-breakpoint-name));
   }
 
   &__logo-img {
-    box-sizing: border-box;
-    height: $height-logotype - $grid-gutter-width/2;
-    width: $height-logotype - $grid-gutter-width/2;
+    height: $height-img-logotype;
+    width: $height-img-logotype;
     margin-right: $grid-gutter-width*0.8;
+    flex-shrink: 0;
 }
 
   &__logo-text {
     text-align: center;
     color: white;
-    display: inline-block;
     padding-bottom: .5em;
+    //todo
+    @media (map-get($grid-breakpoints, $base-breakpoint-name)) {
+      width: 100%;
+    }
   }
 
   &__logo-name {
     font-size: $logo-name-font-size;
-    border-bottom: 3px solid white;
     line-height: 1.05em;
     padding: 0 .5em 0;
+
+    //bottom line
+    border-bottom: 3px solid white;
+    display: inline-block;
   }
 
   &__logo-occupation {
@@ -46,4 +51,7 @@ $occupation-font-size: $base-font-size*$grid-rows/4;
     line-height: .95em;
     letter-spacing: 0.03em;
   }
+
+
+
 }

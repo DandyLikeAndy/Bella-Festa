@@ -23,16 +23,11 @@ body {
   margin: 0;
 }
 
-.page {
-  font-family: 'PT Sans', sans-serif;
-  height: 100%;
-  background: url("./images/page.jpg") center top no-repeat;
-}
-
 .header {
   box-sizing: border-box;
   padding-top: 9px;
   padding-bottom: 9px;
+  white-space: nowrap;
 }
 
 .header__logotype {
@@ -43,33 +38,52 @@ body {
   padding-left: 15px;
   padding-right: 15px;
   max-width: 1600px;
+  margin: auto;
+}
+
+@media (max-width: 768px) {
+  .header__logotype {
+    flex-wrap: wrap;
+  }
 }
 
 .header__logo-img {
-  box-sizing: border-box;
   height: 93px;
   width: 93px;
   margin-right: 24px;
+  flex-shrink: 0;
 }
 
 .header__logo-text {
   text-align: center;
   color: white;
-  display: inline-block;
   padding-bottom: .5em;
+}
+
+@media (768px) {
+  .header__logo-text {
+    width: 100%;
+  }
 }
 
 .header__logo-name {
   font-size: 40px;
-  border-bottom: 3px solid white;
   line-height: 1.05em;
   padding: 0 .5em 0;
+  border-bottom: 3px solid white;
+  display: inline-block;
 }
 
 .header__logo-occupation {
   font-size: 30px;
   line-height: .95em;
   letter-spacing: 0.03em;
+}
+
+.page {
+  font-family: 'PT Sans', sans-serif;
+  height: 100%;
+  background: url("./images/page.jpg") center top no-repeat;
 }
 
 .logo {
