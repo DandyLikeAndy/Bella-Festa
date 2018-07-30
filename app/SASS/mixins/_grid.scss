@@ -21,14 +21,21 @@ $base-bp: $scr-sm !default;
 //max breakpoint ( max container width)
 $max-bp: $scr-xxl !default;
 
-//todo: container-fluid
+//container-fluid width:100%;
+@mixin fluid-container(){
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+
 @mixin flex-container($max-width: $max-bp) {
   display: flex;
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
-  //padding-left: $grid-gutter-width/2;
-  //padding-right: $grid-gutter-width/2;
   max-width: $max-width - $grid-gutter-width;
   margin: auto;
   flex-wrap: wrap;
@@ -40,6 +47,7 @@ $max-bp: $scr-xxl !default;
 ) {
   @media ( max-width: $bp) {
     width: 100%;
+    @content;
   }
 }
 

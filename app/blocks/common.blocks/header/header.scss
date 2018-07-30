@@ -9,15 +9,17 @@ $occupation-font-size: $base-font-size*$grid-rows/4;
 
 .header {
   box-sizing: border-box;
-  padding-top: $grid-height*.5;
-  padding-bottom: $grid-height*.5;
   white-space: nowrap;
 
 
 //logotype string
   &__logotype {
+    
     //flex
     @include flex-container($max-bp);
+
+    padding-top: $grid-height*.5;
+    padding-bottom: $grid-height*.5;
   }
 
   &__logo-img {

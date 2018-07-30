@@ -23,6 +23,12 @@ body {
   margin: 0;
 }
 
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+}
+
 .page {
   font-family: 'PT Sans', sans-serif;
   height: 100%;
@@ -31,8 +37,6 @@ body {
 
 .header {
   box-sizing: border-box;
-  padding-top: 9px;
-  padding-bottom: 9px;
   white-space: nowrap;
 }
 
@@ -44,6 +48,8 @@ body {
   max-width: 1570px;
   margin: auto;
   flex-wrap: wrap;
+  padding-top: 9px;
+  padding-bottom: 9px;
 }
 
 .header__logo-img {
@@ -87,4 +93,101 @@ body {
 
 .logo_theme-color-70 {
   background-image: url("./images/logo_color_70.svg");
+}
+
+.nav-menu {
+  height: 72px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  max-width: 100%;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .nav-menu {
+    height: auto;
+    padding: .5em 0;
+  }
+}
+
+.nav-menu::after {
+  content: "";
+  position: absolute;
+  background: #fff;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: -1;
+}
+
+.nav-menu__list {
+  height: 100%;
+}
+
+.nav-menu__item {
+  height: 100%;
+  display: inline-block;
+  font-size: 22px;
+  margin-right: 2em;
+  text-align: center;
+}
+
+.nav-menu__item:last-child {
+  margin-right: 0;
+}
+
+@media (max-width: 768px) {
+  .nav-menu__item {
+    display: block;
+    margin: 0;
+    height: auto;
+    padding: .2em 0;
+  }
+}
+
+.nav-menu__item_active .nav-menu__link-text {
+  border-bottom: 2px solid #fc90b8;
+}
+
+.nav-menu__link {
+  display: inline-block;
+  height: 100%;
+  text-decoration: none;
+  vertical-align: middle;
+  box-sizing: border-box;
+  padding: 0 4px;
+  color: #fc90b8;
+  line-height: 1;
+}
+
+.nav-menu__link::before {
+  content: "";
+  height: 100%;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.nav-menu__link:hover .nav-menu__link-text {
+  border-bottom: 2px solid #fc90b8;
+}
+
+.nav-menu__link-text {
+  display: inline-block;
+  vertical-align: middle;
+  border-bottom: 2px solid transparent;
+  transition: border .3s;
+}
+
+.nav-menu_theme-transparent::after {
+  opacity: .57;
+  will-change: opacity;
+  transition: opacity .3s;
+}
+
+.nav-menu_theme-transparent:hover::after {
+  opacity: .7;
 }
