@@ -130,4 +130,4 @@ gulp.task('clean', function () {
 });
 
 gulp.watch(params.htmlSrc, ['html']);
-gulp.watch(params.levels.map(level => level + '/**/*.scss'), ['sass']);
+gulp.watch((params.levels.map(level => level + '/**/*.scss').concat(params.sassDir + '/**/*.scss')), ['sass']);

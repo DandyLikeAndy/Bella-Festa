@@ -1,3 +1,5 @@
+
+// for logotype string
 $grid-rows: 6; //количество ячеек сетки по высоте
 $height-logotype: $grid-height*$grid-rows; //высота строки логотипа
 $height-img-logotype: $height-logotype - $grid-gutter-width/2; //высота изображения логотипа
@@ -12,11 +14,10 @@ $occupation-font-size: $base-font-size*$grid-rows/4;
   white-space: nowrap;
 
 
-//строка логотипа
+//logotype string
   &__logotype {
     //flex
-    //todo
-    @include flex-container(map-get($grid-breakpoints, $base-breakpoint-name));
+    @include flex-container($max-bp);
   }
 
   &__logo-img {
@@ -30,10 +31,9 @@ $occupation-font-size: $base-font-size*$grid-rows/4;
     text-align: center;
     color: white;
     padding-bottom: .5em;
-    //todo
-    @media (map-get($grid-breakpoints, $base-breakpoint-name)) {
-      width: 100%;
-    }
+
+    @include col-row;
+
   }
 
   &__logo-name {

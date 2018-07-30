@@ -1,8 +1,10 @@
+//????????
+//breakpoint-name
+$base-bp-name: md;
+$max-bp-name: xxl;
 
-$base-breakpoint-name: md;
-$max-breakpoint-name: xxl;
-$base-breakpoint: map-get($grid-breakpoints, $base-breakpoint-name);
-$max-breakpoint: map-get($grid-breakpoints, $max-breakpoint-name);
+$base-bp: $scr-md;
+$max-bp: $scr-xxl;
 
 //базовый интерлиньяж(36px)/2
 $grid-height: 18px;

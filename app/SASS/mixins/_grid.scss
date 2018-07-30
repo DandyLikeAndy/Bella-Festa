@@ -1,25 +1,69 @@
-$grid-breakpoints: (
-        xs: 0,
-        sm: 576px,
-        md: 768px,
-        lg: 992px,
-        xl: 1200px,
-        xxl: 1600px
-) !default;
+//screen sizes
+$scr-xs:    0 !default;
+$scr-sm:    576px !default;
+$scr-md:    768px !default;
+$scr-lg:    992px !default;
+$scr-xl:    1200px !default;
+$scr-xxl:   1600px !default;
 
-@mixin flex-container($breakpoint: $base-breakpoint, $max-width: $max-breakpoint) {
+//column width
+$grid-col-width: 70px !default;
+//column gutter width
+$grid-gutter-width: 30px !default;
+
+//not use! number of columns
+$grid-columns: 16 !default;
+//not use! container width
+$grid-container-width: ($grid-col-width + $grid-gutter-width)*$grid-columns;
+
+//base breakpoint
+$base-bp: $scr-sm !default;
+//max breakpoint ( max container width)
+$max-bp: $scr-xxl !default;
+
+//todo: container-fluid
+@mixin flex-container($max-width: $max-bp) {
   display: flex;
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
-  padding-left: $grid-gutter-width/2;
-  padding-right: $grid-gutter-width/2;
-  max-width: $max-width;
+  //padding-left: $grid-gutter-width/2;
+  //padding-right: $grid-gutter-width/2;
+  max-width: $max-width - $grid-gutter-width;
   margin: auto;
+  flex-wrap: wrap;
+}
 
-  //показываем в одну строку
-  @media (max-width: $breakpoint) {
-    flex-wrap: wrap;
+//col == row mode
+@mixin col-row(
+  $bp: $base-bp
+) {
+  @media ( max-width: $bp) {
+    width: 100%;
   }
+}
 
+@mixin col(
+  $bp: $base-bp, //screen size
+  $num-cal: 1, //num of col grid, optional
+  $width: null, //width col, optional
+  $padding: false //set margin right ($grid-gutter-width)
+) {
+  @media (max-width: $bp) {
+    @if ($width != null) {
+      width: $width;
+    } @else {
+      width: ($grid-col-width + $grid-gutter-width) * $num-cal - $grid-gutter-width;
+      @if ($padding) {
+        padding-right: $grid-gutter-width/2;
+        padding-left: $grid-gutter-width/2;
+        &:first-child {
+          padding-left: 0;
+        }
+        &:last-child {
+          padding-right: 0;
+        }
+      }
+    }
+  }
 }
