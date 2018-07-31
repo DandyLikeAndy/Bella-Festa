@@ -1,6 +1,7 @@
 //import mixin;
-@import "mixins/grid-mixins";
 @import "mixins/grid";
+@import "../../node_modules/mathsass/dist/math"; //https://www.npmjs.com/package/mathsass
+
 
 //import variables
 @import "variables";

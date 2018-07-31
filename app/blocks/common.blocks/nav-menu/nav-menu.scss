@@ -1,4 +1,7 @@
 .nav-menu {
+    $border-bottom-width: 2px;
+
+
     height: $grid-height*4;
     @include fluid-container;
     position: relative;
@@ -20,7 +23,11 @@
         z-index: -1;
     }
 
-    //children
+
+    //------------------------------------------------------------------------------
+    //  children
+    //------------------------------------------------------------------------------
+
 
     &__list {
         height: 100%;
@@ -29,15 +36,15 @@
 
     //hide line for hover another item
     &__list:hover &__link-text {
-        border-bottom: 2px solid transparent;
+        border-bottom: $border-bottom-width solid transparent;
     }
 
 
     &__item {
         height: 100%;
         display: inline-block;
-        font-size: $base-font-size*1.1;
         text-align: center;
+        font-size: $base-font-size*1.1;
 
         @media (max-width: $scr-md) {
             display: block;
@@ -49,7 +56,7 @@
 
     //bottom line for active
     &__item_active &__link-text {
-        border-bottom: 2px solid $pink-text;
+        border-bottom: $border-bottom-width solid $pink-text;
     }
 
 
@@ -76,7 +83,7 @@
         }
         //bottom line for hover
         &:hover .nav-menu__link-text {
-            border-bottom: 2px solid $pink-text;
+            border-bottom: $border-bottom-width solid $pink-text;
             //text-decoration: underline;
         }
     }
@@ -85,14 +92,35 @@
     &__link-text {
         display: inline-block;
         vertical-align: middle;
-        border-bottom: 2px solid transparent;
+        border-bottom: $border-bottom-width solid transparent;
         transition: border .3s;
         line-height: 1;
 
     }
 
+    &__tel {
+        position: absolute;
+        right: 3%;
+        color: $pink-text;
+        font-size: $base-font-size*0.9;
+        font-weight: bold;
+        border-bottom: $border-bottom-width solid transparent;
+        text-decoration: none;
 
-    //mods
+        @media(max-width: $scr-xl) {
+            display: none;
+        }
+
+        @media(min-width: $scr-xxl) {
+            right: 5%;
+        }
+
+    }
+
+
+    //------------------------------------------------------------------------------
+    //  mods
+    //------------------------------------------------------------------------------
 
     &_theme-transparent {
         &::after {

@@ -137,8 +137,8 @@ ol {
 .nav-menu__item {
   height: 100%;
   display: inline-block;
-  font-size: 22px;
   text-align: center;
+  font-size: 22px;
 }
 
 @media (max-width: 768px) {
@@ -188,6 +188,28 @@ ol {
   border-bottom: 2px solid transparent;
   transition: border .3s;
   line-height: 1;
+}
+
+.nav-menu__tel {
+  position: absolute;
+  right: 3%;
+  color: #fc90b8;
+  font-size: 18px;
+  font-weight: bold;
+  border-bottom: 2px solid transparent;
+  text-decoration: none;
+}
+
+@media (max-width: 1200px) {
+  .nav-menu__tel {
+    display: none;
+  }
+}
+
+@media (min-width: 1600px) {
+  .nav-menu__tel {
+    right: 5%;
+  }
 }
 
 .nav-menu_theme-transparent::after {
