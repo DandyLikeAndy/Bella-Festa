@@ -8,6 +8,7 @@
         padding: .5em 0;
     }
 
+    //background for nav-menu
     &::after {
         content: "";
         position: absolute;
@@ -19,22 +20,24 @@
         z-index: -1;
     }
 
-   
-
     //children
+
     &__list {
         height: 100%;
+        max-width: $scr-md;
     }
+
+    //hide line for hover another item
+    &__list:hover &__link-text {
+        border-bottom: 2px solid transparent;
+    }
+
 
     &__item {
         height: 100%;
         display: inline-block;
         font-size: $base-font-size*1.1;
-        margin-right: 2em;
         text-align: center;
-        &:last-child {
-            margin-right: 0;
-        }
 
         @media (max-width: $scr-md) {
             display: block;
@@ -44,42 +47,47 @@
         }
     }
 
-
     //bottom line for active
     &__item_active &__link-text {
         border-bottom: 2px solid $pink-text;
     }
 
 
-
     &__link {
         display: inline-block;
         height: 100%;
+        width: 100%;
         text-decoration: none;
         vertical-align: middle;
         box-sizing: border-box;
-        padding: 0 4px;
+        padding: 0 1em;
         color: $pink-text;
-        line-height: 1;
 
+        @media (max-width: $scr-lg) {
+            padding: 0 $grid-gutter-width/2;
+        }
+
+        //vertical-align for link-text
         &::before {
             content: "";
             height: 100%;
             display: inline-block;
             vertical-align: middle;
         }
-
+        //bottom line for hover
         &:hover .nav-menu__link-text {
             border-bottom: 2px solid $pink-text;
             //text-decoration: underline;
         }
     }
 
+
     &__link-text {
         display: inline-block;
         vertical-align: middle;
         border-bottom: 2px solid transparent;
         transition: border .3s;
+        line-height: 1;
 
     }
 
@@ -96,10 +104,5 @@
             opacity: .7;
         }
     }
-    
-   
 
-    
-
-    
 }

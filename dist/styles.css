@@ -33,6 +33,7 @@ ol {
   font-family: 'PT Sans', sans-serif;
   height: 100%;
   background: url("./images/page.jpg") center top no-repeat;
+  background-size: cover;
 }
 
 .header {
@@ -126,18 +127,18 @@ ol {
 
 .nav-menu__list {
   height: 100%;
+  max-width: 768px;
+}
+
+.nav-menu__list:hover .nav-menu__link-text {
+  border-bottom: 2px solid transparent;
 }
 
 .nav-menu__item {
   height: 100%;
   display: inline-block;
   font-size: 22px;
-  margin-right: 2em;
   text-align: center;
-}
-
-.nav-menu__item:last-child {
-  margin-right: 0;
 }
 
 @media (max-width: 768px) {
@@ -156,12 +157,18 @@ ol {
 .nav-menu__link {
   display: inline-block;
   height: 100%;
+  width: 100%;
   text-decoration: none;
   vertical-align: middle;
   box-sizing: border-box;
-  padding: 0 4px;
+  padding: 0 1em;
   color: #fc90b8;
-  line-height: 1;
+}
+
+@media (max-width: 992px) {
+  .nav-menu__link {
+    padding: 0 15px;
+  }
 }
 
 .nav-menu__link::before {
@@ -180,6 +187,7 @@ ol {
   vertical-align: middle;
   border-bottom: 2px solid transparent;
   transition: border .3s;
+  line-height: 1;
 }
 
 .nav-menu_theme-transparent::after {

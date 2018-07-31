@@ -13,13 +13,15 @@ $grid-gutter-width: 30px !default;
 
 //not use! number of columns
 $grid-columns: 16 !default;
-//not use! container width
-$grid-container-width: ($grid-col-width + $grid-gutter-width)*$grid-columns;
+
 
 //base breakpoint
 $base-bp: $scr-sm !default;
 //max breakpoint ( max container width)
 $max-bp: $scr-xxl !default;
+
+//container width
+$grid-cont-max-width: $max-bp - $grid-gutter-width !default;
 
 //container-fluid width:100%;
 @mixin fluid-container(){
