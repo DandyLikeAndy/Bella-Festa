@@ -29,50 +29,39 @@ ol {
   padding: 0;
 }
 
-.page {
-  font-family: 'PT Sans', sans-serif;
-  height: 100%;
-  background: url("./images/page.jpg") center top no-repeat;
-  background-size: cover;
-}
-
-.header {
-  box-sizing: border-box;
-  white-space: nowrap;
-}
-
-.header__logotype {
+.logotype {
   display: flex;
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
-  max-width: 1570px;
-  margin: auto;
   flex-wrap: wrap;
+  position: relative;
+  box-sizing: border-box;
+  white-space: nowrap;
   padding-top: 9px;
   padding-bottom: 9px;
 }
 
-.header__logo-img {
+.logotype__logo-img {
   height: 93px;
   width: 93px;
   margin-right: 24px;
   flex-shrink: 0;
 }
 
-.header__logo-text {
+.logotype__logo-text {
   text-align: center;
   color: white;
   padding-bottom: .5em;
 }
 
 @media (max-width: 768px) {
-  .header__logo-text {
+  .logotype__logo-text {
     width: 100%;
   }
 }
 
-.header__logo-name {
+.logotype__logo-name {
   font-size: 40px;
   line-height: 1.05em;
   padding: 0 .5em 0;
@@ -80,10 +69,30 @@ ol {
   display: inline-block;
 }
 
-.header__logo-occupation {
+.logotype__logo-occupation {
   font-size: 30px;
   line-height: .95em;
   letter-spacing: 0.03em;
+}
+
+.logotype__tel {
+  position: absolute;
+  right: 20px;
+  color: white;
+  font-size: 22px;
+  text-decoration: none;
+  transition: color .3s;
+  opacity: .8;
+}
+
+@media (max-width: 1200px) {
+  .logotype__tel {
+    display: none;
+  }
+}
+
+.logotype__tel:hover {
+  color: #fc90b8;
 }
 
 .logo {
@@ -96,13 +105,19 @@ ol {
   background-image: url("./images/logo_color_70.svg");
 }
 
+.page {
+  font-family: 'PT Sans', sans-serif;
+  height: 100%;
+  background: url("./images/page.jpg") center top no-repeat;
+  background-size: cover;
+}
+
 .nav-menu {
   height: 72px;
   display: flex;
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
-  max-width: 100%;
   flex-wrap: wrap;
   position: relative;
 }
@@ -188,28 +203,6 @@ ol {
   border-bottom: 2px solid transparent;
   transition: border .3s;
   line-height: 1;
-}
-
-.nav-menu__tel {
-  position: absolute;
-  right: 3%;
-  color: #fc90b8;
-  font-size: 18px;
-  font-weight: bold;
-  border-bottom: 2px solid transparent;
-  text-decoration: none;
-}
-
-@media (max-width: 1200px) {
-  .nav-menu__tel {
-    display: none;
-  }
-}
-
-@media (min-width: 1600px) {
-  .nav-menu__tel {
-    right: 5%;
-  }
 }
 
 .nav-menu_theme-transparent::after {

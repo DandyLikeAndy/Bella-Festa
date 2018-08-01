@@ -98,25 +98,6 @@
 
     }
 
-    &__tel {
-        position: absolute;
-        right: 3%;
-        color: $pink-text;
-        font-size: $base-font-size*0.9;
-        font-weight: bold;
-        border-bottom: $border-bottom-width solid transparent;
-        text-decoration: none;
-
-        @media(max-width: $scr-xl) {
-            display: none;
-        }
-
-        @media(min-width: $scr-xxl) {
-            right: 5%;
-        }
-
-    }
-
 
     //------------------------------------------------------------------------------
     //  mods

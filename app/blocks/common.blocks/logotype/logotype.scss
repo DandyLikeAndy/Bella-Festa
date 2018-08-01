@@ -1,0 +1,79 @@
+.logotype {
+
+  //variables
+  $grid-rows: 6; //количество ячеек сетки по высоте
+  $height-logotype: $grid-height*$grid-rows; //высота строки логотипа
+  $height-img-logotype: $height-logotype - $grid-gutter-width/2; //высота изображения логотипа
+  $logo-name-font-size: $base-font-size*$grid-rows/3;
+  $occupation-font-size: $base-font-size*$grid-rows/4;
+
+  //flex
+  @include fluid-container;
+
+  position: relative;
+  box-sizing: border-box;
+  white-space: nowrap;
+  padding-top: $grid-height*.5;
+  padding-bottom: $grid-height*.5;
+
+ 
+  //------------------------------------------------------------------------------
+  //  children
+  //------------------------------------------------------------------------------
+
+  &__logo-img {
+    height: $height-img-logotype;
+    width: $height-img-logotype;
+    margin-right: $grid-gutter-width*0.8;
+    flex-shrink: 0;
+  }
+
+  &__logo-text {
+    text-align: center;
+    color: white;
+    padding-bottom: .5em;
+
+    @include col-row;
+
+  }
+
+  &__logo-name {
+    font-size: $logo-name-font-size;
+    line-height: 1.05em;
+    padding: 0 .5em 0;
+
+    //bottom line
+    border-bottom: 3px solid white;
+    display: inline-block;
+  }
+
+  &__logo-occupation {
+    font-size: $occupation-font-size;
+    line-height: .95em;
+    letter-spacing: 0.03em;
+  }
+
+  &__tel {
+    position: absolute;
+    right: 20px;
+    color: white;
+    font-size: $base-font-size*1.1;
+    //font-weight: bold;
+    //border-bottom: $border-bottom-width solid transparent;
+    text-decoration: none;
+    //line-height: 1;
+    transition: color .3s;
+    opacity: .8;
+
+    @media(max-width: $scr-xl) {
+        display: none;
+    }
+
+    &:hover {
+      color: $pink-text;
+    }
+
+
+}
+
+}
