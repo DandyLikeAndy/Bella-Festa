@@ -29,6 +29,13 @@ ol {
   padding: 0;
 }
 
+.page {
+  font-family: 'PT Sans', sans-serif;
+  height: 100%;
+  background: url("./images/page.jpg") center top no-repeat;
+  background-size: cover;
+}
+
 .logotype {
   display: flex;
   justify-content: center;
@@ -36,7 +43,6 @@ ol {
   box-sizing: border-box;
   flex-wrap: wrap;
   position: relative;
-  box-sizing: border-box;
   white-space: nowrap;
   padding-top: 9px;
   padding-bottom: 9px;
@@ -55,7 +61,7 @@ ol {
   padding-bottom: .5em;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 576px) {
   .logotype__logo-text {
     width: 100%;
   }
@@ -95,6 +101,21 @@ ol {
   color: #fc90b8;
 }
 
+@media (max-width: 768px) {
+  .logotype__logo-img {
+    height: 69.75px;
+    width: 69.75px;
+  }
+
+  .logotype__logo-name {
+    font-size: 30px;
+  }
+
+  .logotype__logo-occupation {
+    font-size: 22.5px;
+  }
+}
+
 .logo {
   background-image: url("./images/logo_color.svg");
   background-repeat: no-repeat;
@@ -103,13 +124,6 @@ ol {
 
 .logo_theme-color-70 {
   background-image: url("./images/logo_color_70.svg");
-}
-
-.page {
-  font-family: 'PT Sans', sans-serif;
-  height: 100%;
-  background: url("./images/page.jpg") center top no-repeat;
-  background-size: cover;
 }
 
 .nav-menu {
@@ -213,4 +227,60 @@ ol {
 
 .nav-menu_theme-transparent:hover::after {
   opacity: .7;
+}
+
+.button-menu {
+  cursor: pointer;
+  padding: 4px;
+}
+
+.button-menu__area-pointer {
+  width: 1.8em;
+  height: 1.15em;
+  position: relative;
+}
+
+.button-menu__line {
+  width: 100%;
+  height: 2px;
+  position: absolute;
+  background: white;
+  left: 0;
+  transition: transform .5s;
+  display: block;
+  will-change: transform;
+}
+
+.button-menu__line_top {
+  top: 0;
+}
+
+.button-menu__line_middle {
+  top: calc(50% - 1px + 1px);
+}
+
+.button-menu__line_bottom {
+  bottom: 0;
+}
+
+.button-menu .button-menu_open .button-menu__line_top {
+  transform: translateY(calc(0.575em - 1px)) rotate(32.57406deg);
+  /*width: $newWidth;*/
+}
+
+.button-menu .button-menu_open .button-menu__line_bottom {
+  transform: translateY(calc(-0.575em + 1px)) rotate(-32.57406deg);
+  /*width: $newWidth;*/
+}
+
+.button-menu .button-menu_open .button-menu__line_middle {
+  transform: scaleX(0);
+}
+
+.button-menu .button-menu:hover .button-menu__line {
+  box-shadow: 0 0 1px 1px #F6B7C4;
+}
+
+.button-menu_hide {
+  display: none;
 }

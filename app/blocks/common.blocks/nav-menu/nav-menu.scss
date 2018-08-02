@@ -1,7 +1,5 @@
 .nav-menu {
     $border-bottom-width: 2px;
-
-
     height: $grid-height*4;
     @include fluid-container;
     position: relative;
