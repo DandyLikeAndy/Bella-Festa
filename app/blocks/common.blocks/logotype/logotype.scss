@@ -24,6 +24,11 @@
         width: $height-img-logotype;
         margin-right: $grid-gutter-width*0.8;
         flex-shrink: 0;
+        
+        @media (max-width: $scr-sm) {
+          //for horisontal align
+          margin-right: 0; 
+        }
     }
 
     &__logo-text {
@@ -81,6 +86,8 @@
         &__logo-img {
             height: $height-img-logotype*.75;
             width: $height-img-logotype*.75;
+            //margin-right: 0;
+            margin-bottom: $gutter-vertical/3;
         }
 
         &__logo-name {

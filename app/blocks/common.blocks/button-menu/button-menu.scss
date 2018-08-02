@@ -1,8 +1,8 @@
 //@import "../node_modules/mathsass/dist/math"; //https://www.npmjs.com/package/mathsass
 
-$height: 1.15em; //высота кнопки ( без учета padding(button-menu) и margin(button-menu__area-pointer) )
-$width: 1.8em; //ширины кнопки (без учета padding и margin)
-$lineWidth: 2px; //Ширина линии
+$height: $grid-height*1.3; //высота кнопки ( без учета padding(button-menu) и margin(button-menu__area-pointer) )
+$width: $grid-height*2; //ширины кнопки (без учета padding и margin)
+$lineWidth: 3px; //Ширина линии
 $colorHover: $pink; //цвет lines при наведении
 
 $alpha: rad-to-deg(atan($height/$width), true); //угол наклона lines
@@ -17,10 +17,10 @@ $deltaWidth: $newWidth - $width;
     //margin: auto;
     //top: 0; bottom: 0;
     //z-index: 105;
-    cursor: pointer;
-    //border: 1px solid lightgray;
+    
     padding: 4px; //набивка вокруг lines
-
+    cursor: pointer;
+    
     //------------------------------------------------------------------------------
     //  children
     //------------------------------------------------------------------------------
@@ -48,40 +48,39 @@ $deltaWidth: $newWidth - $width;
     }
 
     &__line_middle {
-        top: calc(50% - #{$lineWidth/2} + 1px);
+        top: calc(50% - #{$lineWidth/2}/*  + 1px */);
     }
 
     &__line_bottom {
         bottom: 0;
     }
 
+
+    //------------------------------------------------------------------------------
+    //  mods
+    //------------------------------------------------------------------------------
+
+    //open menu
     //для крестика в пределах блока (большой крест) button-menu__area-pointer раскоментировать width, translateX
-    .button-menu_open .button-menu__line_top {
+    &_open &__line_top {
         transform: translateY(calc(#{$height/2} - #{$lineWidth/2})) /*translateX(#{-$deltaWidth/2})*/
         rotate($alpha);
         /*width: $newWidth;*/
     }
     //для крестика в пределах блока button-menu__area-pointer раскоментировать width, translateX
-    .button-menu_open .button-menu__line_bottom {
+    &_open &__line_bottom {
         transform: translateY(calc(#{-$height/2} + #{$lineWidth/2})) /*translateX(#{-$deltaWidth/2})*/
         rotate(-#{$alpha});
         /*width: $newWidth;*/
 
     }
 
-    .button-menu_open .button-menu__line_middle {
+    &_open &__line_middle {
         transform: scaleX(0);
     }
 
-    .button-menu:hover .button-menu__line {
+    &:hover &__line {
         box-shadow: 0 0 1px 1px #{$colorHover};
-    }
-
-    //------------------------------------------------------------------------------
-    //  mods
-    //------------------------------------------------------------------------------
-    &_hide {
-        display: none;
     }
 
 }

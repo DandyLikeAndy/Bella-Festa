@@ -19,6 +19,10 @@
         bottom: 0;
         right: 0;
         z-index: -1;
+
+        @media(max-width: $base-bp) {
+            display: none;
+        }
     }
 
 
@@ -30,6 +34,10 @@
     &__list {
         height: 100%;
         max-width: $scr-md;
+
+        @media(max-width: $base-bp) {
+            display: none;
+        }
     }
 
     //hide line for hover another item
@@ -94,6 +102,16 @@
         transition: border .3s;
         line-height: 1;
 
+    }
+
+    &__button {
+        position: fixed;
+        top: 1.5em;
+        right: 1.5em;
+        opacity: .8;
+        @media(min-width: $base-bp) {
+            display: none;
+        }
     }
 
 
