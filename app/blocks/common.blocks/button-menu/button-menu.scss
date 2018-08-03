@@ -12,13 +12,13 @@ $deltaWidth: $newWidth - $width;
 //в случае неравномерности пробелов м/у линиями поиграться с top и bottom у .button-menu__line_top/bottom/middle и .button-menu__line_bottom
 
 .button-menu {
-    //для position: absolute
+    //-----для position: absolute
     //height: 100%;
     //margin: auto;
     //top: 0; bottom: 0;
     //z-index: 105;
     
-    padding: 4px; //набивка вокруг lines
+    //padding: 4px; //набивка вокруг lines (увеличение площади pointer)
     cursor: pointer;
     
     //------------------------------------------------------------------------------
@@ -28,7 +28,7 @@ $deltaWidth: $newWidth - $width;
     &__area-pointer {
         width: $width;
         height: $height;
-        //margin: 4px; //отступ от lines
+        margin: 4px; //отступ от lines (увеличение площади pointer)
         position: relative;
     }
 

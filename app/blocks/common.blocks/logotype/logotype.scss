@@ -3,9 +3,10 @@
     //variables
     $grid-rows: 6; //количество ячеек сетки по высоте
     $height-logotype: $grid-height*$grid-rows; //высота строки логотипа
-    $height-img-logotype: $height-logotype - $grid-gutter-width/2; //высота изображения логотипа
+    $height-img-logotype: $height-logotype - $grid-gutter-width/1.5; //высота изображения логотипа
     $logo-name-font-size: $base-font-size*$grid-rows/3;
-    $occupation-font-size: $base-font-size*$grid-rows/4;
+    $occupation-font-size: $base-font-size*$grid-rows/4.5;
+    $offset-bottom-line: .3em;
 
     //flex
     @include fluid-container;
@@ -42,7 +43,7 @@
     &__logo-name {
         font-size: $logo-name-font-size;
         line-height: 1.05em;
-        padding: 0 .5em 0;
+        padding: 0 $offset-bottom-line 0;
 
         //bottom line
         border-bottom: 3px solid white;

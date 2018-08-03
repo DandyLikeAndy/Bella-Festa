@@ -101,16 +101,59 @@
         border-bottom: $border-bottom-width solid transparent;
         transition: border .3s;
         line-height: 1;
-
     }
 
     &__button {
-        position: fixed;
-        top: 1.5em;
-        right: 1.5em;
-        opacity: .8;
-        @media(min-width: $base-bp) {
+        @media (min-width: $base-bp) {
             display: none;
+        }
+    }
+
+
+    //------------------------------------------------------------------------------
+    //  mobile version
+    //------------------------------------------------------------------------------
+
+
+    @media (max-width: $base-bp) {
+
+        &__list {
+            margin-top: $grid-height/2;
+        }
+
+        &__item {
+            display: block;
+            margin: 0;
+            height: auto;
+            padding: .2em 0;
+            font-size: $base-font-size*.9;
+        }
+
+        &__button {
+            position: fixed;
+            top: 1.5em;
+            right: 1.5em;
+            opacity: .8;
+        }
+
+        &__link {
+            color: white;
+        } 
+
+        //bottom line for active
+        &__item_active &__link-text {
+            border-bottom-color: white;
+        } 
+        
+        //hide line for hover another item
+        &__list:hover &__link-text {
+            border-bottom-color: transparent; 
+        }   
+
+         //bottom line for hover
+         &__item:hover .nav-menu__link-text {
+            border-bottom-color: white ; 
+            //text-decoration: underline;
         }
     }
 
@@ -130,4 +173,5 @@
         }
     }
 
+    
 }
