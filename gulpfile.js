@@ -19,10 +19,11 @@ let params = { //html2bl and others
         htmlSrc: 'app/pages.html/index.html',
         levels: ['app/blocks/library.blocks', 'app/blocks/common.blocks'],
         extCssFiles: 'scss',
-        sassDir: "app/sass",
-        fontelloDir: "app/libs/fontello",
-        fontsDir: "app/libs/fonts",
-        imgDir: "images"
+        sassDir: 'app/sass',
+        jsDir: 'app/js',
+        fontelloDir: 'app/libs/fontello',
+        fontsDir: 'app/libs/fonts',
+        outImgDir: 'images'
     },
     getFileNames = html2bl.getFileNames(params); //html2bl
 
@@ -78,7 +79,7 @@ gulp.task('sass', function () {
                 //.pipe(autoprefixer({browsers: ['last 2 versions']}))
                 .pipe(urlAdjust({
                     //prependRelative for image (images must be in the block folder)
-                    prependRelative: './' + params.imgDir + '/'
+                    prependRelative: './' + params.outImgDir + '/'
                 }))
                 .pipe(gulp.dest(params.out))
                 .pipe(reload({
@@ -92,7 +93,7 @@ gulp.task('sass', function () {
 
 gulp.task('js', function () {
     return getFileNames.then(function (source) {
-            gulp.src(source.dirs.map(dir => dir + '/**/*.js'))
+            gulp.src( [params.jsDir + '/**/*.js'].concat(source.dirs.map(dir => dir + '/**/*.js')) )
                 .pipe(concat('app.js'))
                 .pipe(gulp.dest(params.out))
                 .pipe(reload({
@@ -105,7 +106,7 @@ gulp.task('js', function () {
 gulp.task('images', function () {
     return getFileNames.then(function (source) {
             gulp.src(source.dirs.map(dir => dir + '/*.{jpg,png,svg}'))
-                .pipe(gulp.dest(path.join(params.out + '/' + params.imgDir)));
+                .pipe(gulp.dest(path.join(params.out + '/' + params.outImgDir)));
         })
         .done();
 });
@@ -131,3 +132,4 @@ gulp.task('clean', function () {
 
 gulp.watch(params.htmlSrc, ['html']);
 gulp.watch((params.levels.map(level => level + '/**/*.scss').concat(params.sassDir + '/**/*.scss')), ['sass']);
+gulp.watch((params.levels.map(level => level + '/**/*.js').concat(params.jsDir + '/**/*.js')), ['js']);
