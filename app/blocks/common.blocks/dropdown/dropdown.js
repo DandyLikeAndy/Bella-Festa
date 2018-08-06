@@ -22,6 +22,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 // ------------------------------------------------------------------------
+// Dependences
+// ------------------------------------------------------------------------
+    const onTrEnd = onTransitionend;
+
+
+// ------------------------------------------------------------------------
 // Class Definition
 // ------------------------------------------------------------------------
 
@@ -74,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
             el.style.height = 0;
             el.classList.add(ClassName.SHOW);
 
-            onTransitionend({
+            onTrEnd({
                 el: el,
                 handler: function () {
                     el._dropdown._showComplete();
