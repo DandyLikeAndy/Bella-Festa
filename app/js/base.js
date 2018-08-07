@@ -1,3 +1,65 @@
+function ElU(el, modules){
+    //var args = [].slice.call(arguments);
+    this._el = el;
+
+    //if call without new
+    if (!(this instanceof ElU)) {
+        return new ElU(el, modules);
+    }
+
+    //if call without modules - add all modules
+    if (!modules || modules === '*' || !(modules instanceof Array)) {
+    modules = [];
+    for (var key in ElU.modules) {
+        if (ElU.modules.hasOwnProperty(key)) {
+            modules.push(key);
+        }
+    }
+
+    //init modules
+    for (var i = 0; i<modules.length; i++) {
+        ElU.modules[modules[i]](this);
+    }
+}
+}
+
+ElU.modules = {};
+ElU.modules.event = function(el) {
+    el.on = function(type, handler, context) {
+
+        if (context) {//todo
+            var newHandler = handler.bind(context)
+            handler = newHandler;
+        }
+
+        if(type.search(/\./)) {
+            var nameSpaces = type.split('.');
+            
+            el.eventSpaces = el.eventSpaces || {};
+
+            type = nameSpaces[0];
+            
+            for (var i = 0 ; i<nameSpaces.length; i++) {
+                var name = nameSpaces[i];
+                el.eventSpaces[name] = el.eventSpaces[name] || {};
+                
+                if (i === nameSpaces.length-1) {
+                    el.eventSpaces[name].handlers = el.eventSpaces[name].handlers || [];
+                    el.eventSpaces[name].handlers.push(handler);
+                 }
+            }
+        }
+        
+        this._el.addEventListener(type, handler, false);
+    };
+
+    el.off = function(type, handler) {
+        this._el.removeEventListener(type, handler);
+    }
+}
+
+
+
 /**
  * Adding an event to complete the animation
  * @param options.$el {jQuery} the element that will have event handler
