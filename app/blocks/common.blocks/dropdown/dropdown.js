@@ -27,6 +27,15 @@ document.addEventListener('DOMContentLoaded', function () {
     const onTrEnd = onTransitionend;
 
 
+    function on(el, type, handler, context) {
+        if (context) {
+            handler = function () {
+                handler.call(context);
+            }
+        }
+        el.addEventListener(type, handler, false);
+    }
+
 // ------------------------------------------------------------------------
 // Class Definition
 // ------------------------------------------------------------------------
@@ -50,20 +59,19 @@ document.addEventListener('DOMContentLoaded', function () {
             this._dropDownEl = targetEl;
             this._isTransitioning = null;
 
-
             //todo хранить экземпляр в dom-эл-те
             targetEl._dropdown = this;
 
-            //handlers todo отделная функция на установку обр-в
-            triggerEl.addEventListener('click', function () {
-                targetEl._dropdown.toggle();
-            }, false);
+            //handlers todo создать свою обертку для элемента, реализующую полезности let $targetEl = Utils(targetEl);
+            on(targetEl, 'click', this.toggle, this);
         };
 
         // Public methods
 
-        toggle() {
 
+
+        toggle() {
+            console.log('on');
             if (this._dropDownEl.classList.contains(ClassName.SHOW)) {
                 this.show();
             } else {
