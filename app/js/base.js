@@ -27,9 +27,11 @@ ElU.modules = {};
 ElU.modules.event = function(el) {
     el.on = function(type, handler, context) {
 
-        if (context) {//todo
-            var newHandler = handler.bind(context)
-            handler = newHandler;
+        if (context) {
+            var oldHandler = handler;
+            handler = function() {
+                return oldHandler.call(context);
+            }
         }
 
         if(type.search(/\./)) {
