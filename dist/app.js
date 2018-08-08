@@ -1,3 +1,147 @@
+'use strict';
+function ElU(el, modules){
+
+    //if call without new
+    if (!(this instanceof ElU)) {
+        return new ElU(el, modules);
+    }
+
+    this._el = el;
+
+    //if call without modules - add all modules
+    if (!modules || modules === '*' || !(modules instanceof Array)) {
+    modules = [];
+    for (var key in ElU.modules) {
+        if (ElU.modules.hasOwnProperty(key)) {
+            modules.push(key);
+        }
+    }
+
+    //init modules
+    for (var i = 0; i<modules.length; i++) {
+        ElU.modules[modules[i]](this);
+    }
+}
+}
+
+ElU.modules = {};
+ElU.modules.event = function(el) {
+    /**
+     *
+     * @param {string} type - Event type, can set namespaces: 'click.name[.name.....]',
+     *          if only 'click', namespaces does not set
+     * @param {function} handler - Handler, this support (this == context)
+     * @param {object} [context]  - optional Context
+     * @this {HTMLElement || Object}
+     */
+    el.on = function(type, handler, context) {
+
+        if (context) {
+            var oldHandler = handler;
+            handler = function() {
+                return oldHandler.call(context);
+            }
+        }
+
+        if(type.search(/\./)) {
+
+            this.eventSpaces = this.eventSpaces || {};
+
+            var nameSpaces = type.split('.'),
+                eventSpaces = this.eventSpaces;
+
+            type = nameSpaces[0];
+            
+            for (var i = 0 ; i<nameSpaces.length; i++) {
+                var name = nameSpaces[i];
+                eventSpaces[name] = this.eventSpaces[name] || {};
+                
+                if (i === nameSpaces.length-1) {
+                    eventSpaces[name].handlers = eventSpaces.handlers || [];
+                    eventSpaces[name].handlers.push(handler);
+                 }
+                 eventSpaces = eventSpaces[name];
+            }
+        }
+
+        this._el.addEventListener(type, handler, false);
+    };
+
+    el.off = function(type, handler) {
+
+        if(type.search(/\./)) {
+            var handlers = getHandlers(this),//todo проверить получение обр-ков
+                nameSpaces = type.split('.');
+            type = nameSpaces[0];
+            
+            for (var i=0; i<handlers.length; i++) {
+                this._el.removeEventListener(type, handlers[i]);
+                
+            }
+            return;
+        }
+
+        this._el.removeEventListener(type, handler);
+
+        function getHandlers($el) {
+            var nameSpaces = type.split('.'),
+                eventSpaces = $el.eventSpaces;  
+                
+            for (var i=0; i<nameSpaces.length; i++) {
+                var name = nameSpaces[i],
+                    handlers = [];
+                if (!eventSpaces) return;
+                
+                if (i === nameSpaces.length-1 && eventSpaces[name]) {
+                    console.log('!', eventSpaces, eventSpaces[name].handlers);
+                    handlers.concat(eventSpaces[name].handlers);
+                    delete eventSpaces[name].handlers;
+
+                    for (var key in eventSpaces[name]) {
+                        if (eventSpaces.hasOwnProperty(key)) {
+                            var otherHandlers = getOtherHandlers(eventSpaces[name]);
+                            handlers.concat(otherHandlers)
+                        }
+                    }
+                    delete eventSpaces[name];
+                }
+                eventSpaces = eventSpaces[name];
+            }
+        } 
+
+        function getOtherHandlers(eventSpaces) {
+            var handlers = [];
+            for (var key in eventSpaces ) {
+                if (eventSpaces.hasOwnProperty(key)) {
+                    if (key === 'handlers' && (eventSpaces[handlers] instanceof Array)) {
+                        handlers.concat(eventSpaces[handlers]);
+                        continue;
+                }
+                getOtherHandlers(eventSpaces[key]);
+                return handlers;
+                }
+            }
+        }    
+    };
+};
+
+//test
+var elem = document;
+var $elem = ElU(elem);
+
+
+var handler = function() {
+  console.log(this);
+};
+
+$elem.on('click.h', handler, {w:window});
+console.log($elem);
+//console.log($elem.eventSpaces.click.h.handlers[0]);
+
+$elem.off('click.h');
+
+
+
 /**
  * Adding an event to complete the animation
  * @param options.$el {jQuery} the element that will have event handler

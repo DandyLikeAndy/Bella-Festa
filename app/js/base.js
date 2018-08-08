@@ -1,11 +1,12 @@
+'use strict';
 function ElU(el, modules){
-    //var args = [].slice.call(arguments);
-    this._el = el;
 
     //if call without new
     if (!(this instanceof ElU)) {
         return new ElU(el, modules);
     }
+
+    this._el = el;
 
     //if call without modules - add all modules
     if (!modules || modules === '*' || !(modules instanceof Array)) {
@@ -43,36 +44,101 @@ ElU.modules.event = function(el) {
         }
 
         if(type.search(/\./)) {
-            var nameSpaces = type.split('.');
-            
-            el.eventSpaces = el.eventSpaces || {};
+
+            this.eventSpaces = this.eventSpaces || {};
+
+            var nameSpaces = type.split('.'),
+                eventSpaces = this.eventSpaces;
 
             type = nameSpaces[0];
             
             for (var i = 0 ; i<nameSpaces.length; i++) {
                 var name = nameSpaces[i];
-                el.eventSpaces[name] = el.eventSpaces[name] || {};
+                eventSpaces[name] = this.eventSpaces[name] || {};
                 
                 if (i === nameSpaces.length-1) {
-                    el.eventSpaces[name].handlers = el.eventSpaces[name].handlers || [];
-                    el.eventSpaces[name].handlers.push(handler);
+                    eventSpaces[name].handlers = eventSpaces.handlers || [];
+                    eventSpaces[name].handlers.push(handler);
                  }
+                 eventSpaces = eventSpaces[name];
             }
         }
-        
+
         this._el.addEventListener(type, handler, false);
     };
 
     el.off = function(type, handler) {
+
         if(type.search(/\./)) {
-            var nameSpaces = type.split('.');
-            //todo
-            var handlers = [];/*el.eventSpaces[nameSpaces.slice(1).join('.')].handlers;*/
+            var handlers = getHandlers(this),//todo проверить получение обр-ков
+                nameSpaces = type.split('.');
             type = nameSpaces[0];
+            
+            for (var i=0; i<handlers.length; i++) {
+                this._el.removeEventListener(type, handlers[i]);
+                
+            }
+            return;
         }
+
         this._el.removeEventListener(type, handler);
-    }
+
+        function getHandlers($el) {
+            var nameSpaces = type.split('.'),
+                eventSpaces = $el.eventSpaces;  
+                
+            for (var i=0; i<nameSpaces.length; i++) {
+                var name = nameSpaces[i],
+                    handlers = [];
+                if (!eventSpaces) return;
+                
+                if (i === nameSpaces.length-1 && eventSpaces[name]) {
+                    console.log('!', eventSpaces, eventSpaces[name].handlers);
+                    handlers.concat(eventSpaces[name].handlers);
+                    delete eventSpaces[name].handlers;
+
+                    for (var key in eventSpaces[name]) {
+                        if (eventSpaces.hasOwnProperty(key)) {
+                            var otherHandlers = getOtherHandlers(eventSpaces[name]);
+                            handlers.concat(otherHandlers)
+                        }
+                    }
+                    delete eventSpaces[name];
+                }
+                eventSpaces = eventSpaces[name];
+            }
+        } 
+
+        function getOtherHandlers(eventSpaces) {
+            var handlers = [];
+            for (var key in eventSpaces ) {
+                if (eventSpaces.hasOwnProperty(key)) {
+                    if (key === 'handlers' && (eventSpaces[handlers] instanceof Array)) {
+                        handlers.concat(eventSpaces[handlers]);
+                        continue;
+                }
+                getOtherHandlers(eventSpaces[key]);
+                return handlers;
+                }
+            }
+        }    
+    };
 };
+
+//test
+var elem = document;
+var $elem = ElU(elem);
+
+
+var handler = function() {
+  console.log(this);
+};
+
+$elem.on('click.h', handler, {w:window});
+console.log($elem);
+//console.log($elem.eventSpaces.click.h.handlers[0]);
+
+$elem.off('click.h');
 
 
 
