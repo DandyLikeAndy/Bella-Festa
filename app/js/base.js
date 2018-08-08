@@ -25,6 +25,14 @@ function ElU(el, modules){
 
 ElU.modules = {};
 ElU.modules.event = function(el) {
+    /**
+     *
+     * @param {string} type - Event type, can set namespaces: 'click.name[.name.....]',
+     *          if only 'click', namespaces does not set
+     * @param {function} handler - Handler, this support (this == context)
+     * @param {object} [context]  - optional Context
+     * @this {HTMLElement || Object}
+     */
     el.on = function(type, handler, context) {
 
         if (context) {
@@ -56,9 +64,15 @@ ElU.modules.event = function(el) {
     };
 
     el.off = function(type, handler) {
+        if(type.search(/\./)) {
+            var nameSpaces = type.split('.');
+            //todo
+            var handlers = [];/*el.eventSpaces[nameSpaces.slice(1).join('.')].handlers;*/
+            type = nameSpaces[0];
+        }
         this._el.removeEventListener(type, handler);
     }
-}
+};
 
 
 
