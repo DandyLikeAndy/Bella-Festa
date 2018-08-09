@@ -31,7 +31,7 @@ ElU.modules.event = function (el) {
      *
      * @param {string} type - Event type, can set namespaces: 'click.name[.name.....]',
      *          if only 'click', namespaces does not set
-     * @param {function} handler - Handler, this support (this == context)
+     * @param {function} handler - Handler, 'this' support (this == context)
      * @param {object} [context]  - optional Context
      * @this {HTMLElement || Object}
      */
@@ -55,10 +55,11 @@ ElU.modules.event = function (el) {
 
             for (var i = 0; i < nameSpaces.length; i++) {
                 var name = nameSpaces[i];
-                eventSpaces[name] = this.eventSpaces[name] || {};
+                eventSpaces[name] = eventSpaces[name] || {};
 
                 if (i === nameSpaces.length - 1) {
-                    eventSpaces[name].handlers = eventSpaces.handlers || [];
+                    console.log('eventSpaces[name].handlers', eventSpaces[name].handlers);
+                    eventSpaces[name].handlers = eventSpaces[name].handlers || [];
                     eventSpaces[name].handlers.push(handler);
                 }
                 eventSpaces = eventSpaces[name];
@@ -71,75 +72,79 @@ ElU.modules.event = function (el) {
     el.off = function (type, handler) {
 
         if (type.search(/\./)) {
-            var handlers = getHandlers(this),//todo проверить получение обр-ков
+            var handlers = getHandlers(this), //проверить возвр знаение
                 nameSpaces = type.split('.');
+            if (!handlers) {
+                console.err('spaceEvents is undefined');
+                return;
+            }
+
             type = nameSpaces[0];
-            console.log('type', type, ' handler ', handlers);
 
             for (var i = 0; i < handlers.length; i++) {
                 this._el.removeEventListener(type, handlers[i]);
             }
+
+            deleteNonUsedEventSpaces(this.eventSpaces);
+
             return;
         }
 
         this._el.removeEventListener(type, handler);
 
-
+        //todo F -  удалить несипользуемые переменные в eventSpaces
         function getHandlers($el) {
 
             var nameSpaces = type.split('.'),
                 eventSpaces = $el.eventSpaces,
                 handlers = [];
 
+            if (!eventSpaces) return;
+
             for (var i = 0; i < nameSpaces.length; i++) {
+                var name = nameSpaces[i],
+                    evSpaces = eventSpaces[name];
+                
+                if (!evSpaces) return;
 
-                var name = nameSpaces[i];
-
-                if (!eventSpaces) return;
-
-                if (i === nameSpaces.length - 1 && eventSpaces[name]) {
-                    if (eventSpaces[name].handlers) {
-                        handlers = handlers.concat(eventSpaces[name].handlers);
-                        delete eventSpaces[name].handlers;
-                    }
-
-                    for (var key in eventSpaces[name]) {
-
-                        if (eventSpaces.hasOwnProperty(key)) {
-                            var otherHandlers = getOtherHandlers(eventSpaces[name]);
-                            console.log('otherHandlers',otherHandlers);
-                            handlers = handlers.concat(otherHandlers);
-                            //console.log('handlers', handlers);
-                        }
-                    }
+                if (i === nameSpaces.length-1) {
+                    handlers = handlers.concat(getIntHandlers(evSpaces));
                     delete eventSpaces[name];
                 }
-                eventSpaces = eventSpaces[name];
+                eventSpaces = evSpaces;
             }
-
+            console.log('getHandlers', handlers);
             return handlers;
         }
 
-
-        function getOtherHandlers(eventSpaces) {
+        function getIntHandlers(eventSpaces) {
             var handlers = [];
             for (var key in eventSpaces) {
-                //console.log('eventSpaces', eventSpaces);
 
-                if (eventSpaces.hasOwnProperty(key) /*&& !(eventSpaces instanceof Array)*/) {
-                    console.log('eventSpaces[handlers] ', eventSpaces[key]);
-                    if (key === 'handlers' /*&& (eventSpaces[handlers] instanceof Array)*/) {
+                if (eventSpaces.hasOwnProperty(key)) {
+                    if (key === 'handlers' && (eventSpaces[key] instanceof Array)) {
                         handlers = handlers.concat(eventSpaces[key]);
-                        console.log('handlers_int', handlers);
+
                         continue;
                     }
-
-                    handlers = handlers.concat(getOtherHandlers(eventSpaces[key]));
-                    //console.log('handlers', handlers);
+                    //check subElements (recursion)
+                    handlers = handlers.concat(getIntHandlers(eventSpaces[key]));
                 }
             }
             return handlers;
         }
+
+        function deleteNonUsedEventSpaces(evSpaces) {
+            /*for (var key in evSpaces) {
+                if (evSpaces.hasOwnProperty(key)) {
+                    if (evSpaces[key].handlers && (evSpaces[key].handlers instanceof Array)) return;
+                    deleteNonUsedEventSpaces(evSpaces[key]);
+                }
+            }
+            delete evSpaces[key];*/
+        }
+
+
     };
 };
 
@@ -148,15 +153,19 @@ var elem = document;
 var $elem = ElU(elem);
 
 
-var handler = function() {
+var handler1 = function() {
   console.log(this);
 };
+var handler2 = function() {
+    console.log(this);
+};
 
-$elem.on('click.h.h', handler, {w:window});
-console.log($elem);
+$elem.on('click.h.h', handler1, {w:window});
+$elem.on('click.h.h.h', handler2, {h:{}});
+//.log($elem);
 //console.log($elem.eventSpaces.click.h.handlers[0]);
 
-$elem.off('click.h');
+//$elem.off('click.h.h');
 console.log($elem);
 
 
