@@ -58,7 +58,6 @@ ElU.modules.event = function (el) {
                 eventSpaces[name] = eventSpaces[name] || {};
 
                 if (i === nameSpaces.length - 1) {
-                    console.log('eventSpaces[name].handlers', eventSpaces[name].handlers);
                     eventSpaces[name].handlers = eventSpaces[name].handlers || [];
                     eventSpaces[name].handlers.push(handler);
                 }
@@ -72,7 +71,7 @@ ElU.modules.event = function (el) {
     el.off = function (type, handler) {
 
         if (type.search(/\./)) {
-            var handlers = getHandlers(this), //проверить возвр знаение
+            var handlers = getHandlers(this),
                 nameSpaces = type.split('.');
             if (!handlers) {
                 console.err('spaceEvents is undefined');
@@ -85,14 +84,13 @@ ElU.modules.event = function (el) {
                 this._el.removeEventListener(type, handlers[i]);
             }
 
-            deleteNonUsedEventSpaces(this.eventSpaces);
-
+            deleteNonUsedEventSpaces(this.eventSpaces, type);
+            
             return;
         }
 
         this._el.removeEventListener(type, handler);
 
-        //todo F -  удалить несипользуемые переменные в eventSpaces
         function getHandlers($el) {
 
             var nameSpaces = type.split('.'),
@@ -113,7 +111,7 @@ ElU.modules.event = function (el) {
                 }
                 eventSpaces = evSpaces;
             }
-            console.log('getHandlers', handlers);
+
             return handlers;
         }
 
@@ -134,14 +132,31 @@ ElU.modules.event = function (el) {
             return handlers;
         }
 
-        function deleteNonUsedEventSpaces(evSpaces) {
-            /*for (var key in evSpaces) {
+        function deleteNonUsedEventSpaces(eventSpaces, type) {
+            var evSpaces = eventSpaces[type];
+
+            for (var key in evSpaces) {
+
                 if (evSpaces.hasOwnProperty(key)) {
-                    if (evSpaces[key].handlers && (evSpaces[key].handlers instanceof Array)) return;
-                    deleteNonUsedEventSpaces(evSpaces[key]);
+                    if (evSpaces.handlers && (evSpaces.handlers instanceof Array)) continue;
+                    if (isEmpty(evSpaces[key])) {
+                        delete evSpaces[key];
+                    } else {
+                        deleteNonUsedEventSpaces(evSpaces, key);
+                    }
                 }
             }
-            delete evSpaces[key];*/
+            if (isEmpty(evSpaces)) delete eventSpaces[type];
+            
+        }
+
+        function isEmpty(obj) {
+            for (var key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    return false;
+                }
+            }
+            return true;
         }
 
 
@@ -152,7 +167,6 @@ ElU.modules.event = function (el) {
 var elem = document;
 var $elem = ElU(elem);
 
-
 var handler1 = function() {
   console.log(this);
 };
@@ -160,13 +174,13 @@ var handler2 = function() {
     console.log(this);
 };
 
-$elem.on('click.h.h', handler1, {w:window});
-$elem.on('click.h.h.h', handler2, {h:{}});
+$elem.on('click.h.h.h.h', handler1, {w:window});
+$elem.on('click.h.h.h.h.h', handler2, {h:{}});
 //.log($elem);
 //console.log($elem.eventSpaces.click.h.handlers[0]);
 
-//$elem.off('click.h.h');
-console.log($elem);
+//$elem.off('click.h.h.h.h');
+//console.log($elem);
 
 
 
