@@ -1,5 +1,12 @@
 'use strict';
 
+/**
+ * ElU - Element Utilites
+ * @constructor
+ * @param {HTMLElement} el 
+ * @param {[String]} modules or undefined for all
+ * @return wraper for HTMLElement
+ */
 function ElU(el, modules) {
 
     //if call without new
@@ -7,6 +14,11 @@ function ElU(el, modules) {
         return new ElU(el, modules);
     }
 
+    try {
+        if (!(el instanceof Node)) throw new Error('element does not instanceof Node') ;
+    } catch (err) {
+        console.error(err.message);
+    }
     this._el = el;
 
     //if call without modules - add all modules
@@ -24,7 +36,9 @@ function ElU(el, modules) {
         }
     }
 }
-
+/**
+ * modules for ElU Element Utilites
+ */
 ElU.modules = {};
 ElU.modules.event = function (el) {
     /**
@@ -68,6 +82,11 @@ ElU.modules.event = function (el) {
         this._el.addEventListener(type, handler, false);
     };
 
+    /**
+     * 
+     * @param {string} type - Event type, can has namespaces 
+     * @param {*} [handler] optional
+     */
     el.off = function (type, handler) {
 
         if (type.search(/\./)) {
@@ -91,6 +110,14 @@ ElU.modules.event = function (el) {
 
         this._el.removeEventListener(type, handler);
 
+        //----------------------------
+        //function for internal use
+        //----------------------------
+
+        /**
+         * get handlers and delete its eventsSpaces (for increase the speed)
+         * @param {*} $el 
+         */
         function getHandlers($el) {
 
             var nameSpaces = type.split('.'),
@@ -114,7 +141,10 @@ ElU.modules.event = function (el) {
 
             return handlers;
         }
-
+        /**
+         * get all handlers into the eventSpaces
+         * @param {Object} eventSpaces 
+         */
         function getIntHandlers(eventSpaces) {
             var handlers = [];
             for (var key in eventSpaces) {
@@ -132,6 +162,11 @@ ElU.modules.event = function (el) {
             return handlers;
         }
 
+        /**
+         * Delete all (use recurcion) non used event spaces into $el.eventSpaces for type - type
+         * @param {Object} eventSpaces for check ($el.eventSpaces without type)
+         * @param {string} type - key in eventSpaces[key] for delete, if not used
+         */
         function deleteNonUsedEventSpaces(eventSpaces, type) {
             var evSpaces = eventSpaces[type];
 
@@ -147,9 +182,12 @@ ElU.modules.event = function (el) {
                 }
             }
             if (isEmpty(evSpaces)) delete eventSpaces[type];
-            
         }
 
+        /**
+         * check object for emptiness
+         * @param {Object} obj 
+         */
         function isEmpty(obj) {
             for (var key in obj) {
                 if (obj.hasOwnProperty(key)) {
@@ -158,31 +196,35 @@ ElU.modules.event = function (el) {
             }
             return true;
         }
-
-
     };
 };
+ElU.modules.dom = function (el) {
+    /**
+     * Find el by Attribute
+     * @param {string} attribute 
+     * @param {string} value 
+     */
+    el.getElementsByAttribute = function(attribute, value) {
+        var allElements = this._el.getElementsByTagName('*'),
+        elem,
+        found = [];
+    
+    for (var i = 0; i < allElements.length; i++) {
+        elem = allElements[i];
+        var attrValue = elem.getAttribute(attribute);
+        if (elem.getAttribute(attribute)) {
+            if (!value || attrValue === value) {
+                found.push(elem);
+            }
+        }
+    }
+    return found;
+    }
+}
 
-//test
-var elem = document;
-var $elem = ElU(elem);
-
-var handler1 = function() {
-  console.log(this);
-};
-var handler2 = function() {
-    console.log(this);
-};
-
-$elem.on('click.h.h.h.h', handler1, {w:window});
-$elem.on('click.h.h.h.h.h', handler2, {h:{}});
-//.log($elem);
-//console.log($elem.eventSpaces.click.h.handlers[0]);
-
-//$elem.off('click.h.h.h.h');
-//console.log($elem);
-
-
+var $el = ElU(document);
+var $el2 =ElU({});
+console.log($el, $el2);
 
 /**
  * Adding an event to complete the animation
@@ -538,7 +580,8 @@ document.addEventListener('DOMContentLoaded', function () {
         constructor(opts) {
             let triggerEl = opts.triggerEl,
                 idTarget = triggerEl.getAttribute(Attribute.DATA_TARGET),
-                targetEl = document.getElementById(idTarget);
+                targetEl = document.getElementById(idTarget),
+                $triggerEl = ElU(triggerEl);
 
             console.log(Attribute.DATA_TARGET);
             console.log(triggerEl.getAttribute(Attribute.DATA_TARGET));
@@ -551,8 +594,9 @@ document.addEventListener('DOMContentLoaded', function () {
             //todo хранить экземпляр в dom-эл-те
             targetEl._dropdown = this;
 
-            //handlers todo создать свою обертку для элемента, реализующую полезности let $targetEl = Utils(targetEl);
-            on(targetEl, 'click', this.toggle, this);
+            //onclick for triggerEl
+            $triggerEl.on('click.toggle', this.toggle, this);
+            
         };
 
         // Public methods
@@ -631,7 +675,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         //todo: add polyfill closest
         const triggerEl = e.target.closest(`[${Attribute.DATA_TOGGLE}="${AttrValue.DATA_TOGGLE}"]`);
-
+        
         if (!triggerEl) return;
 
         if (triggerEl.tagName === 'A') {
@@ -642,6 +686,7 @@ document.addEventListener('DOMContentLoaded', function () {
             triggerEl,
             isAnimation: triggerEl.getAttribute(Attribute.DATA_IS_ANIMATION) || true
         };
+        console.log('triggerEl', triggerEl);
         //todo: проверка инициализации об-та
         return Dropdown.init(opts);
     });

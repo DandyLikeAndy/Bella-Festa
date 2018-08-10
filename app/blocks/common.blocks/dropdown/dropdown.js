@@ -49,7 +49,8 @@ document.addEventListener('DOMContentLoaded', function () {
         constructor(opts) {
             let triggerEl = opts.triggerEl,
                 idTarget = triggerEl.getAttribute(Attribute.DATA_TARGET),
-                targetEl = document.getElementById(idTarget);
+                targetEl = document.getElementById(idTarget),
+                $triggerEl = ElU(triggerEl);
 
             console.log(Attribute.DATA_TARGET);
             console.log(triggerEl.getAttribute(Attribute.DATA_TARGET));
@@ -62,8 +63,9 @@ document.addEventListener('DOMContentLoaded', function () {
             //todo хранить экземпляр в dom-эл-те
             targetEl._dropdown = this;
 
-            //handlers todo создать свою обертку для элемента, реализующую полезности let $targetEl = Utils(targetEl);
-            on(targetEl, 'click', this.toggle, this);
+            //onclick for triggerEl
+            $triggerEl.on('click.toggle', this.toggle, this);
+            
         };
 
         // Public methods
@@ -142,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         //todo: add polyfill closest
         const triggerEl = e.target.closest(`[${Attribute.DATA_TOGGLE}="${AttrValue.DATA_TOGGLE}"]`);
-
+        
         if (!triggerEl) return;
 
         if (triggerEl.tagName === 'A') {
@@ -153,6 +155,7 @@ document.addEventListener('DOMContentLoaded', function () {
             triggerEl,
             isAnimation: triggerEl.getAttribute(Attribute.DATA_IS_ANIMATION) || true
         };
+        console.log('triggerEl', triggerEl);
         //todo: проверка инициализации об-та
         return Dropdown.init(opts);
     });
