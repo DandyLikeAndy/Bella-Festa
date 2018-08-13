@@ -15,7 +15,7 @@ function ElU(el, modules) {
     }
 
     try {
-        if (!(el instanceof Node)) throw new Error('element does not instanceof Node') ;
+        if (!(el instanceof Node)) throw new Error(el + ' element does not instanceof Node') ;
     } catch (err) {
         console.error(err.message);
     }
@@ -53,8 +53,8 @@ ElU.modules.event = function (el) {
 
         if (context) {
             var oldHandler = handler;
-            handler = function () {
-                return oldHandler.call(context);
+            handler = function (e) {
+                return oldHandler.call(context, e);
             }
         }
 
@@ -222,9 +222,6 @@ ElU.modules.dom = function (el) {
     }
 }
 
-var $el = ElU(document);
-var $el2 =ElU({});
-console.log($el, $el2);
 
 /**
  * Adding an event to complete the animation
@@ -555,17 +552,7 @@ document.addEventListener('DOMContentLoaded', function () {
 // ------------------------------------------------------------------------
 // Dependences
 // ------------------------------------------------------------------------
-    const onTrEnd = onTransitionend;
-
-
-    function on(el, type, handler, context) {
-        if (context) {
-            handler = function () {
-                handler.call(context);
-            }
-        }
-        el.addEventListener(type, handler, false);
-    }
+   //todo проверка существования завиимостей: ElU, onTransitionEnd
 
 // ------------------------------------------------------------------------
 // Class Definition
@@ -601,10 +588,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Public methods
 
-
-
         toggle() {
-            console.log('on');
+            
             if (this._dropDownEl.classList.contains(ClassName.SHOW)) {
                 this.show();
             } else {
@@ -613,7 +598,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         show() {
-
+            console.log('show');
             const el = this._dropDownEl;
 
             if (el.classList.contains(ClassName.SHOW) || el._isTransitioning) return;
@@ -621,7 +606,7 @@ document.addEventListener('DOMContentLoaded', function () {
             el.style.height = 0;
             el.classList.add(ClassName.SHOW);
 
-            onTrEnd({
+            onTransitionend({
                 el: el,
                 handler: function () {
                     el._dropdown._showComplete();
@@ -660,35 +645,43 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Static methods
 
-        static init(opts) {
-            return new Dropdown(opts);
+        static init($elem) {
+            let triggerEls = $elem.getElementsByAttribute('data-toggle', 'drop-down'),
+                dropDowns = [];
+
+            for (let i = 0; i<triggerEls.length; i++) {
+                let triggerEl= triggerEls[i];
+                dropDowns.push(new Dropdown({
+                    triggerEl,
+                    isAnimation: triggerEl.getAttribute(Attribute.DATA_IS_ANIMATION) || true
+                }))
+            }
+            return dropDowns;
         }
-
-
     }
 
 
 // ------------------------------------------------------------------------
-// Initialization
+// Initialization - for all dropDown elements when it click
 // ------------------------------------------------------------------------
-    document.addEventListener('click', function (e) {
+    let $document = ElU(document);
+    $document.on('click.initDropDown', initHandler);
+
+    function initHandler (e) {
 
         //todo: add polyfill closest
         const triggerEl = e.target.closest(`[${Attribute.DATA_TOGGLE}="${AttrValue.DATA_TOGGLE}"]`);
-        
+
         if (!triggerEl) return;
 
         if (triggerEl.tagName === 'A') {
             event.preventDefault();
         }
+        
+        $document.off('click.initDropDown', initHandler);
 
-        let opts = {
-            triggerEl,
-            isAnimation: triggerEl.getAttribute(Attribute.DATA_IS_ANIMATION) || true
-        };
-        console.log('triggerEl', triggerEl);
-        //todo: проверка инициализации об-та
-        return Dropdown.init(opts);
-    });
+        return Dropdown.init($document);
+    }
+
 });
 

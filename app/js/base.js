@@ -15,7 +15,7 @@ function ElU(el, modules) {
     }
 
     try {
-        if (!(el instanceof Node)) throw new Error('element does not instanceof Node') ;
+        if (!(el instanceof Node)) throw new Error(el + ' element does not instanceof Node') ;
     } catch (err) {
         console.error(err.message);
     }
@@ -53,8 +53,8 @@ ElU.modules.event = function (el) {
 
         if (context) {
             var oldHandler = handler;
-            handler = function () {
-                return oldHandler.call(context);
+            handler = function (e) {
+                return oldHandler.call(context, e);
             }
         }
 
@@ -222,9 +222,6 @@ ElU.modules.dom = function (el) {
     }
 }
 
-var $el = ElU(document);
-var $el2 =ElU({});
-console.log($el, $el2);
 
 /**
  * Adding an event to complete the animation
