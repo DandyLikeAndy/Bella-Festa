@@ -1,10 +1,14 @@
 .dropdown {
-    transition: height .5s;
+    transition: height 1s;
     will-change: height;
+    overflow: hidden;
+
     //------------------------------------------------------------------------------
     //  mods
     //------------------------------------------------------------------------------
     &_open {
         display: block;
+        //transition: height 1s;
+        //will-change: height;
     }
 }

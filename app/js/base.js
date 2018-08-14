@@ -57,9 +57,9 @@ ElU.modules.event = function (el) {
                 return oldHandler.call(context, e);
             }
         }
-
+        
         if (type.search(/\./)) {
-
+           
             this.eventSpaces = this.eventSpaces || {};
 
             var nameSpaces = type.split('.'),
@@ -78,7 +78,15 @@ ElU.modules.event = function (el) {
                 eventSpaces = eventSpaces[name];
             }
         }
+        
+        if (type === 'transitionend') {
 
+            this.onTransitionend(handler);
+            
+            return;
+            
+        }
+        
         this._el.addEventListener(type, handler, false);
     };
 
@@ -88,23 +96,36 @@ ElU.modules.event = function (el) {
      * @param {*} [handler] optional
      */
     el.off = function (type, handler) {
-
+        
         if (type.search(/\./)) {
             var handlers = getHandlers(this),
                 nameSpaces = type.split('.');
+                
             if (!handlers) {
-                console.err('spaceEvents is undefined');
+                console.error('spaceEvents is undefined');
                 return;
             }
+            
 
             type = nameSpaces[0];
 
             for (var i = 0; i < handlers.length; i++) {
+
+                if (type === 'transitionend') {
+                    this.offTransitionend(handlers[i]);
+                    continue;
+                }
+
                 this._el.removeEventListener(type, handlers[i]);
             }
 
             deleteNonUsedEventSpaces(this.eventSpaces, type);
-            
+
+            return;
+        }
+        
+        if (type === 'transitionend') {
+            this.offTransitionend(handler);
             return;
         }
 
@@ -128,15 +149,17 @@ ElU.modules.event = function (el) {
 
             for (var i = 0; i < nameSpaces.length; i++) {
                 var name = nameSpaces[i],
-                    evSpaces = eventSpaces[name];
+                    evSubSpaces = eventSpaces[name];
                 
-                if (!evSpaces) return;
+                if (!evSubSpaces) return;
 
                 if (i === nameSpaces.length-1) {
-                    handlers = handlers.concat(getIntHandlers(evSpaces));
+
+                    handlers = handlers.concat(getIntHandlers(evSubSpaces));
+                    
                     delete eventSpaces[name];
                 }
-                eventSpaces = evSpaces;
+                eventSpaces = evSubSpaces;
             }
 
             return handlers;
@@ -168,20 +191,20 @@ ElU.modules.event = function (el) {
          * @param {string} type - key in eventSpaces[key] for delete, if not used
          */
         function deleteNonUsedEventSpaces(eventSpaces, type) {
-            var evSpaces = eventSpaces[type];
+            var evSubSpaces = eventSpaces[type];
 
-            for (var key in evSpaces) {
+            for (var key in evSubSpaces) {
 
-                if (evSpaces.hasOwnProperty(key)) {
-                    if (evSpaces.handlers && (evSpaces.handlers instanceof Array)) continue;
-                    if (isEmpty(evSpaces[key])) {
-                        delete evSpaces[key];
+                if (evSubSpaces.hasOwnProperty(key)) {
+                    if (evSubSpaces.handlers && (evSubSpaces.handlers instanceof Array)) continue;
+                    if (isEmpty(evSubSpaces[key])) {
+                        delete evSubSpaces[key];
                     } else {
-                        deleteNonUsedEventSpaces(evSpaces, key);
+                        deleteNonUsedEventSpaces(evSubSpaces, key);
                     }
                 }
             }
-            if (isEmpty(evSpaces)) delete eventSpaces[type];
+            if (isEmpty(evSubSpaces)) delete eventSpaces[type];
         }
 
         /**
@@ -197,7 +220,31 @@ ElU.modules.event = function (el) {
             return true;
         }
     };
+
+   
+    el.onTransitionend = function(handler) {
+        var el = this._el;
+        if (el.style.transition === undefined &&
+            el.style.WebkitTransition === undefined &&
+            el.style.OTransition === undefined &&
+            el.style.MozTransition === undefined) {
+                handler();
+                return;
+        }
+        
+        el.addEventListener('transitionend', handler, false);
+        el.addEventListener('webkitTransitionEnd', handler, false);
+        el.addEventListener('oTransitionEnd', handler, false);
+    }
+  
+    el.offTransitionend = function(handler) {
+        var el = this._el;
+            el.removeEventListener('transitionend', handler, false);
+            el.removeEventListener('webkitTransitionEnd', handler, false);
+            el.removeEventListener('oTransitionEnd', handler, false);
+    }
 };
+
 ElU.modules.dom = function (el) {
     /**
      * Find el by Attribute

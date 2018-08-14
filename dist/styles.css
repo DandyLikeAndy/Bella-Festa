@@ -29,6 +29,16 @@ ol {
   padding: 0;
 }
 
+.logo {
+  background-image: url("./images/logo_color.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.logo_theme-color-70 {
+  background-image: url("./images/logo_color_70.svg");
+}
+
 .page {
   font-family: 'PT Sans', sans-serif;
   height: 100%;
@@ -121,16 +131,6 @@ ol {
   .logotype__logo-occupation {
     font-size: 20px;
   }
-}
-
-.logo {
-  background-image: url("./images/logo_color.svg");
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-.logo_theme-color-70 {
-  background-image: url("./images/logo_color_70.svg");
 }
 
 .nav-menu {
@@ -344,8 +344,9 @@ ol {
 }
 
 .dropdown {
-  transition: height .5s;
+  transition: height 1s;
   will-change: height;
+  overflow: hidden;
 }
 
 .dropdown_open {
