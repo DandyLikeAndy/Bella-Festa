@@ -29,6 +29,13 @@ ol {
   padding: 0;
 }
 
+.page {
+  font-family: 'PT Sans', sans-serif;
+  height: 100%;
+  background: url("./images/page.jpg") center top no-repeat;
+  background-size: cover;
+}
+
 .logo {
   background-image: url("./images/logo_color.svg");
   background-repeat: no-repeat;
@@ -37,13 +44,6 @@ ol {
 
 .logo_theme-color-70 {
   background-image: url("./images/logo_color_70.svg");
-}
-
-.page {
-  font-family: 'PT Sans', sans-serif;
-  height: 100%;
-  background: url("./images/page.jpg") center top no-repeat;
-  background-size: cover;
 }
 
 .logotype {

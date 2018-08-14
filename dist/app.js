@@ -600,7 +600,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const ClassNameTr = {
         SHOW: `${Class.TRIGGER_ELEM}_open`
-    }
+    };
 
 
 // ------------------------------------------------------------------------
@@ -660,15 +660,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (el.classList.contains(ClassNameEl.SHOW) || el._isTransitioning) return;
 
-            //for standart animation (first value)
-            el.style.height = 0;
-
             el.classList.add(ClassNameEl.SHOW);
             trEl.classList.add(ClassNameTr.SHOW);
 
+            //for standard animation (first value)
+            el.style.height = 0;
+
             $el.on('transitionend.show', this._showComplete, this);
 
-            //for standart animation (end value)
+            //for standard animation (end value)
             el.style.height = el.scrollHeight + 'px';
 
         }
@@ -676,32 +676,30 @@ document.addEventListener('DOMContentLoaded', function () {
         hide() {
                 const el = this._targetEl,
                     trEl = this._triggerEl,
-                    $el = this._$targetEl;;
+                    $el = this._$targetEl;
 
             if (!el.classList.contains(ClassNameEl.SHOW) || el._isTransitioning) return;
 
             trEl.classList.remove(ClassNameTr.SHOW);
 
-            //todo: write function standartAnimation() {}
+            //todo: write function standardAnimation() {}
             //todo: isTransition
             //todo: custom animation
+            //todo:  _reflow(), el.style.display = 'block';
     
 
-             //for standart animation (end value)
+             //for standard animation (end value)
+            //el.style.height = el.scrollHeight + 'px';
+            el.style.height = el.getBoundingClientRect().height + 'px';
 
-            el.style.height = el.scrollHeight + 'px';
-            console.log('Height', el.style.height);
             $el.on('transitionend.show', this._showComplete, this);
             
-            //for standart animation (end value)
+            //for standard animation (end value)
 
             el.style.height = 0;
-            
-
             el.style.display = 'block';
-            console.log('Height', el.style.height);
+
             el.classList.remove(ClassNameEl.SHOW);
-            
         }
 
 
@@ -709,16 +707,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
         _showComplete(e) {
             
-            if (!e || (e.target != e.currentTarget)) return;//доп проверка эл
+            if (!e || (e.target !== e.currentTarget)) return;//todo: доп проверка эл
 
             const el = this._targetEl,
                   $el = this._$targetEl;
 
-            
+            //for transition
+            this._reflow();
+
             $el.off('transitionend.show');
-            
-            el.style.display = '';
-            
+
+            el.style = '';
+
+
+        }
+
+        _reflow() {
+            return this._el.offsetHeight;
         }
 
         _isHidden() {
