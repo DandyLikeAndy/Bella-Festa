@@ -1,275 +1,4 @@
 'use strict';
-
-/**
- * ElU - Element Utilites
- * @constructor
- * @param {HTMLElement} el 
- * @param {[String]} modules or undefined for all
- * @return wraper for HTMLElement
- */
-function ElU(el, modules) {
-
-    //if call without new
-    if (!(this instanceof ElU)) {
-        return new ElU(el, modules);
-    }
-
-    try {
-        if (!(el instanceof Node)) throw new Error(el + ' element does not instanceof Node') ;
-    } catch (err) {
-        console.error(err.message);
-    }
-    this._el = el;
-
-    //if call without modules - add all modules
-    if (!modules || modules === '*' || !(modules instanceof Array)) {
-        modules = [];
-        for (var key in ElU.modules) {
-            if (ElU.modules.hasOwnProperty(key)) {
-                modules.push(key);
-            }
-        }
-
-        //init modules
-        for (var i = 0; i < modules.length; i++) {
-            ElU.modules[modules[i]](this);
-        }
-    }
-}
-/**
- * modules for ElU Element Utilites
- */
-ElU.modules = {};
-ElU.modules.event = function (el) {
-    /**
-     *
-     * @param {string} type - Event type, can set namespaces: 'click.name[.name.....]',
-     *          if only 'click', namespaces does not set
-     * @param {function} handler - Handler, 'this' support (this == context)
-     * @param {object} [context]  - optional Context
-     * @this {HTMLElement || Object}
-     */
-    el.on = function (type, handler, context) {
-
-        if (context) {
-            var oldHandler = handler;
-            handler = function (e) {
-                return oldHandler.call(context, e);
-            }
-        }
-        
-        if (type.search(/\./)) {
-           
-            this.eventSpaces = this.eventSpaces || {};
-
-            var nameSpaces = type.split('.'),
-                eventSpaces = this.eventSpaces;
-
-            type = nameSpaces[0];
-
-            for (var i = 0; i < nameSpaces.length; i++) {
-                var name = nameSpaces[i];
-                eventSpaces[name] = eventSpaces[name] || {};
-
-                if (i === nameSpaces.length - 1) {
-                    eventSpaces[name].handlers = eventSpaces[name].handlers || [];
-                    eventSpaces[name].handlers.push(handler);
-                }
-                eventSpaces = eventSpaces[name];
-            }
-        }
-        
-        if (type === 'transitionend') {
-
-            this.onTransitionend(handler);
-            
-            return;
-            
-        }
-        
-        this._el.addEventListener(type, handler, false);
-    };
-
-    /**
-     * 
-     * @param {string} type - Event type, can has namespaces 
-     * @param {*} [handler] optional
-     */
-    el.off = function (type, handler) {
-        
-        if (type.search(/\./)) {
-            var handlers = getHandlers(this),
-                nameSpaces = type.split('.');
-                
-            if (!handlers) {
-                console.error('spaceEvents is undefined');
-                return;
-            }
-            
-
-            type = nameSpaces[0];
-
-            for (var i = 0; i < handlers.length; i++) {
-
-                if (type === 'transitionend') {
-                    this.offTransitionend(handlers[i]);
-                    continue;
-                }
-
-                this._el.removeEventListener(type, handlers[i]);
-            }
-
-            deleteNonUsedEventSpaces(this.eventSpaces, type);
-
-            return;
-        }
-        
-        if (type === 'transitionend') {
-            this.offTransitionend(handler);
-            return;
-        }
-
-        this._el.removeEventListener(type, handler);
-
-        //----------------------------
-        //function for internal use
-        //----------------------------
-
-        /**
-         * get handlers and delete its eventsSpaces (for increase the speed)
-         * @param {*} $el 
-         */
-        function getHandlers($el) {
-
-            var nameSpaces = type.split('.'),
-                eventSpaces = $el.eventSpaces,
-                handlers = [];
-
-            if (!eventSpaces) return;
-
-            for (var i = 0; i < nameSpaces.length; i++) {
-                var name = nameSpaces[i],
-                    evSubSpaces = eventSpaces[name];
-                
-                if (!evSubSpaces) return;
-
-                if (i === nameSpaces.length-1) {
-
-                    handlers = handlers.concat(getIntHandlers(evSubSpaces));
-                    
-                    delete eventSpaces[name];
-                }
-                eventSpaces = evSubSpaces;
-            }
-
-            return handlers;
-        }
-        /**
-         * get all handlers into the eventSpaces
-         * @param {Object} eventSpaces 
-         */
-        function getIntHandlers(eventSpaces) {
-            var handlers = [];
-            for (var key in eventSpaces) {
-
-                if (eventSpaces.hasOwnProperty(key)) {
-                    if (key === 'handlers' && (eventSpaces[key] instanceof Array)) {
-                        handlers = handlers.concat(eventSpaces[key]);
-
-                        continue;
-                    }
-                    //check subElements (recursion)
-                    handlers = handlers.concat(getIntHandlers(eventSpaces[key]));
-                }
-            }
-            return handlers;
-        }
-
-        /**
-         * Delete all (use recurcion) non used event spaces into $el.eventSpaces for type - type
-         * @param {Object} eventSpaces for check ($el.eventSpaces without type)
-         * @param {string} type - key in eventSpaces[key] for delete, if not used
-         */
-        function deleteNonUsedEventSpaces(eventSpaces, type) {
-            var evSubSpaces = eventSpaces[type];
-
-            for (var key in evSubSpaces) {
-
-                if (evSubSpaces.hasOwnProperty(key)) {
-                    if (evSubSpaces.handlers && (evSubSpaces.handlers instanceof Array)) continue;
-                    if (isEmpty(evSubSpaces[key])) {
-                        delete evSubSpaces[key];
-                    } else {
-                        deleteNonUsedEventSpaces(evSubSpaces, key);
-                    }
-                }
-            }
-            if (isEmpty(evSubSpaces)) delete eventSpaces[type];
-        }
-
-        /**
-         * check object for emptiness
-         * @param {Object} obj 
-         */
-        function isEmpty(obj) {
-            for (var key in obj) {
-                if (obj.hasOwnProperty(key)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    };
-
-   
-    el.onTransitionend = function(handler) {
-        var el = this._el;
-        if (el.style.transition === undefined &&
-            el.style.WebkitTransition === undefined &&
-            el.style.OTransition === undefined &&
-            el.style.MozTransition === undefined) {
-                handler();
-                return;
-        }
-        
-        el.addEventListener('transitionend', handler, false);
-        el.addEventListener('webkitTransitionEnd', handler, false);
-        el.addEventListener('oTransitionEnd', handler, false);
-    }
-  
-    el.offTransitionend = function(handler) {
-        var el = this._el;
-            el.removeEventListener('transitionend', handler, false);
-            el.removeEventListener('webkitTransitionEnd', handler, false);
-            el.removeEventListener('oTransitionEnd', handler, false);
-    }
-};
-
-ElU.modules.dom = function (el) {
-    /**
-     * Find el by Attribute
-     * @param {string} attribute 
-     * @param {string} value 
-     */
-    el.getElementsByAttribute = function(attribute, value) {
-        var allElements = this._el.getElementsByTagName('*'),
-        elem,
-        found = [];
-    
-    for (var i = 0; i < allElements.length; i++) {
-        elem = allElements[i];
-        var attrValue = elem.getAttribute(attribute);
-        if (elem.getAttribute(attribute)) {
-            if (!value || attrValue === value) {
-                found.push(elem);
-            }
-        }
-    }
-    return found;
-    }
-}
-
-
 /**
  * Adding an event to complete the animation
  * @param options.$el {jQuery} the element that will have event handler
@@ -573,6 +302,316 @@ function verticalAlign(el) {
     el.style.top = top;
 }
 
+'use strict';
+(function() {
+
+/**
+ * ElU - Element Utilites
+ * @constructor
+ * @param {HTMLElement} el 
+ * @param {[String]} modules or undefined for all
+ * @return wraper for HTMLElement
+ */
+function ElU(el, modules) {
+
+    //if call without new
+    if (!(this instanceof ElU)) {
+        return new ElU(el, modules);
+    }
+
+    try {
+        if (!(el instanceof Node)) throw new Error(el + ' element does not instanceof Node') ;
+    } catch (err) {
+        console.error(err.message);
+    }
+    this._el = el;
+
+    //if call without modules - add all modules
+    if (!modules || modules === '*' || !(modules instanceof Array)) {
+        modules = [];
+        for (let key in ElU.modules) {
+            if (ElU.modules.hasOwnProperty(key)) {
+                modules.push(key);
+            }
+        }
+
+        //init modules
+        for (let i = 0; i < modules.length; i++) {
+            ElU.modules[modules[i]](this);
+        }
+    }
+}
+/**
+ * modules for ElU Element Utilites
+ */
+ElU.modules = {};
+ElU.modules.event = function (el) {
+    /**
+     *
+     * @param {string} type - Event type, can set namespaces: 'click.name[.name.....]',
+     *          if only 'click', namespaces does not set
+     * @param {function} handler - Handler, 'this' support (this == context)
+     * @param {object} [context]  - optional Context
+     * @this {HTMLElement || Object}
+     */
+    el.on = function (type, handler, context) {
+
+        if (context) {
+            let oldHandler = handler;
+            handler = function (e) {
+                return oldHandler.call(context, e);
+            }
+        }
+        
+        if (type.search(/\./)) {
+           
+            this.eventSpaces = this.eventSpaces || {};
+
+            let nameSpaces = type.split('.'),
+                eventSpaces = this.eventSpaces;
+
+            type = nameSpaces[0];
+
+            for (let i = 0; i < nameSpaces.length; i++) {
+                const name = nameSpaces[i];
+                eventSpaces[name] = eventSpaces[name] || {};
+
+                if (i === nameSpaces.length - 1) {
+                    eventSpaces[name].handlers = eventSpaces[name].handlers || [];
+                    eventSpaces[name].handlers.push(handler);
+                }
+                eventSpaces = eventSpaces[name];
+            }
+        }
+        
+        if (type === 'transitionend') {
+
+            this.onTransitionend(handler);
+            
+            return;
+            
+        }
+        
+        this._el.addEventListener(type, handler, false);
+    };
+
+    /**
+     * 
+     * @param {string} type - Event type, can has namespaces 
+     * @param {*} [handler] optional
+     */
+    el.off = function (type, handler) {
+        
+        if (type.search(/\./)) {
+            let handlers = getHandlers(this),
+                nameSpaces = type.split('.');
+                
+            if (!handlers) {
+                console.error('spaceEvents is undefined');
+                return;
+            }
+            
+
+            type = nameSpaces[0];
+
+            for (let i = 0; i < handlers.length; i++) {
+
+                if (type === 'transitionend') {
+                    this.offTransitionend(handlers[i]);
+                    continue;
+                }
+
+                this._el.removeEventListener(type, handlers[i]);
+            }
+
+            deleteNonUsedEventSpaces(this.eventSpaces, type);
+
+            return;
+        }
+        
+        if (type === 'transitionend') {
+            this.offTransitionend(handler);
+            return;
+        }
+
+        this._el.removeEventListener(type, handler);
+
+        //----------------------------
+        //function for internal use
+        //----------------------------
+
+        /**
+         * get handlers and delete its eventsSpaces (for increase the speed)
+         * @param {*} $el 
+         */
+        function getHandlers($el) {
+
+            let nameSpaces = type.split('.'),
+                eventSpaces = $el.eventSpaces,
+                handlers = [];
+
+            if (!eventSpaces) return;
+
+            for (let i = 0; i < nameSpaces.length; i++) {
+                const name = nameSpaces[i],
+                    evSubSpaces = eventSpaces[name];
+                
+                if (!evSubSpaces) return;
+
+                if (i === nameSpaces.length-1) {
+
+                    handlers = handlers.concat(getIntHandlers(evSubSpaces));
+                    
+                    delete eventSpaces[name];
+                }
+                eventSpaces = evSubSpaces;
+            }
+
+            return handlers;
+        }
+        /**
+         * get all handlers into the eventSpaces
+         * @param {Object} eventSpaces 
+         */
+        function getIntHandlers(eventSpaces) {
+            let handlers = [];
+            for (let key in eventSpaces) {
+
+                if (eventSpaces.hasOwnProperty(key)) {
+                    if (key === 'handlers' && (eventSpaces[key] instanceof Array)) {
+                        handlers = handlers.concat(eventSpaces[key]);
+
+                        continue;
+                    }
+                    //check subElements (recursion)
+                    handlers = handlers.concat(getIntHandlers(eventSpaces[key]));
+                }
+            }
+            return handlers;
+        }
+
+        /**
+         * Delete all (use recurcion) non used event spaces into $el.eventSpaces for type - type
+         * @param {Object} eventSpaces for check ($el.eventSpaces without type)
+         * @param {string} type - key in eventSpaces[key] for delete, if not used
+         */
+        function deleteNonUsedEventSpaces(eventSpaces, type) {
+            let evSubSpaces = eventSpaces[type];
+
+            for (let key in evSubSpaces) {
+
+                if (evSubSpaces.hasOwnProperty(key)) {
+                    if (evSubSpaces.handlers && (evSubSpaces.handlers instanceof Array)) continue;
+                    if (isEmpty(evSubSpaces[key])) {
+                        delete evSubSpaces[key];
+                    } else {
+                        deleteNonUsedEventSpaces(evSubSpaces, key);
+                    }
+                }
+            }
+            if (isEmpty(evSubSpaces)) delete eventSpaces[type];
+        }
+
+        /**
+         * check object for emptiness
+         * @param {Object} obj 
+         */
+        function isEmpty(obj) {
+            for (let key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    };
+
+   
+    el.onTransitionend = function(handler) {
+
+        const el = this._el;
+
+        if (el.style.transition === undefined &&
+            el.style.WebkitTransition === undefined &&
+            el.style.OTransition === undefined &&
+            el.style.MozTransition === undefined) {
+                handler();
+                return;
+        }
+        
+        el.addEventListener('transitionend', handler, false);
+        el.addEventListener('webkitTransitionEnd', handler, false);
+        el.addEventListener('oTransitionEnd', handler, false);
+    }
+  
+    el.offTransitionend = function(handler) {
+
+        const el = this._el;
+
+            el.removeEventListener('transitionend', handler, false);
+            el.removeEventListener('webkitTransitionEnd', handler, false);
+            el.removeEventListener('oTransitionEnd', handler, false);
+    }
+};
+
+ElU.modules.dom = function (el) {
+    /**
+     * Find el by Attribute
+     * @param {string} attribute 
+     * @param {string} value 
+     */
+    el.getElementsByAttribute = function(attribute, value) {
+        let allElements = this._el.getElementsByTagName('*'),
+            elem,
+            found = [];
+    
+    for (let i = 0; i < allElements.length; i++) {
+
+        elem = allElements[i];
+
+        const attrValue = elem.getAttribute(attribute);
+
+        if (elem.getAttribute(attribute)) {
+            if (!value || attrValue === value) {
+                found.push(elem);
+            }
+        }
+    }
+
+    return found;
+    }
+};
+
+
+
+/**
+ * space for plugin
+ */
+
+ElU.fn = ElU.prototype = {};
+
+
+/**
+ * expose the library
+ * define ElU as a global ElU variable, saving the original ElU to restore later if needed
+ */
+
+if (typeof window !== 'undefined') {
+    expose();
+}
+
+function expose() {
+    let oldElU = window.oldElU;
+    ElU.noConflict = function () {
+        window.ElU = oldElU;
+        return this;
+    };
+    window.ElU = ElU;
+}
+
+
+})();
+
 document.addEventListener('DOMContentLoaded', function () {
 
 // ------------------------------------------------------------------------
@@ -607,7 +646,7 @@ document.addEventListener('DOMContentLoaded', function () {
 // ------------------------------------------------------------------------
 // Dependences
 // ------------------------------------------------------------------------
-   //todo проверка существования завиимостей: ElU, onTransitionEnd
+   const ElU = window.ElU;
 
 // ------------------------------------------------------------------------
 // Class Definition
@@ -621,17 +660,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
         constructor(opts) {
             let triggerEl = opts.triggerEl,
-                idTarget = triggerEl.getAttribute(Attribute.DATA_TARGET),
-                targetEl = opts.targetEl || document.getElementById(idTarget);
+                idTarget = triggerEl && triggerEl.getAttribute(Attribute.DATA_TARGET),
+                targetEl = opts.targetEl || idTarget && document.getElementById(idTarget);
                 
-
+            this.customAnimate = opts.customAnimate //save customAnimate = {show: f, hide: f [, transitionComplete: f]}
+            
             this._triggerEl = triggerEl;
             this._targetEl = targetEl;
-            this._isTransitioning = null;
-            this._isAnimation = opts.isAnimation;
-
-            this._$triggerEl = ElU(triggerEl);
-            this._$targetEl = ElU(targetEl);
+            this._isAnimation = opts.isAnimation || true;
+            
+            this._$triggerEl = opts.$triggerEl || triggerEl && ElU(triggerEl);
+            this._$targetEl = opts.$targetEl || ElU(targetEl);
 
             //todo хранить экземпляр в dom-эл-те
             targetEl._dropdown = this;
@@ -639,7 +678,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (opts.isToggle) this.toggle();
 
             //onclick for triggerEl
-            this._$triggerEl.on('click.toggle', this.toggle, this);
+            this._$triggerEl && this._$triggerEl.on('click.toggle', this.toggle, this);
             
         };
 
@@ -657,82 +696,42 @@ document.addEventListener('DOMContentLoaded', function () {
         show() {
             
             const el = this._targetEl,
-                trEl =  this._triggerEl,
-                $el = this._$targetEl;
+                trEl =  this._triggerEl;
 
-            if (el.classList.contains(ClassNameEl.SHOW) || el._isTransitioning) return;
+            if (el.classList.contains(ClassNameEl.SHOW) || el.classList.contains(ClassNameEl.TRANSITIONING)) return;
 
             el.classList.add(ClassNameEl.SHOW);
-            trEl.classList.add(ClassNameTr.SHOW);
+            trEl && trEl.classList.add(ClassNameTr.SHOW);
             
-            if(this._isAnimation) {
+            if(this._isAnimation && !this.customAnimate) {
                 Dropdown._defaultAnimate.show(this);
+            } else if (this.customAnimate) {
+                this.customAnimate.show(this);
             }
-
-           /* //for standard animation (first value)
-            el.style.height = 0;
-
-            $el.on('transitionend.show', this._transitionComplete, this);
-
-            //for standard animation (end value)
-            el.style.height = el.scrollHeight + 'px';*/
 
         }
 
         hide() {
                 const el = this._targetEl,
-                    trEl = this._triggerEl,
-                    $el = this._$targetEl;
+                    trEl = this._triggerEl;
 
-            if (!el.classList.contains(ClassNameEl.SHOW) || el._isTransitioning) return;
+            if (!el.classList.contains(ClassNameEl.SHOW) || el.classList.contains(ClassNameEl.TRANSITIONING)) return;
 
-            trEl.classList.remove(ClassNameTr.SHOW);
+            trEl && trEl.classList.remove(ClassNameTr.SHOW);
 
-            //todo: write function standardAnimation() {}
-            //todo: isTransition
-            //todo: custom animation
-            //todo:  _reflow(), el.style.display = 'block';
-    
-
-            /* //for standard animation (end value)
-            //el.style.height = el.scrollHeight + 'px';
-            el.style.height = el.getBoundingClientRect().height + 'px';
-
-            $el.on('transitionend.show', this._transitionComplete, this);
-            
-            //for standard animation (end value)
-
-            el.style.height = 0;
-            el.style.display = 'block';*/
-
-            if(this._isAnimation) {
+            if (this._isAnimation && !this.customAnimate) {
                 Dropdown._defaultAnimate.hide(this);
-            }
+
+            } else if (this.customAnimate) {
+                this.customAnimate.hide(this);
+            } 
 
             el.classList.remove(ClassNameEl.SHOW);
+
         }
 
 
         // Private methods
-
-        _transitionComplete(e) {
-            
-            if (!e || (e.target !== e.currentTarget)) return;//todo: доп проверка эл
-
-            const el = this._targetEl,
-                  $el = this._$targetEl;
-
-            //for transition
-            this._reflow();
-
-            $el.off('transitionend.show');
-
-            el.style = '';
-
-
-        }
-
-
 
         _isHidden() {
             let el = this._targetEl;
@@ -756,7 +755,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return dropdowns;
         }
 
-        static _reflow(el) {
+        static reflow(el) {
             return el.offsetHeight;
         }
 
@@ -767,57 +766,47 @@ document.addEventListener('DOMContentLoaded', function () {
                     const el = inst._targetEl,
                         $el = inst._$targetEl;
 
-
                     el.classList.add(ClassNameEl.TRANSITIONING);
-
-                    //for standard animation (first value)
+                    
                     el.style.height = 0;
-                    //console.log(Dropdown._reflow(el));
+
                     $el.on('transitionend.complete', this.transitionComplete, $el);
-                    //debugger;
-                    //for standard animation (end value)
+
                     el.style.height = el.scrollHeight + 'px';
 
                 },
                 
                 hide: function (inst) {
+
                     const el = inst._targetEl,
                         $el = inst._$targetEl;
-
-
-                    el.classList.add(ClassNameEl.TRANSITIONING);
-
-
-                    //for standard animation (end value)
+                    
                     //el.style.height = el.scrollHeight + 'px';
                     el.style.height = el.getBoundingClientRect().height + 'px';
-                    console.log(Dropdown._reflow(el));
+
                     $el.on('transitionend.complete', this.transitionComplete, $el);
 
-                    //for standard animation (end value)
+                    Dropdown.reflow(el);
 
+                    el.classList.add(ClassNameEl.TRANSITIONING);
+                    
                     el.style.height = 0;
-                    //el.style.display = 'block';
                     
                 },
 
                 transitionComplete: function (e) {
-                    if (!e || (e.target !== e.currentTarget)) return;//todo: доп проверка эл
-
+                    
+                    if (!(e && e.target === e.currentTarget && e.propertyName === 'height')) return;
+                    
                     const el = this._el,
                         $el = this;
 
-                    //console.log(Dropdown._reflow(el));
                     el.classList.remove(ClassNameEl.TRANSITIONING);
-                    //for transition
+
                     $el.off('transitionend.complete');
-                    console.log(Dropdown._reflow(el));
+
                     el.style.height = '';
-
                 }
-
-
-                
             }
         }
     }
@@ -845,6 +834,20 @@ document.addEventListener('DOMContentLoaded', function () {
         
         return Dropdown.init($document, trigInitEl);
     }
+
+ElU.fn.dropdown = function (params) { 
+
+    let opts = {
+        targetEl: this._el,
+        $targetEl: this,
+        ...params
+    };
+
+    new Dropdown(opts);
+
+    return this;
+
+ };
 
 });
 

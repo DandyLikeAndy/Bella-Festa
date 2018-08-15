@@ -9,7 +9,7 @@
         //will-change: height;
     }
     &_transitioning {
-        transition: height 1s;
+        transition: height .5s;
         display: block;
         //will-change: height;
         overflow: hidden;
