@@ -1,7 +1,4 @@
 .dropdown {
-    transition: height 1s;
-    will-change: height;
-    overflow: hidden;
 
     //------------------------------------------------------------------------------
     //  mods
@@ -10,5 +7,11 @@
         display: block;
         //transition: height 1s;
         //will-change: height;
+    }
+    &_transitioning {
+        transition: height 1s;
+        display: block;
+        //will-change: height;
+        overflow: hidden;
     }
 }

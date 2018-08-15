@@ -595,7 +595,8 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     const ClassNameEl = {
-        SHOW: `${Class.TARGET_ELEM}_open`
+        SHOW: `${Class.TARGET_ELEM}_open`,
+        TRANSITIONING: `${Class.TARGET_ELEM}_transitioning`
     };
 
     const ClassNameTr = {
@@ -621,12 +622,13 @@ document.addEventListener('DOMContentLoaded', function () {
         constructor(opts) {
             let triggerEl = opts.triggerEl,
                 idTarget = triggerEl.getAttribute(Attribute.DATA_TARGET),
-                targetEl = document.getElementById(idTarget);
+                targetEl = opts.targetEl || document.getElementById(idTarget);
                 
 
             this._triggerEl = triggerEl;
             this._targetEl = targetEl;
             this._isTransitioning = null;
+            this._isAnimation = opts.isAnimation;
 
             this._$triggerEl = ElU(triggerEl);
             this._$targetEl = ElU(targetEl);
@@ -662,14 +664,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
             el.classList.add(ClassNameEl.SHOW);
             trEl.classList.add(ClassNameTr.SHOW);
+            
+            if(this._isAnimation) {
+                Dropdown._defaultAnimate.show(this);
+            }
 
-            //for standard animation (first value)
+           /* //for standard animation (first value)
             el.style.height = 0;
 
-            $el.on('transitionend.show', this._showComplete, this);
+            $el.on('transitionend.show', this._transitionComplete, this);
 
             //for standard animation (end value)
-            el.style.height = el.scrollHeight + 'px';
+            el.style.height = el.scrollHeight + 'px';*/
 
         }
 
@@ -688,16 +694,20 @@ document.addEventListener('DOMContentLoaded', function () {
             //todo:  _reflow(), el.style.display = 'block';
     
 
-             //for standard animation (end value)
+            /* //for standard animation (end value)
             //el.style.height = el.scrollHeight + 'px';
             el.style.height = el.getBoundingClientRect().height + 'px';
 
-            $el.on('transitionend.show', this._showComplete, this);
+            $el.on('transitionend.show', this._transitionComplete, this);
             
             //for standard animation (end value)
 
             el.style.height = 0;
-            el.style.display = 'block';
+            el.style.display = 'block';*/
+
+            if(this._isAnimation) {
+                Dropdown._defaultAnimate.hide(this);
+            }
 
             el.classList.remove(ClassNameEl.SHOW);
         }
@@ -705,7 +715,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Private methods
 
-        _showComplete(e) {
+        _transitionComplete(e) {
             
             if (!e || (e.target !== e.currentTarget)) return;//todo: доп проверка эл
 
@@ -722,9 +732,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         }
 
-        _reflow() {
-            return this._el.offsetHeight;
-        }
+
 
         _isHidden() {
             let el = this._targetEl;
@@ -747,16 +755,82 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             return dropdowns;
         }
+
+        static _reflow(el) {
+            return el.offsetHeight;
+        }
+
+        static get _defaultAnimate() {
+            return {
+                
+                show: function(inst) {
+                    const el = inst._targetEl,
+                        $el = inst._$targetEl;
+
+
+                    el.classList.add(ClassNameEl.TRANSITIONING);
+
+                    //for standard animation (first value)
+                    el.style.height = 0;
+                    //console.log(Dropdown._reflow(el));
+                    $el.on('transitionend.complete', this.transitionComplete, $el);
+                    //debugger;
+                    //for standard animation (end value)
+                    el.style.height = el.scrollHeight + 'px';
+
+                },
+                
+                hide: function (inst) {
+                    const el = inst._targetEl,
+                        $el = inst._$targetEl;
+
+
+                    el.classList.add(ClassNameEl.TRANSITIONING);
+
+
+                    //for standard animation (end value)
+                    //el.style.height = el.scrollHeight + 'px';
+                    el.style.height = el.getBoundingClientRect().height + 'px';
+                    console.log(Dropdown._reflow(el));
+                    $el.on('transitionend.complete', this.transitionComplete, $el);
+
+                    //for standard animation (end value)
+
+                    el.style.height = 0;
+                    //el.style.display = 'block';
+                    
+                },
+
+                transitionComplete: function (e) {
+                    if (!e || (e.target !== e.currentTarget)) return;//todo: доп проверка эл
+
+                    const el = this._el,
+                        $el = this;
+
+                    //console.log(Dropdown._reflow(el));
+                    el.classList.remove(ClassNameEl.TRANSITIONING);
+                    //for transition
+                    $el.off('transitionend.complete');
+                    console.log(Dropdown._reflow(el));
+                    el.style.height = '';
+
+                }
+
+
+                
+            }
+        }
     }
 
-
+    
+    
 // ------------------------------------------------------------------------
 // Initialization - for all dropdown elements when it click
 // ------------------------------------------------------------------------
     let $document = ElU(document);
-    $document.on('click.initDropDown', initHandler);
+    $document.on('click.initDropDown', initDropdown);
 
-    function initHandler (e) {
+    function initDropdown (e) {
 
         //todo: add polyfill closest
         const trigInitEl = e.target.closest(`[${Attribute.DATA_TOGGLE}="${AttrValue.DATA_TOGGLE}"]`);
