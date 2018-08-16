@@ -4,9 +4,9 @@
 /**
  * ElU - Element Utilites
  * @constructor
- * @param {Node} el
- * @param {[String] || String || undefined} [modules], '' or undefined, '*' for all
- * @return wrapper for HTMLElement
+ * @param {Node} - element
+ * @param {String[] | String} [modules] - modules for use, '', '*' or undefined for all modules
+ * @return {object} wrapper for HTMLElement
  */
 function ElU(el, modules) {
 

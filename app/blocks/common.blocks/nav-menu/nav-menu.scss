@@ -34,10 +34,6 @@
     &__list {
         height: 100%;
         max-width: $scr-md;
-
-        @media(max-width: $base-bp) {
-            display: none;
-        }
     }
 
     //hide line for hover another item
@@ -104,7 +100,7 @@
     }
 
     &__button {
-        @media (min-width: $base-bp) {
+        @media (min-width: $base-bp + 1px) {
             display: none;
         }
     }
@@ -119,6 +115,7 @@
 
         &__list {
             margin-top: $grid-height/2;
+            display: none;
         }
 
         &__item {

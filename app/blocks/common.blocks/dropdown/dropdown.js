@@ -33,6 +33,10 @@ document.addEventListener('DOMContentLoaded', function () {
 // Dependencies
 // ------------------------------------------------------------------------
    const ElU = window.ElU; //$elem
+   if(!ElU) {
+        console.error('for create Dropdown instance need ElU library');
+        return;
+   }
 
 // ------------------------------------------------------------------------
 // Class Definition
@@ -46,17 +50,25 @@ document.addEventListener('DOMContentLoaded', function () {
         
         /**
          *
-         * @param {object}      opts                optional
-         * @param {HTMLElement} opts.targetEl       optional
-         * @param {HTMLElement} opts.triggerEl      optional
-         * @param {object}      opts.customAnimate  optional    {show: f, hide: f [, transitionComplete: f]}
-         * @param {boolean}     opts.isAnimation    optional
-         * @param {boolean}     opts.isToggle       optional
-         * @param {object}      opts.$triggerEl     optional    instance of class ElU
-         * @param {object}      opts.$targetEl      optional    instance of class ElU
+         * @param {object}      opts                    Object with parameters
+         * 
+         * @param {HTMLElement} [opts.targetEl]         Target element, 
+         *                                              if it is not specified, 
+         *                                              it is taken from the trigger element attribute (Attribute.DATA_TARGET)
+         *                                              
+         * @param {HTMLElement} [opts.triggerEl]        Trigger element
+         * 
+         * @param {object}      [opts.customAnimate]    Custom animation {show: f, hide: f [, transitionComplete: f]}
+         * @param {boolean}     [opts.isAnimation=true] Use animation?
+         * 
+         * @param {boolean}     [opts.isToggle=false]   Call dropdown.toggle()?
+         * 
+         * @param {ElU}         [opts.$triggerEl]       Instance of class ElU, for call event handlers
+         * @param {ElU}         [opts.$targetEl]        Instance of class ElU, for call event handlers
          *
          */
         constructor(opts) {
+
             let triggerEl = opts.triggerEl,
                 idTarget = triggerEl && triggerEl.getAttribute(Attribute.DATA_TARGET),
                 targetEl = opts.targetEl || idTarget && document.getElementById(idTarget);
@@ -137,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // ***************************************
         
 
-        _isHidden() {
+        _isHidden() { //not use yet
             let el = this._targetEl;
             return !el.offsetWidth && !el.offsetHeight;
         }
@@ -168,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return el.offsetHeight;
         }
 
-        //defaultAnimate return {show: f, hide: f, transitionComplete: f
+        //_defaultAnimate return {show: f, hide: f, transitionComplete: f
         static get _defaultAnimate() {
             return {
 
@@ -251,6 +263,8 @@ document.addEventListener('DOMContentLoaded', function () {
 // ------------------------------------------------------------------------
 // ElU module:
 // ------------------------------------------------------------------------
+    ElU.fn = ElU.prototype;
+
 
     ElU.fn.dropdown = function (params) {
 
