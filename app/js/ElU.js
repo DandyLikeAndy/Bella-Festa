@@ -4,9 +4,9 @@
 /**
  * ElU - Element Utilites
  * @constructor
- * @param {HTMLElement} el 
- * @param {[String]} modules or undefined for all
- * @return wraper for HTMLElement
+ * @param {Node} el
+ * @param {[String] || String || undefined} [modules], '' or undefined, '*' for all
+ * @return wrapper for HTMLElement
  */
 function ElU(el, modules) {
 
@@ -38,7 +38,7 @@ function ElU(el, modules) {
     }
 }
 /**
- * modules for ElU Element Utilites
+ * modules for ElU Element Utilities
  */
 ElU.modules = {};
 ElU.modules.event = function (el) {
@@ -103,7 +103,7 @@ ElU.modules.event = function (el) {
                 nameSpaces = type.split('.');
                 
             if (!handlers) {
-                console.error('spaceEvents is undefined');
+                console.error('spaceEvents is undefined: ' + type);
                 return;
             }
             

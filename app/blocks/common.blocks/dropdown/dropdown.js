@@ -30,9 +30,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 // ------------------------------------------------------------------------
-// Dependences
+// Dependencies
 // ------------------------------------------------------------------------
-   const ElU = window.ElU;
+   const ElU = window.ElU; //$elem
 
 // ------------------------------------------------------------------------
 // Class Definition
@@ -40,23 +40,35 @@ document.addEventListener('DOMContentLoaded', function () {
 
     class Dropdown {
 
-// ------------------------------------------------------------------------
-// Constructor
-// ------------------------------------------------------------------------
-
+        // ***************************************
+        // Constructor
+        // ***************************************
+        
+        /**
+         *
+         * @param {object}      opts                optional
+         * @param {HTMLElement} opts.targetEl       optional
+         * @param {HTMLElement} opts.triggerEl      optional
+         * @param {object}      opts.customAnimate  optional    {show: f, hide: f [, transitionComplete: f]}
+         * @param {boolean}     opts.isAnimation    optional
+         * @param {boolean}     opts.isToggle       optional
+         * @param {object}      opts.$triggerEl     optional    instance of class ElU
+         * @param {object}      opts.$targetEl      optional    instance of class ElU
+         *
+         */
         constructor(opts) {
             let triggerEl = opts.triggerEl,
                 idTarget = triggerEl && triggerEl.getAttribute(Attribute.DATA_TARGET),
                 targetEl = opts.targetEl || idTarget && document.getElementById(idTarget);
                 
-            this.customAnimate = opts.customAnimate //save customAnimate = {show: f, hide: f [, transitionComplete: f]}
+            this.customAnimate = opts.customAnimate; //save customAnimate = {show: f, hide: f [, transitionComplete: f]}
             
             this._triggerEl = triggerEl;
             this._targetEl = targetEl;
             this._isAnimation = opts.isAnimation || true;
             
             this._$triggerEl = opts.$triggerEl || triggerEl && ElU(triggerEl);
-            this._$targetEl = opts.$targetEl || ElU(targetEl);
+            this._$targetEl = opts.$targetEl || targetEl && ElU(targetEl);
 
             //todo хранить экземпляр в dom-эл-те
             targetEl._dropdown = this;
@@ -67,8 +79,11 @@ document.addEventListener('DOMContentLoaded', function () {
             this._$triggerEl && this._$triggerEl.on('click.toggle', this.toggle, this);
             
         };
-
+        
+        
+        // ***************************************
         // Public methods
+        // ***************************************
 
         toggle() {
             
@@ -116,22 +131,30 @@ document.addEventListener('DOMContentLoaded', function () {
 
         }
 
-
+        
+        // ***************************************
         // Private methods
+        // ***************************************
+        
 
         _isHidden() {
             let el = this._targetEl;
             return !el.offsetWidth && !el.offsetHeight;
         }
-
+        
+        
+        
+        // ***************************************
         // Static methods
+        // ***************************************
+
 
         static init($elem, trigInitEl) {
             let triggerEls = $elem.getElementsByAttribute('data-toggle', 'drop-down'),
                 dropdowns = [];
 
-            for (let i = 0; i<triggerEls.length; i++) {
-                let triggerEl= triggerEls[i];
+            for (let i = 0; i < triggerEls.length; i++) {
+                let triggerEl = triggerEls[i];
                 dropdowns.push(new Dropdown({
                     triggerEl,
                     isAnimation: triggerEl.getAttribute(Attribute.DATA_IS_ANIMATION) || true,
@@ -145,15 +168,16 @@ document.addEventListener('DOMContentLoaded', function () {
             return el.offsetHeight;
         }
 
+        //defaultAnimate return {show: f, hide: f, transitionComplete: f
         static get _defaultAnimate() {
             return {
-                
-                show: function(inst) {
+
+                show: function (inst) {
                     const el = inst._targetEl,
                         $el = inst._$targetEl;
 
                     el.classList.add(ClassNameEl.TRANSITIONING);
-                    
+
                     el.style.height = 0;
 
                     $el.on('transitionend.complete', this.transitionComplete, $el);
@@ -161,12 +185,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     el.style.height = el.scrollHeight + 'px';
 
                 },
-                
+
                 hide: function (inst) {
 
                     const el = inst._targetEl,
                         $el = inst._$targetEl;
-                    
+
                     //el.style.height = el.scrollHeight + 'px';
                     el.style.height = el.getBoundingClientRect().height + 'px';
 
@@ -175,15 +199,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     Dropdown.reflow(el);
 
                     el.classList.add(ClassNameEl.TRANSITIONING);
-                    
+
                     el.style.height = 0;
-                    
+
                 },
 
                 transitionComplete: function (e) {
-                    
+
                     if (!(e && e.target === e.currentTarget && e.propertyName === 'height')) return;
-                    
+
                     const el = this._el,
                         $el = this;
 
@@ -202,10 +226,12 @@ document.addEventListener('DOMContentLoaded', function () {
 // ------------------------------------------------------------------------
 // Initialization - for all dropdown elements when it click
 // ------------------------------------------------------------------------
-    let $document = ElU(document);
-    $document.on('click.initDropDown', initDropdown);
 
-    function initDropdown (e) {
+    let $document = ElU(document);
+
+    $document.on('click.initDropdown', initDropdown);
+
+    function initDropdown(e) {
 
         //todo: add polyfill closest
         const trigInitEl = e.target.closest(`[${Attribute.DATA_TOGGLE}="${AttrValue.DATA_TOGGLE}"]`);
@@ -215,25 +241,37 @@ document.addEventListener('DOMContentLoaded', function () {
         if (trigInitEl.tagName === 'A') {
             event.preventDefault();
         }
-        
-        $document.off('click.initDropDown');
-        
+
+        $document.off('click.initDropdown');
+
         return Dropdown.init($document, trigInitEl);
     }
 
-ElU.fn.dropdown = function (params) { 
 
-    let opts = {
-        targetEl: this._el,
-        $targetEl: this,
-        ...params
+// ------------------------------------------------------------------------
+// ElU module:
+// ------------------------------------------------------------------------
+
+    ElU.fn.dropdown = function (params) {
+
+        let opts = {
+            targetEl: this._el,
+            $targetEl: this,
+            ...params
+        };
+
+        new Dropdown(opts);
+
+        return this;
+
     };
 
-    new Dropdown(opts);
 
-    return this;
+// ------------------------------------------------------------------------
+// ElU static method:
+// ------------------------------------------------------------------------
 
- };
+    ElU.dropdown = Dropdown;
 
 });
 
