@@ -2,11 +2,12 @@
 (function() {
 
 /**
- * ElU - Element Utilites
+ * ElU - Element Utilities
+ *
  * @constructor
- * @param {Node} - element
+ * @param {Node} el - element
  * @param {String[] | String} [modules] - modules for use, '', '*' or undefined for all modules
- * @return {object} wrapper for HTMLElement
+ * @return {object} wrapper for HTMLElement $el = ElU(el);
  */
 function ElU(el, modules) {
 
@@ -187,7 +188,7 @@ ElU.modules.event = function (el) {
         }
 
         /**
-         * Delete all (use recurcion) non used event spaces into $el.eventSpaces for type - type
+         * Delete all (use recursion) non used event spaces into $el.eventSpaces for type - type
          * @param {Object} eventSpaces for check ($el.eventSpaces without type)
          * @param {string} type - key in eventSpaces[key] for delete, if not used
          */
@@ -221,8 +222,9 @@ ElU.modules.event = function (el) {
             return true;
         }
     };
+    //todo: function triggerEvent
+    el.triggerEvent = function (type, detail) {};
 
-   
     el.onTransitionend = function(handler) {
 
         const el = this._el;
@@ -238,7 +240,7 @@ ElU.modules.event = function (el) {
         el.addEventListener('transitionend', handler, false);
         el.addEventListener('webkitTransitionEnd', handler, false);
         el.addEventListener('oTransitionEnd', handler, false);
-    }
+    };
   
     el.offTransitionend = function(handler) {
 
@@ -281,7 +283,7 @@ ElU.modules.dom = function (el) {
 
 
 /**
- * space for plugin
+ * space for plugins
  */
 
 ElU.fn = ElU.prototype = {};

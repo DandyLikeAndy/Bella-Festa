@@ -82,7 +82,6 @@ document.addEventListener('DOMContentLoaded', function () {
             this._$triggerEl = opts.$triggerEl || triggerEl && ElU(triggerEl);
             this._$targetEl = opts.$targetEl || targetEl && ElU(targetEl);
 
-            //todo хранить экземпляр в dom-эл-те
             targetEl._dropdown = this;
 
             if (opts.isToggle) this.toggle();
