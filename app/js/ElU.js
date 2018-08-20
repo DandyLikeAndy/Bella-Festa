@@ -211,7 +211,7 @@ ElU.modules.event = function (el) {
 
         /**
          * check object for emptiness
-         * @param {Object} obj 
+         * @param {Object} obj test object;
          */
         function isEmpty(obj) {
             for (let key in obj) {
@@ -222,8 +222,32 @@ ElU.modules.event = function (el) {
             return true;
         }
     };
-    //todo: function triggerEvent
-    el.triggerEvent = function (type, detail) {};
+    /**
+     *
+     * @param {string} type event type
+     * @param {object} detail
+     */
+    el.triggerCustomEvent = function (type, detail, params) {
+        let evProp = {},
+            event;
+
+        if (params) {
+          params.bubbles = params.bubbles || true;
+          params.cancelable = params.cancelable ||true;
+        }
+
+        for (let key in params) {
+            if (params.hasOwnProperty(key)) {
+                evProp[key] = params[key];
+            }
+        }
+
+        evProp.detail = detail;
+
+        event = new CustomEvent(type, detail);
+        this._el.dispatchEvent(event);
+
+    };
 
     el.onTransitionend = function(handler) {
 
