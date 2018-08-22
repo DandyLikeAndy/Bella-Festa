@@ -44,7 +44,7 @@ function ElU(el, modules) {
 ElU.modules = {};
 ElU.modules.event = function (el) {
     /**
-     *
+     * add event handler for $el
      * @param {string} type - Event type, can set namespaces: 'click.name[.name.....]',
      *          if only 'click', namespaces does not set
      * @param {function} handler - Handler, 'this' support (this == context)
@@ -93,7 +93,7 @@ ElU.modules.event = function (el) {
     };
 
     /**
-     * 
+     * remove event handler for $el
      * @param {string} type - Event type, can has namespaces 
      * @param {*} [handler] optional
      */
@@ -222,29 +222,34 @@ ElU.modules.event = function (el) {
             return true;
         }
     };
+
     /**
-     *
-     * @param {string} type event type
-     * @param {object} detail
+     * Trigger custom event
+     * @param {string} type - event type
+     * @param {object} [detail] - detail
+     * @param {object} [params] - {bubbles=true, cancelable=true [,detail]}
      */
     el.triggerCustomEvent = function (type, detail, params) {
+
         let evProp = {},
             event;
 
-        if (params) {
-          params.bubbles = params.bubbles || true;
-          params.cancelable = params.cancelable ||true;
-        }
-
+        params = params || {};
+        params.bubbles = params.bubbles || true;
+        params.cancelable = params.cancelable ||true;
+        
         for (let key in params) {
             if (params.hasOwnProperty(key)) {
                 evProp[key] = params[key];
             }
         }
 
-        evProp.detail = detail;
+        if (detail) {
+            evProp.detail = detail;
+        }
 
-        event = new CustomEvent(type, detail);
+        event = new CustomEvent(type, evProp);
+
         this._el.dispatchEvent(event);
 
     };

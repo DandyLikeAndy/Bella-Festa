@@ -108,28 +108,34 @@ document.addEventListener('DOMContentLoaded', function () {
         show() {
             
             const el = this._targetEl,
-                trEl =  this._triggerEl;
+                trEl =  this._triggerEl,
+                $el = this._$targetEl;
 
             if (el.classList.contains(ClassNameEl.SHOW) || el.classList.contains(ClassNameEl.TRANSITIONING)) return;
 
             el.classList.add(ClassNameEl.SHOW);
             trEl && trEl.classList.add(ClassNameTr.SHOW);
+
+            $el.triggerCustomEvent('dropdownShow');
             
             if(this._isAnimation && !this.customAnimate) {
                 Dropdown._defaultAnimate.show(this);
             } else if (this.customAnimate) {
                 this.customAnimate.show(this);
-            }
+            } 
 
         }
 
         hide() {
                 const el = this._targetEl,
-                    trEl = this._triggerEl;
+                    trEl = this._triggerEl,
+                    $el = this._$targetEl;;
 
             if (!el.classList.contains(ClassNameEl.SHOW) || el.classList.contains(ClassNameEl.TRANSITIONING)) return;
 
             trEl && trEl.classList.remove(ClassNameTr.SHOW);
+
+            $el.triggerCustomEvent('dropdownHide');
 
             if (this._isAnimation && !this.customAnimate) {
                 Dropdown._defaultAnimate.hide(this);
@@ -227,6 +233,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     $el.off('transitionend.complete');
 
                     el.style.height = '';
+                    
+                    //trigger event
+                    if (el.classList.contains(ClassNameEl.SHOW)) {
+                        $el.triggerCustomEvent('dropdownHidden');
+                    } else {
+                        $el.triggerCustomEvent('dropdownShown');
+                    }
                 }
             }
         }
@@ -235,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function () {
     
     
 // ------------------------------------------------------------------------
-// Initialization - for all dropdown elements when it click
+// Initialization - for all dropdown elements when one of the elements is clicked
 // ------------------------------------------------------------------------
 
     let $document = ElU(document);
@@ -270,8 +283,13 @@ document.addEventListener('DOMContentLoaded', function () {
         let opts = {
             targetEl: this._el,
             $targetEl: this,
-            ...params
         };
+
+        for (let key in params) {
+            if (params.hasOwnProperty(key)) {
+                opts[key] = params[key];
+            }
+        }
 
         new Dropdown(opts);
 

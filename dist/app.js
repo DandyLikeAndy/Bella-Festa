@@ -306,11 +306,12 @@ function verticalAlign(el) {
 (function() {
 
 /**
- * ElU - Element Utilites
+ * ElU - Element Utilities
+ *
  * @constructor
- * @param {Node} - element
+ * @param {Node} el - element
  * @param {String[] | String} [modules] - modules for use, '', '*' or undefined for all modules
- * @return {object} wrapper for HTMLElement
+ * @return {object} wrapper for HTMLElement $el = ElU(el);
  */
 function ElU(el, modules) {
 
@@ -347,7 +348,7 @@ function ElU(el, modules) {
 ElU.modules = {};
 ElU.modules.event = function (el) {
     /**
-     *
+     * add event handler for $el
      * @param {string} type - Event type, can set namespaces: 'click.name[.name.....]',
      *          if only 'click', namespaces does not set
      * @param {function} handler - Handler, 'this' support (this == context)
@@ -396,7 +397,7 @@ ElU.modules.event = function (el) {
     };
 
     /**
-     * 
+     * remove event handler for $el
      * @param {string} type - Event type, can has namespaces 
      * @param {*} [handler] optional
      */
@@ -491,7 +492,7 @@ ElU.modules.event = function (el) {
         }
 
         /**
-         * Delete all (use recurcion) non used event spaces into $el.eventSpaces for type - type
+         * Delete all (use recursion) non used event spaces into $el.eventSpaces for type - type
          * @param {Object} eventSpaces for check ($el.eventSpaces without type)
          * @param {string} type - key in eventSpaces[key] for delete, if not used
          */
@@ -514,7 +515,7 @@ ElU.modules.event = function (el) {
 
         /**
          * check object for emptiness
-         * @param {Object} obj 
+         * @param {Object} obj test object;
          */
         function isEmpty(obj) {
             for (let key in obj) {
@@ -526,7 +527,37 @@ ElU.modules.event = function (el) {
         }
     };
 
-   
+    /**
+     * Trigger custom event
+     * @param {string} type - event type
+     * @param {object} [detail] - detail
+     * @param {object} [params] - {bubbles=true, cancelable=true [,detail]}
+     */
+    el.triggerCustomEvent = function (type, detail, params) {
+
+        let evProp = {},
+            event;
+
+        params = params || {};
+        params.bubbles = params.bubbles || true;
+        params.cancelable = params.cancelable ||true;
+        
+        for (let key in params) {
+            if (params.hasOwnProperty(key)) {
+                evProp[key] = params[key];
+            }
+        }
+
+        if (detail) {
+            evProp.detail = detail;
+        }
+
+        event = new CustomEvent(type, evProp);
+
+        this._el.dispatchEvent(event);
+
+    };
+
     el.onTransitionend = function(handler) {
 
         const el = this._el;
@@ -542,7 +573,7 @@ ElU.modules.event = function (el) {
         el.addEventListener('transitionend', handler, false);
         el.addEventListener('webkitTransitionEnd', handler, false);
         el.addEventListener('oTransitionEnd', handler, false);
-    }
+    };
   
     el.offTransitionend = function(handler) {
 
@@ -585,7 +616,7 @@ ElU.modules.dom = function (el) {
 
 
 /**
- * space for plugin
+ * space for plugins
  */
 
 ElU.fn = ElU.prototype = {};
@@ -612,6 +643,21 @@ function expose() {
 
 })();
 
+document.addEventListener('DOMContentLoaded', function () {
+    let $target = ElU(document.getElementById('nav-menu__drop-down'));
+    $target.on('dropdownShow', function(e) {
+        console.log('dropdownShowEvent', e);
+    })
+    $target.on('dropdownHide', function(e) {
+        console.log('dropdownHideEvent', e);
+    })
+    $target.on('dropdownShown', function(e) {
+        console.log('dropdownShownEvent', e);
+    })
+    $target.on('dropdownHidden', function(e) {
+        console.log('dropdownHiddenEvent', e);
+    })
+}, false);
 document.addEventListener('DOMContentLoaded', function () {
 
 // ------------------------------------------------------------------------
@@ -696,7 +742,6 @@ document.addEventListener('DOMContentLoaded', function () {
             this._$triggerEl = opts.$triggerEl || triggerEl && ElU(triggerEl);
             this._$targetEl = opts.$targetEl || targetEl && ElU(targetEl);
 
-            //todo хранить экземпляр в dom-эл-те
             targetEl._dropdown = this;
 
             if (opts.isToggle) this.toggle();
@@ -723,28 +768,34 @@ document.addEventListener('DOMContentLoaded', function () {
         show() {
             
             const el = this._targetEl,
-                trEl =  this._triggerEl;
+                trEl =  this._triggerEl,
+                $el = this._$targetEl;
 
             if (el.classList.contains(ClassNameEl.SHOW) || el.classList.contains(ClassNameEl.TRANSITIONING)) return;
 
             el.classList.add(ClassNameEl.SHOW);
             trEl && trEl.classList.add(ClassNameTr.SHOW);
+
+            $el.triggerCustomEvent('dropdownShow');
             
             if(this._isAnimation && !this.customAnimate) {
                 Dropdown._defaultAnimate.show(this);
             } else if (this.customAnimate) {
                 this.customAnimate.show(this);
-            }
+            } 
 
         }
 
         hide() {
                 const el = this._targetEl,
-                    trEl = this._triggerEl;
+                    trEl = this._triggerEl,
+                    $el = this._$targetEl;;
 
             if (!el.classList.contains(ClassNameEl.SHOW) || el.classList.contains(ClassNameEl.TRANSITIONING)) return;
 
             trEl && trEl.classList.remove(ClassNameTr.SHOW);
+
+            $el.triggerCustomEvent('dropdownHide');
 
             if (this._isAnimation && !this.customAnimate) {
                 Dropdown._defaultAnimate.hide(this);
@@ -842,6 +893,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     $el.off('transitionend.complete');
 
                     el.style.height = '';
+                    
+                    //trigger event
+                    if (el.classList.contains(ClassNameEl.SHOW)) {
+                        $el.triggerCustomEvent('dropdownHidden');
+                    } else {
+                        $el.triggerCustomEvent('dropdownShown');
+                    }
                 }
             }
         }
@@ -850,7 +908,7 @@ document.addEventListener('DOMContentLoaded', function () {
     
     
 // ------------------------------------------------------------------------
-// Initialization - for all dropdown elements when it click
+// Initialization - for all dropdown elements when one of the elements is clicked
 // ------------------------------------------------------------------------
 
     let $document = ElU(document);
@@ -885,8 +943,13 @@ document.addEventListener('DOMContentLoaded', function () {
         let opts = {
             targetEl: this._el,
             $targetEl: this,
-            ...params
         };
+
+        for (let key in params) {
+            if (params.hasOwnProperty(key)) {
+                opts[key] = params[key];
+            }
+        }
 
         new Dropdown(opts);
 
