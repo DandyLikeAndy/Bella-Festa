@@ -171,7 +171,9 @@ ElU.modules.event = function (el) {
          * @param {Object} eventSpaces 
          */
         function getIntHandlers(eventSpaces) {
+
             let handlers = [];
+
             for (let key in eventSpaces) {
 
                 if (eventSpaces.hasOwnProperty(key)) {

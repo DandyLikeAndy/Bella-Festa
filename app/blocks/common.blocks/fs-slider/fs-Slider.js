@@ -18,7 +18,7 @@ function BaseSlider(options) {
     var slider = options.elem,
         $slItems = $('.base-slider__item', slider),
         $slInfoBlocks = $slItems.find('.base-slider__info'),
-        currentImgNum = $slItems.length - 1,
+        currentImgNum = $slItems.length - 1, //it is top element item in slider
         nextImgNum, dir,
         $buttonPlay = $('.base-slider__button_play-pause i', slider),
         isWork, isAnimationInfo, timerAutoPlayID, timerLoadID,
@@ -60,7 +60,7 @@ function BaseSlider(options) {
     function loadImg(img) {
         var src = img.getAttribute('data-img-realsrc');
 
-        if (!src) { //если загружено, просто показываем
+        if (!src) { //если загружено, просто показываем //todo: ?? почему уже загружен??
             img.style.opacity = 1;
             img.isloaded = true;
             return;
@@ -104,7 +104,7 @@ function BaseSlider(options) {
         function initMove() {
 
             if(isAnimationInfo) {
-                preLoadImgs(currentImgNum);
+                preLoadImgs(currentImgNum);//???
                 isAnimationInfo = false;
             }
 

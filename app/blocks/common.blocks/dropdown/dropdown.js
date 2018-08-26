@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function () {
         hide() {
                 const el = this._targetEl,
                     trEl = this._triggerEl,
-                    $el = this._$targetEl;;
+                    $el = this._$targetEl;
 
             if (!el.classList.contains(ClassNameEl.SHOW) || el.classList.contains(ClassNameEl.TRANSITIONING)) return;
 
