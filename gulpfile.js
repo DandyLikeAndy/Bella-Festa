@@ -112,12 +112,12 @@ gulp.task('images', function () {
 });
 
 gulp.task('fonts', function () {
-    return gulp.src([params.fontsDir + '/*.*', '!' + params.fontsDir + '/*.txt'])
+    return gulp.src([params.fontsDir + '/*.*', params.fontelloDir + '/font/*.*', '!' + params.fontsDir + '/*.txt'])
         .pipe(gulp.dest(params.out + '/fonts'))
 });
 
 gulp.task('fontello', function () {
-    return gulp.src([params.fontelloDir + '/css/animation.css', params.fontelloDir + '/css/fontello.css'])
+    return gulp.src([params.fontelloDir + '/css/fontello.css', params.fontelloDir + '/css/animation.css'])
         .pipe(concat('fontello.css'))
         .pipe(gulp.dest(params.out))
         //.pipe(rename({suffix: '.min'}))

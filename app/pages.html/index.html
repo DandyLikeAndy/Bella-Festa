@@ -6,6 +6,7 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="styles.css" type="text/css" media="all">
+    <link rel="stylesheet" href="fontello.css" type="text/css" media="all">
     <title>Главная</title>
     <!--<script src="https://yastatic.net/jquery/3.1.1/jquery.js"></script>-->
 </head>
@@ -47,27 +48,28 @@
         </ul>
     
     </nav>
-
+</header>
     <div class="simple-slider" id="sSlider">
-        <div class="simple-slider__button-loaded"><i class="simple-slider__icon icon-spin animate-spin"></i></div>
+        <div class="simple-slider__icon-loaded"><i class="simple-slider__icon icon-spin animate-spin"></i></div>
         <div class="simple-slider__button simple-slider__button_dir-prev"><i class="simple-slider__icon  icon-left-open"></i></div>
         <div class="simple-slider__item">
             <div class="simple-slider__img" data-img-realsrc="images/simple-slider-03.jpg"></div>
-            <div class="simple-slider__info"><a href="#" class="simple-slider__link">ОБРАЗ НА МЕРОПРИЯТИЕ<br/>Образ на любое мероприятие - вечерний, выпускной, все что захочется</a></div>
+            <!-- S -->
         </div>
         <div class="simple-slider__item">
             <div class="simple-slider__img" data-img-realsrc="images/simple-slider-02.jpg"></div>
-            <div class="simple-slider__info"><a href="#" class="simple-slider__link">СВАДЕБНЫЙ ОБРАЗ<br/>Создаю нежные и романтические свадебные образы для невест, а также выполню образы для мам и гостей</a></div>
+            <!-- <div class="simple-slider__info"><a href="#" class="simple-slider__link">СВАДЕБНЫЙ ОБРАЗ<br/>Создаю нежные и романтические свадебные образы для невест, а также выполню образы для мам и гостей</a></div> -->
         </div>
-        <div class="simple-slider__item">
-            <div class="simple-slider__img" data-img-realsrc="images/simple-slider-01.jpg"></div>
-            <div class="simple-slider__info"><a href="#" class="simple-slider__link">ОБРАЗ НА ФОТОСЕССИЮ<br/>Яркие образы для фотосессий по вашему желанию</a></div>
+        <div class="simple-slider__item" style="opacity: 1; z-index: 1;">
+            <div class="simple-slider__img" data-img-realsrc="images/simple-slider-01.jpg" style="background-image: url(images/simple-slider-01.jpg)"></div>
+            <!-- <div class="simple-slider__info"><a href="#" class="simple-slider__link">ОБРАЗ НА ФОТОСЕССИЮ<br/>Яркие образы для фотосессий по вашему желанию</a></div> -->
         </div>
 
         <div class="simple-slider__button simple-slider__button_dir-next"><i class="simple-slider__icon icon-right-open"></i></div>
         <div class="simple-slider__button simple-slider__button_play-pause"><i class="simple-slider__icon icon-play"></i></div>
+        <div class="simple-slider__scrim" style="background-color: #b5a09a; opacity: .45;"></div>
     </div>
-</header>
+
 <script src="app.js"></script>
 </body>
 </html>
