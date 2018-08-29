@@ -69,14 +69,14 @@ document.addEventListener('DOMContentLoaded', function () {
          */
         constructor(opts) {
 
-            let triggerEl = opts.triggerEl,
+            const triggerEl = opts.triggerEl,
                 idTarget = triggerEl && triggerEl.getAttribute(Attribute.DATA_TARGET),
                 targetEl = opts.targetEl || idTarget && document.getElementById(idTarget);
                 
             this.customAnimate = opts.customAnimate; //save customAnimate = {show: f, hide: f [, transitionComplete: f]}
             
-            this._triggerEl = triggerEl;
-            this._targetEl = targetEl;
+            this.triggerEl = triggerEl;
+            this.targetEl = targetEl;
             this._isAnimation = opts.isAnimation || true;
             
             this._$triggerEl = opts.$triggerEl || triggerEl && ElU(triggerEl);
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         toggle() {
             
-            if (this._targetEl.classList.contains(ClassNameEl.SHOW)) {
+            if (this.targetEl.classList.contains(ClassNameEl.SHOW)) {
                 this.hide();
             } else {
                 this.show();
@@ -107,8 +107,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         show() {
             
-            const el = this._targetEl,
-                trEl =  this._triggerEl,
+            const el = this.targetEl,
+                trEl =  this.triggerEl,
                 $el = this._$targetEl;
 
             if (el.classList.contains(ClassNameEl.SHOW) || el.classList.contains(ClassNameEl.TRANSITIONING)) return;
@@ -127,8 +127,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         hide() {
-                const el = this._targetEl,
-                    trEl = this._triggerEl,
+                const el = this.targetEl,
+                    trEl = this.triggerEl,
                     $el = this._$targetEl;
 
             if (!el.classList.contains(ClassNameEl.SHOW) || el.classList.contains(ClassNameEl.TRANSITIONING)) return;
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function () {
         
 
         _isHidden() { //not use yet
-            let el = this._targetEl;
+            let el = this.targetEl;
             return !el.offsetWidth && !el.offsetHeight;
         }
         
