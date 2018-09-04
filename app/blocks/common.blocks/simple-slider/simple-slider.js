@@ -8,7 +8,9 @@ const ClassNameEl = {
     ITEM: `${CLASS_SL_ELEM}__item`,
     IMG: `${CLASS_SL_ELEM}__img`,
     INFO: `${CLASS_SL_ELEM}__info`,
-    BUTTON_PLAY: `${CLASS_SL_ELEM}__button_play-pause`
+    BUTTON_PLAY: `${CLASS_SL_ELEM}__button_play-pause`,
+    BUTTON_NEXT: `${CLASS_SL_ELEM}__button_next`,
+    BUTTON_PREV: `${CLASS_SL_ELEM}__button_prev`
 };
 
 const Attribute = {
@@ -37,6 +39,9 @@ class SimSlider {
         this.slInfoBlocks = slEl.getElementsByClassName(ClassNameEl.INFO);
         this.buttonPlay = slEl.getElementsByClassName(ClassNameEl.BUTTON_PLAY);
 
+        //save instanse in element
+        this.slEl._simSlider = this;
+
         this._currentItemNum = this.slItems.length - 1; //*** !!! it is number of top element item  in slider
         this._currentItem = slItems[this._currentItemNum]; //*** !!!
         this._isWork = null;
@@ -51,6 +56,15 @@ class SimSlider {
 
     }
 
+// ***************************************
+// Public methods
+// ***************************************
+
+toggleAutoPlay() {}
+
+go(dir) {
+    
+}
 
 // ***************************************
 // Private methods
@@ -64,7 +78,7 @@ _initElms() {
     currentItem.cssText = "'zIndex': 1; 'will-change': 'transform'"; //todo: для изображения или + transform??
     this._preLoadImgs(currentImgNum); //загружаем остальные фотографии (которые должны подгрузиться в данный момент времени)
 
-    this.slEl.onclick = this.onClick;
+    this.slEl.onclick = this._onClick;
 }
 
 
@@ -113,7 +127,24 @@ _preLoadImgs(itemNum) {
             loadImg(img);
         }
 }
-_onClick(e) {}
+_onClick(e) {
+    if (e.target.closest(ClassNameEl.BUTTON_PLAY)) {
+        toggleAutoPlay();
+        return;
+
+    } else if (this._isWork) {
+        return;
+
+    } else if ($(e.target).closest(ClassNameEl.BUTTON_NEXT)) {
+        dir = 1;
+        go(dir);
+
+    } else if ($(e.target).closest(ClassNameEl.BUTTON_PREV)) {
+        dir = -1;
+        go(dir);
+    }
+}
+
 _initTouchEvent();
 
 
