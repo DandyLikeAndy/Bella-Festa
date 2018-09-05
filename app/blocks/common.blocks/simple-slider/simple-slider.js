@@ -43,6 +43,7 @@ class SimSlider {
         this.slEl._simSlider = this;
 
         this._currentItemNum = this.slItems.length - 1; //*** !!! it is number of top element item  in slider
+        this._nextItemNum = null,
         this._currentItem = slItems[this._currentItemNum]; //*** !!!
         this._isWork = null;
         this._isAutoPlayOn = null;
@@ -53,6 +54,8 @@ class SimSlider {
         this._initElms();
         this._initTouchEvent();
         if(opts.isAutoPlay) this.toggleAutoPlay(); //todo: to fix autoPlay(true)
+        
+        //todo: set animateMove(dir) func
 
     }
 
@@ -60,11 +63,25 @@ class SimSlider {
 // Public methods
 // ***************************************
 
-toggleAutoPlay() {}
+    toggleAutoPlay() { }
 
-go(dir) {
-    
-}
+    go(dir) {
+        if (this._isWork) return;
+        if (!SimSlider._getImg(this._currentItem).isloaded) return;
+
+        dir = dir || 1;
+        this._isWork = true;
+        this._nextItemNum = this._getNextItemNum(dir);
+
+        //init for current item
+        this._currentItem.cssText("zIndex: 2; transition: '' ");
+        //init for next item
+        this.slItems[this._nextItemNum].style.zIndex = 1;
+
+        this._animateMove(dir);
+    }
+
+
 
 // ***************************************
 // Private methods
@@ -75,7 +92,7 @@ _initElms() {
         firstImg = SimSlider._getImg(currentItem);
 
     this._loadImg(firstImg); //load first img
-    currentItem.cssText = "'zIndex': 1; 'will-change': 'transform'"; //todo: для изображения или + transform??
+    currentItem.cssText = "zIndex: 1; will-change: transform"; //todo: для изображения или + transform??
     this._preLoadImgs(currentImgNum); //загружаем остальные фотографии (которые должны подгрузиться в данный момент времени)
 
     this.slEl.onclick = this._onClick;
@@ -127,6 +144,9 @@ _preLoadImgs(itemNum) {
             loadImg(img);
         }
 }
+
+
+
 _onClick(e) {
     if (e.target.closest(ClassNameEl.BUTTON_PLAY)) {
         toggleAutoPlay();
@@ -146,6 +166,19 @@ _onClick(e) {
 }
 
 _initTouchEvent();
+
+_getNextItemNum(dir){
+    const curNum = this._currentItemNum,
+        slItems = this.slItems;
+
+    let nextItemNum = null;    
+
+    if(dir == -1) {
+        return nextItemNum = curNum >= slItems.length - 1 ? 0 : curNum + 1;
+    } else {
+        return nextItemNum = curNum === 0 ? slItems.length - 1 : curNum - 1;
+    }
+}
 
 
 // ***************************************

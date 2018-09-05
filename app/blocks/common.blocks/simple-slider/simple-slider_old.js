@@ -103,8 +103,8 @@ function BaseSlider(options) {
 
         function initMove() {
 
-            if(isAnimationInfo) {
-                preLoadImgs(currentImgNum);//???
+            if(isAnimationInfo) { //для плавной анимации???
+                preLoadImgs(currentImgNum);
                 isAnimationInfo = false;
             }
 
