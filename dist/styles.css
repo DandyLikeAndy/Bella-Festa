@@ -29,11 +29,27 @@ ol {
   padding: 0;
 }
 
+.logo {
+  background-image: url("./images/logo_color.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.logo_theme-color-70 {
+  background-image: url("./images/logo_color_70.svg");
+}
+
 .page {
   font-family: 'PT Sans', sans-serif;
   height: 100%;
   background: url("./images/page.jpg") center top no-repeat;
   background-size: cover;
+}
+
+.header {
+  position: fixed;
+  z-index: 100;
+  width: 100%;
 }
 
 .logotype {
@@ -121,22 +137,6 @@ ol {
   .logotype__logo-occupation {
     font-size: 20px;
   }
-}
-
-.logo {
-  background-image: url("./images/logo_color.svg");
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-.logo_theme-color-70 {
-  background-image: url("./images/logo_color_70.svg");
-}
-
-.header {
-  position: fixed;
-  z-index: 100;
-  width: 100%;
 }
 
 .nav-menu {
@@ -407,12 +407,12 @@ ol {
   opacity: 0.6;
 }
 
-.simple-slider__button_dir-prev {
+.simple-slider__button_prev {
   left: 1%;
   top: calc(50% -  60px);
 }
 
-.simple-slider__button_dir-next {
+.simple-slider__button_next {
   right: 1%;
   top: calc(50% - 60px);
 }
@@ -463,12 +463,12 @@ ol {
     padding: 10px;
   }
 
-  .simple-slider__button_dir-prev {
+  .simple-slider__button_prev {
     left: 0;
     top: calc(50% - 25px);
   }
 
-  .simple-slider__button_dir-next {
+  .simple-slider__button_next {
     right: 0;
     top: calc(50% - 25px);
   }

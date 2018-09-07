@@ -57,11 +57,11 @@ $font-size-button-mv: $base-font-size*1.25;
         opacity: 0.6;
     }
 
-    &__button_dir-prev {
+    &__button_prev {
         left: 1%;
         top: calc(50% -  #{$base-font-size*3});
     }
-    &__button_dir-next {
+    &__button_next {
         right: 1%;
         top: calc(50% - #{$base-font-size*3});
     }
@@ -104,12 +104,12 @@ $font-size-button-mv: $base-font-size*1.25;
             padding: 10px;
         }
     
-        &__button_dir-prev {
+        &__button_prev {
             left: 0;
             top: calc(50% - #{$font-size-button-mv});
     
         }
-        &__button_dir-next {
+        &__button_next {
             right: 0;
             top: calc(50% - #{$font-size-button-mv});
         }

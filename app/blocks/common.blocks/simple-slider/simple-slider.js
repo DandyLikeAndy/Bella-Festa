@@ -9,15 +9,19 @@ const ClassNameEl = {
     IMG: `${CLASS_SL_ELEM}__img`,
     INFO: `${CLASS_SL_ELEM}__info`,
     BUTTON_PLAY: `${CLASS_SL_ELEM}__button_play-pause`,
+    BUTTON_ICO: `${CLASS_SL_ELEM}__icon`,
     BUTTON_NEXT: `${CLASS_SL_ELEM}__button_next`,
     BUTTON_PREV: `${CLASS_SL_ELEM}__button_prev`
 };
 
+const StatusClassName = {
+    ICO_PLAY: 'icon-play',
+    ICO_PAUSE: 'icon-pause'
+}
+
 const Attribute = {
     DATA_IMG_SRC: 'data-img-realsrc'
 };
-
-
 
 
 // ------------------------------------------------------------------------
@@ -37,7 +41,7 @@ class SimSlider {
         this.slEl = opts.slEl;
         this.slItems = slEl.getElementsByClassName(ClassNameEl.ITEM);
         this.slInfoBlocks = slEl.getElementsByClassName(ClassNameEl.INFO);
-        this.buttonPlay = slEl.getElementsByClassName(ClassNameEl.BUTTON_PLAY);
+        this.buttonPlayIco = slEl.querySelector(ClassNameEl.BUTTON_PLAY + ' ' + ClassNameEl.BUTTON_ICO);
 
         //save instanse in element
         this.slEl._simSlider = this;
@@ -50,12 +54,14 @@ class SimSlider {
         this._timerAutoPlayID = null;
         this._timerLoadID = null;
         this._qtPreloaded = opts.qtPreloaded || 1;
+        this._autoPlayDelay = opts.autoPlayDelay || 3000;
 
         this._initElms();
         this._initTouchEvent();
         if(opts.isAutoPlay) this.toggleAutoPlay(); //todo: to fix autoPlay(true)
         
         //todo: set animateMove(dir) func
+
 
     }
 
@@ -74,14 +80,33 @@ class SimSlider {
         this._nextItemNum = this._getNextItemNum(dir);
 
         //init for current item
-        this._currentItem.cssText("zIndex: 2; transition: '' ");
+        this._currentItem.style.zIndex = 2;
         //init for next item
         this.slItems[this._nextItemNum].style.zIndex = 1;
 
         this._animateMove(dir);
     }
 
+    onAutoPlay() {
+        this.isAutoPlay = true;
+        this._setClassButtonPlayIco('pause');
 
+        if( this.isWork ) return; //происходит анимация, автовоспроизв будет запущено ф-ией transitionComplete
+
+        const nextItem = this.slItems[this_getNextItemNum()],
+            nextImg = SimSlider._getImg(nextItem);
+
+        if(!nextImg.isloaded) {
+            clearTimeout(this._timerAutoPlayID);
+            /*; /!*!!!!*!/
+            clearTimeout(timerLoadID);*/
+            this._timerLoadID = setTimeout(function(){ this.onAutoPlay(); }, 1000);//если след. изображ не загружено делаем паузу и пробуем снова todo: сделать параметр
+            return;
+        }
+        
+        clearTimeout(this._timerAutoPlayID);//д.б. запущен только один таймер - перед запуском следущего отменяем текущий(если сущ)
+        this._timerAutoPlayID = setTimeout(function(){ this.go(); }, this._autoPlayDelay);
+    }
 
 // ***************************************
 // Private methods
@@ -167,7 +192,7 @@ _onClick(e) {
 
 _initTouchEvent();
 
-_getNextItemNum(dir){
+_getNextItemNum(dir) {
     const curNum = this._currentItemNum,
         slItems = this.slItems;
 
@@ -180,13 +205,64 @@ _getNextItemNum(dir){
     }
 }
 
+_setClassButtonPlayIco(action) {
+    const button = this.buttonPlayIco;
+
+    if (button && action === 'pause') {
+        button.classList.remove(StatusClassName.ICO_PLAY);
+        button.classList.add(StatusClassName.ICO_PAUSE);
+    } else if (button && action === 'play') {
+        button.classList.remove(StatusClassName.ICO_PAUSE);
+        button.classList.add(StatusClassName.ICO_PLAY);
+    }
+}
+
 
 // ***************************************
 // Static methods
 // ***************************************
+
+//necessary functions:
+//call OnAutoPlay();
+//set currentItemNum = nextItemNum
+//set currentItem = nextAnimEl;
+static get _fadeAnimation(dir) {
+    const animEl = this._currentItem,
+        nextAnimEl = this.slItems[this._nextItemNum],
+        $animEl = ElU(this._currentItem);
+
+    item._$el = $animEl;
+
+    $item.on('transitionend.fade', transitionComplete, this);   
+    item.style.opacity = 0;
+
+    function transitionComplete(e) {
+        const animEl = this._currentItem,
+            $animEl = animEl._$el;
+
+        if (e.target === animEl && e.propertyName != 'opacity') return;
+        $animEl.off('transitionend.fade');
+
+        //reset style for current item
+        animEl.cssText('Z-index: 0; opacity: 0; will-change: ""');
+        //preparation transition for next item
+        this.slItems[this._nextItemNum].style.willChange = "opacity";
+
+        this._currentItemNum = this._nextItemNum;
+        this._currentItem = nextAnimEl;
+        this.isWork = false;
+
+        if(this.isAutoPlay) this.onAutoPlay();
+    }
+
+}
+
+
 static _getImg(el) {
     el.getElementsByClassName(ClassNameEl.IMG)[0];
 }
+
+
 
 
 }
