@@ -17,7 +17,7 @@ const ClassNameEl = {
 const StatusClassName = {
     ICO_PLAY: 'icon-play',
     ICO_PAUSE: 'icon-pause'
-}
+};
 
 const Attribute = {
     DATA_IMG_SRC: 'data-img-realsrc'
@@ -149,8 +149,8 @@ _loadImg(img) {
 
 
 _preLoadImgs(itemNum) {
-    const qtPreloaded = this._qtPreloaded,
-        slItems = this.slItems;
+    let qtPreloaded = this._qtPreloaded;
+    const  slItems = this.slItems;
 
         if ( qtPreloaded > slItems.length-1 ) qtPreloaded = slItems.length-1;
         for ( let i = itemNum-qtPreloaded; i <= itemNum+qtPreloaded; i++ ) {
@@ -226,7 +226,7 @@ _setClassButtonPlayIco(action) {
 //call OnAutoPlay();
 //set currentItemNum = nextItemNum
 //set currentItem = nextAnimEl;
-static get _fadeAnimation(dir) {
+static get _fadeAnimation() { //?????
     const animEl = this._currentItem,
         nextAnimEl = this.slItems[this._nextItemNum],
         $animEl = ElU(this._currentItem);
