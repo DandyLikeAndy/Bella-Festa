@@ -58,11 +58,9 @@ class SimSlider {
 
         this._initElms();
         this._initTouchEvent();
+        this._setAnimateFunc(opts.typeAnimation);
+
         if(opts.isAutoPlay) this.toggleAutoPlay(); //todo: to fix autoPlay(true)
-        
-        //todo: set animateMove(dir) func
-
-
     }
 
 // ***************************************
@@ -217,45 +215,56 @@ _setClassButtonPlayIco(action) {
     }
 }
 
+_setAnimateFunc(typeAnimation) {
+    let typeAn = typeAnimation || 'fade',
+        stSlideAnimation = SimSlider._stSlideAnimate[typeAn];
+        this._animateMove = stSlideAnimation instanceof Function ? stSlideAnimation : SimSlider._stSlideAnimate.fade;
+}
+
 
 // ***************************************
 // Static methods
 // ***************************************
 
-//necessary functions:
+//necessary actions:
 //call OnAutoPlay();
 //set currentItemNum = nextItemNum
 //set currentItem = nextAnimEl;
-static get _fadeAnimation() { //?????
-    const animEl = this._currentItem,
-        nextAnimEl = this.slItems[this._nextItemNum],
-        $animEl = ElU(this._currentItem);
-
-    item._$el = $animEl;
-
-    $item.on('transitionend.fade', transitionComplete, this);   
-    item.style.opacity = 0;
-
-    function transitionComplete(e) {
-        const animEl = this._currentItem,
-            $animEl = animEl._$el;
-
-        if (e.target === animEl && e.propertyName != 'opacity') return;
-        $animEl.off('transitionend.fade');
-
-        //reset style for current item
-        animEl.cssText('Z-index: 0; opacity: 0; will-change: ""');
-        //preparation transition for next item
-        this.slItems[this._nextItemNum].style.willChange = "opacity";
-
-        this._currentItemNum = this._nextItemNum;
-        this._currentItem = nextAnimEl;
-        this.isWork = false;
-
-        if(this.isAutoPlay) this.onAutoPlay();
+static get _stSlideAnimate() {
+    return {
+        fade: function() { //?????
+            const animEl = this._currentItem,
+                nextAnimEl = this.slItems[this._nextItemNum],
+                $animEl = ElU(this._currentItem);
+        
+            item._$el = $animEl;
+        
+            $item.on('transitionend.fade', transitionComplete, this);   
+            item.style.opacity = 0;
+        
+            function transitionComplete(e) {
+                const animEl = this._currentItem,
+                    $animEl = animEl._$el;
+        
+                if (e.target === animEl && e.propertyName != 'opacity') return;
+                $animEl.off('transitionend.fade');
+        
+                //reset style for current item
+                animEl.cssText('Z-index: 0; opacity: 0; will-change: ""');
+                //preparation transition for next item
+                this.slItems[this._nextItemNum].style.willChange = "opacity";
+        
+                this._currentItemNum = this._nextItemNum;
+                this._currentItem = nextAnimEl;
+                this.isWork = false;
+        
+                if(this.isAutoPlay) this.onAutoPlay();
+            }
+        
+        }
     }
-
 }
+
 
 
 static _getImg(el) {
