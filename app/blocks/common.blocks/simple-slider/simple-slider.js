@@ -67,7 +67,16 @@ class SimSlider {
 // Public methods
 // ***************************************
 
-    toggleAutoPlay() { }
+    toggleAutoPlay() {
+        if (!this._isAutoPlayOn) {
+            this._isAutoPlayOn = true;
+            this._setClassButtonPlayIco('pause');
+            this.onAutoPlay();
+        } else {
+            this._isAutoPlayOn = false;
+            this._setClassButtonPlayIco('play');
+        }
+     }
 
     go(dir) {
         if (this._isWork) return;
@@ -87,7 +96,6 @@ class SimSlider {
 
     onAutoPlay() {
         this.isAutoPlay = true;
-        this._setClassButtonPlayIco('pause');
 
         if( this.isWork ) return; //происходит анимация, автовоспроизв будет запущено ф-ией transitionComplete
 
