@@ -75,6 +75,8 @@ class SimSlider {
         } else {
             this._isAutoPlayOn = false;
             this._setClassButtonPlayIco('play');
+            clearTimeout(this._timerAutoPlayID);
+            clearTimeout(this._timerLoadID);
         }
      }
 
@@ -95,9 +97,7 @@ class SimSlider {
     }
 
     onAutoPlay() {
-        this.isAutoPlay = true;
-
-        if( this.isWork ) return; //происходит анимация, автовоспроизв будет запущено ф-ией transitionComplete
+        if( this._isWork ) return; //происходит анимация, автовоспроизв будет запущено ф-ией transitionComplete
 
         const nextItem = this.slItems[this_getNextItemNum()],
             nextImg = SimSlider._getImg(nextItem);
