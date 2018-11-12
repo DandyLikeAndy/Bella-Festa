@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
 // ------------------------------------------------------------------------
 // Constants and variables
 // ------------------------------------------------------------------------
-const CLASS_SL_ELEM = 'simpleSlider';
+const CLASS_SL_ELEM = 'simple-slider';
 
 const ClassNameEl = {
     ITEM: `${CLASS_SL_ELEM}__item`,
@@ -37,8 +37,9 @@ const Attribute = {
 class SimSlider {
 
     constructor(opts) {
+        const slEl = opts.slEl;
 
-        this.slEl = opts.slEl;
+        this.slEl = slEl;
         this.slItems = slEl.getElementsByClassName(ClassNameEl.ITEM);
         this.slInfoBlocks = slEl.getElementsByClassName(ClassNameEl.INFO);
         this.buttonPlayIco = slEl.querySelector(ClassNameEl.BUTTON_PLAY + ' ' + ClassNameEl.BUTTON_ICO);
@@ -121,7 +122,7 @@ class SimSlider {
     _initElms() {
         const currentItem = this._currentItem,
             firstImg = SimSlider._getImg(currentItem),
-            $slEl = ElU(slEl);
+            $slEl = ElU(this.slEl);
 
 
         this._loadImg(firstImg); //load first img
@@ -281,10 +282,6 @@ class SimSlider {
 static _getImg(el) {
      return el.getElementsByClassName(ClassNameEl.IMG)[0];
 }
-
-
-
-
 }
 
 
@@ -292,7 +289,13 @@ static _getImg(el) {
 // Initialization 
 // ------------------------------------------------------------------------
 
+let simSladers = document.getElementsByClassName(CLASS_SL_ELEM);
 
-
+for (let i=0; i<simSladers.length; i++) {
+    let opts = {
+        slEl: simSladers[i]
+    }
+    new SimSlider(opts);
+}
 
 });
