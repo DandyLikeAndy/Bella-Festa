@@ -42,8 +42,8 @@ class SimSlider {
         this.slEl = slEl;
         this.slItems = slEl.getElementsByClassName(ClassNameEl.ITEM);
         this.slInfoBlocks = slEl.getElementsByClassName(ClassNameEl.INFO);
-        this.buttonPlayIco = slEl.querySelector(ClassNameEl.BUTTON_PLAY + ' ' + ClassNameEl.BUTTON_ICO);
-
+        this.buttonPlayIco = slEl.querySelector('.' + ClassNameEl.BUTTON_PLAY + ' .' + ClassNameEl.BUTTON_ICO);
+        
         //save instance in element
         this.slEl._simSlider = this;
 
@@ -69,9 +69,10 @@ class SimSlider {
 // ***************************************
 
     toggleAutoPlay() {
+        
         if (!this._isAutoPlayOn) {
             this._isAutoPlayOn = true;
-            this._setClassButtonPlayIco('pause');
+            this._setClassButtonPlayIco('pause');//todo: do not change icon - to fix
             this.onAutoPlay();
         } else {
             this._isAutoPlayOn = false;
@@ -82,6 +83,7 @@ class SimSlider {
      }
 
     go(dir) {
+        console.log(this._isWork); //temp
         if (this._isWork) return;
         if (!SimSlider._getImg(this._currentItem).isloaded) return;
 
@@ -99,20 +101,21 @@ class SimSlider {
 
     onAutoPlay() {
         if( this._isWork ) return; //происходит анимация, автовоспроизв будет запущено ф-ией transitionComplete
-
-        const nextItem = this.slItems[this_getNextItemNum()],
-            nextImg = SimSlider._getImg(nextItem);
-
+        
+        const nextItem = this.slItems[this._getNextItemNum()],
+            nextImg = SimSlider._getImg(nextItem),
+            self = this;
+        
         if(!nextImg.isloaded) {
             clearTimeout(this._timerAutoPlayID);
             /*; /!*!!!!*!/
             clearTimeout(timerLoadID);*/
-            this._timerLoadID = setTimeout(function(){ this.onAutoPlay(); }, 1000);//если след. изображ не загружено делаем паузу и пробуем снова todo: сделать параметр
+            this._timerLoadID = setTimeout(function(){ self.onAutoPlay(); }, 1000);//если след. изображ не загружено делаем паузу и пробуем снова todo: сделать параметр
             return;
         }
         
         clearTimeout(this._timerAutoPlayID);//д.б. запущен только один таймер - перед запуском следущего отменяем текущий(если сущ)
-        this._timerAutoPlayID = setTimeout(function(){ this.go(); }, this._autoPlayDelay);
+        this._timerAutoPlayID = setTimeout(function(){ self.go(); }, this._autoPlayDelay);
     }
 
 // ***************************************
@@ -129,7 +132,7 @@ class SimSlider {
         currentItem.cssText = "zIndex: 1; will-change: transform"; //todo: для изображения или + transform??
         this._preLoadImgs(this._currentItemNum); //загружаем остальные фотографии (которые должны подгрузиться в данный момент времени)
 
-        $slEl.on('click', this._onClick(), this);
+        $slEl.on('click', this._onClick, this);
     }
 
 
@@ -175,24 +178,24 @@ class SimSlider {
             }
 
             if (img.isloaded) continue;
-            loadImg(img);
+            this._loadImg(img);
         }
     }
 
 
     _onClick(e) {
-        if (e.target.closest(ClassNameEl.BUTTON_PLAY)) {
+        if (e.target.closest('.' + ClassNameEl.BUTTON_PLAY)) {
             this.toggleAutoPlay();
             return;
 
         } else if (this._isWork) {
             return;
 
-        } else if (e.target.closest(ClassNameEl.BUTTON_NEXT)) {
+        } else if (e.target.closest('.' + ClassNameEl.BUTTON_NEXT)) {
             let dir = 1;
             this.go(dir);
 
-        } else if (e.target.closest(ClassNameEl.BUTTON_PREV)) {
+        } else if (e.target.closest('.' + ClassNameEl.BUTTON_PREV)) {
             let dir = -1;
             this.go(dir);
         }
@@ -216,13 +219,16 @@ class SimSlider {
 
     _setClassButtonPlayIco(action) {
         const button = this.buttonPlayIco;
-
-        if (button && action === 'pause') {
+        console.log(button);//temp
+        console.log(ClassNameEl.BUTTON_ICO);//temp
+        console.log('.' + ClassNameEl.BUTTON_PLAY + ' .' + ClassNameEl.BUTTON_ICO);//temp 
+        if (/* button.className === ICO_PLAY &&  */action === 'pause') { //todo: do not change icon - to fix
+           button.classList.remove(StatusClassName.ICO_PAUSE);
+            button.classList.add(StatusClassName.ICO_PLAY);
+        } else if (/* button.className === ICO_PAUSE && */ action === 'play') {
             button.classList.remove(StatusClassName.ICO_PLAY);
             button.classList.add(StatusClassName.ICO_PAUSE);
-        } else if (button && action === 'play') {
-            button.classList.remove(StatusClassName.ICO_PAUSE);
-            button.classList.add(StatusClassName.ICO_PLAY);
+        
         }
     }
 
@@ -295,7 +301,8 @@ for (let i=0; i<simSladers.length; i++) {
     let opts = {
         slEl: simSladers[i]
     }
-    new SimSlider(opts);
+    window.simSlider = new SimSlider(opts);
+     
 }
 
 });
