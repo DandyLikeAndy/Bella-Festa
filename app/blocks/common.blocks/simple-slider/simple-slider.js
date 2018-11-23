@@ -83,7 +83,7 @@ class SimSlider {
      }
 
     go(dir) {
-        console.log(this._isWork); //temp
+    
         if (this._isWork) return;
         if (!SimSlider._getImg(this._currentItem).isloaded) return;
 
@@ -219,13 +219,13 @@ class SimSlider {
 
     _setClassButtonPlayIco(action) {
         const button = this.buttonPlayIco;
-        console.log(button);//temp
-        console.log(ClassNameEl.BUTTON_ICO);//temp
-        console.log('.' + ClassNameEl.BUTTON_PLAY + ' .' + ClassNameEl.BUTTON_ICO);//temp 
-        if (/* button.className === ICO_PLAY &&  */action === 'pause') { //todo: do not change icon - to fix
-           button.classList.remove(StatusClassName.ICO_PAUSE);
+
+        if (button.classList.contains(StatusClassName.ICO_PAUSE) && action === 'play') {
+            console.log('action ', action);//temp
+            button.classList.remove(StatusClassName.ICO_PAUSE);
             button.classList.add(StatusClassName.ICO_PLAY);
-        } else if (/* button.className === ICO_PAUSE && */ action === 'play') {
+        } else if (button.classList.contains(StatusClassName.ICO_PLAY) &&  action === 'pause') {
+            console.log('action ', action);//temp
             button.classList.remove(StatusClassName.ICO_PLAY);
             button.classList.add(StatusClassName.ICO_PAUSE);
         
@@ -255,10 +255,11 @@ class SimSlider {
                     nextAnimEl = this.slItems[this._nextItemNum],
                     $animEl = ElU(this._currentItem);
 
-                item._$el = ElU(animEl);
+                animEl._$el = $animEl;
 
                 $animEl.on('transitionend.fade', transitionComplete, this);
-                item.style.opacity = 0;
+            
+                animEl.style.opacity = 0;
 
                 function transitionComplete(e) {
                     const animEl = this._currentItem,
@@ -268,7 +269,7 @@ class SimSlider {
                     $animEl.off('transitionend.fade');
 
                     //reset style for current item
-                    animEl.cssText('Z-index: 0; opacity: 0; will-change: ""');
+                    animEl.cssText = 'Z-index: 0; opacity: 0; will-change: ""';
                     //preparation transition for next item
                     this.slItems[this._nextItemNum].style.willChange = "opacity";
 
@@ -276,7 +277,7 @@ class SimSlider {
                     this._currentItem = nextAnimEl;
                     this.isWork = false;
 
-                    if (this.isAutoPlay) this.onAutoPlay();
+                    if (this.isAutoPlay) this.onAutoPlay();//todo not work - fix
                 }
 
             }

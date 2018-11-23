@@ -29,13 +29,6 @@ ol {
   padding: 0;
 }
 
-.page {
-  font-family: 'PT Sans', sans-serif;
-  height: 100%;
-  background: url("./images/page.jpg") center top no-repeat;
-  background-size: cover;
-}
-
 .logo {
   background-image: url("./images/logo_color.svg");
   background-repeat: no-repeat;
@@ -44,6 +37,13 @@ ol {
 
 .logo_theme-color-70 {
   background-image: url("./images/logo_color_70.svg");
+}
+
+.page {
+  font-family: 'PT Sans', sans-serif;
+  height: 100%;
+  background: url("./images/page.jpg") center top no-repeat;
+  background-size: cover;
 }
 
 .header {
@@ -344,6 +344,16 @@ ol {
   box-shadow: 0 0 1px 1px #F6B7C4;
 }
 
+.dropdown_open {
+  display: block;
+}
+
+.dropdown_transitioning {
+  transition: height .5s;
+  display: block;
+  overflow: hidden;
+}
+
 /*paging speed*/
 
 .simple-slider {
@@ -521,13 +531,3 @@ ol {
     opacity: 1;
     background: #91dd89;
 }*/
-
-.dropdown_open {
-  display: block;
-}
-
-.dropdown_transitioning {
-  transition: height .5s;
-  display: block;
-  overflow: hidden;
-}
