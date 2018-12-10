@@ -1054,10 +1054,10 @@ class SimSlider {
      }
 
     go(dir) {
-    
+        
         if (this._isWork) return;
         if (!SimSlider._getImg(this._currentItem).isloaded) return;
-
+        
         dir = dir || 1;
         this._isWork = true;
         this._nextItemNum = this._getNextItemNum(dir);
@@ -1154,18 +1154,18 @@ class SimSlider {
     }
 
 
-    _onClick(e) {
+    _onClick(e) { 
         if (e.target.closest('.' + ClassNameEl.BUTTON_PLAY)) {
             this.toggleAutoPlay();
             return;
-
+            
         } else if (this._isWork) {
             return;
 
         } else if (e.target.closest('.' + ClassNameEl.BUTTON_NEXT)) {
             let dir = 1;
             this.go(dir);
-
+            
         } else if (e.target.closest('.' + ClassNameEl.BUTTON_PREV)) {
             let dir = -1;
             this.go(dir);
@@ -1192,14 +1192,12 @@ class SimSlider {
         const button = this.buttonPlayIco;
 
         if (button.classList.contains(StatusClassName.ICO_PAUSE) && action === 'play') {
-            console.log('action ', action);//temp
             button.classList.remove(StatusClassName.ICO_PAUSE);
             button.classList.add(StatusClassName.ICO_PLAY);
+
         } else if (button.classList.contains(StatusClassName.ICO_PLAY) &&  action === 'pause') {
-            console.log('action ', action);//temp
             button.classList.remove(StatusClassName.ICO_PLAY);
             button.classList.add(StatusClassName.ICO_PAUSE);
-        
         }
     }
 
@@ -1229,7 +1227,7 @@ class SimSlider {
                 animEl._$el = $animEl;
 
                 $animEl.on('transitionend.fade', transitionComplete, this);
-            
+                
                 animEl.style.opacity = 0;
 
                 function transitionComplete(e) {
@@ -1238,17 +1236,17 @@ class SimSlider {
 
                     if (e.target === animEl && e.propertyName != 'opacity') return;
                     $animEl.off('transitionend.fade');
-
+                    
                     //reset style for current item
-                    animEl.cssText = 'Z-index: 0; opacity: 0; will-change: ""';
+                    animEl.style.cssText = 'Z-index: 0; will-change: ""';
                     //preparation transition for next item
                     this.slItems[this._nextItemNum].style.willChange = "opacity";
 
                     this._currentItemNum = this._nextItemNum;
                     this._currentItem = nextAnimEl;
-                    this.isWork = false;
-
-                    if (this.isAutoPlay) this.onAutoPlay();//todo not work - fix
+                    this._isWork = false;
+            
+                    if (this._isAutoPlayOn) this.onAutoPlay();
                 }
 
             }
