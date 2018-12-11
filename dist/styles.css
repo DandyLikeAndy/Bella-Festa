@@ -29,16 +29,6 @@ ol {
   padding: 0;
 }
 
-.logo {
-  background-image: url("./images/logo_color.svg");
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-.logo_theme-color-70 {
-  background-image: url("./images/logo_color_70.svg");
-}
-
 .page {
   font-family: 'PT Sans', sans-serif;
   height: 100%;
@@ -139,8 +129,18 @@ ol {
   }
 }
 
+.logo {
+  background-image: url("./images/logo_color.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.logo_theme-color-70 {
+  background-image: url("./images/logo_color_70.svg");
+}
+
 .nav-menu {
-  height: 72px;
+  height: 63px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -285,11 +285,11 @@ ol {
 .nav-menu_theme-transparent::after {
   opacity: .57;
   will-change: opacity;
-  transition: opacity .3s;
+  transition: opacity .5s;
 }
 
 .nav-menu_theme-transparent:hover::after {
-  opacity: .7;
+  opacity: .65;
 }
 
 .button-menu {
@@ -368,16 +368,16 @@ ol {
   position: absolute;
   width: 100%;
   height: 100%;
-  transition: opacity 0.5s;
   opacity: 1;
   z-index: -1;
+  transition: opacity 1s ease-in;
 }
 
 .simple-slider__img {
   position: absolute;
   width: 100%;
   height: 100%;
-  transition: transform 0.5s;
+  transition: opacity 1s;
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;

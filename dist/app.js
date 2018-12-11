@@ -660,6 +660,11 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log('dropdownHiddenEvent', e);
     })
 }, false);
+// ------------------------------------------------------------------------
+// dropdown.js
+// ------------------------------------------------------------------------
+
+
 document.addEventListener('DOMContentLoaded', function () {
 
 // ------------------------------------------------------------------------
@@ -852,9 +857,9 @@ document.addEventListener('DOMContentLoaded', function () {
             return {
 
                 show: function (inst) {
-                    const el = inst._targetEl,
+                    const el = inst.targetEl,
                         $el = inst._$targetEl;
-
+                    
                     el.classList.add(ClassNameEl.TRANSITIONING);
 
                     el.style.height = 0;
@@ -867,7 +872,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 hide: function (inst) {
 
-                    const el = inst._targetEl,
+                    const el = inst.targetEl,
                         $el = inst._$targetEl;
 
                     //el.style.height = el.scrollHeight + 'px';
@@ -876,9 +881,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     $el.on('transitionend.complete', this.transitionComplete, $el);
 
                     Dropdown.reflow(el);
-
+                    
                     el.classList.add(ClassNameEl.TRANSITIONING);
-
+                    
                     el.style.height = 0;
 
                 },

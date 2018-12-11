@@ -1,6 +1,6 @@
 .nav-menu {
     $border-bottom-width: 2px;
-    height: $grid-height*4;
+    height: $grid-height*3.5;
     @include fluid-container;
     position: relative;
 
@@ -163,10 +163,10 @@
         &::after {
             opacity: .57;
             will-change: opacity;
-            transition: opacity .3s;
+            transition: opacity .5s;
         }
         &:hover::after {
-            opacity: .7;
+            opacity: .65;
         }
     }
 
