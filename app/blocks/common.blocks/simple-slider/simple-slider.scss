@@ -4,8 +4,10 @@ $font-size-button:  $base-font-size*1.8;
 $font-size-button-mv: $base-font-size*1.25;
 
 $font-color-container-info: white;
-$font-size-title-info: $base-font-size*1.6;
-$font-size-description-info: $base-font-size*1.5;
+$font-size-title-info: $base-font-size*1.5;
+$font-size-description-info: $base-font-size*1.4;
+$font-size-title-info-mv: $base-font-size*1.1;
+$font-size-description-info-mv: $base-font-size*1;
 
 .simple-slider {
     width: 100%;
@@ -110,9 +112,8 @@ $font-size-description-info: $base-font-size*1.5;
         left: 0; right: 0;
         bottom: 10%;
         margin: auto;
-        width: 40%;
         max-width: $scr-sm;
-        overflow: auto;
+        overflow: hidden;
         z-index: 10;
     }
 
@@ -155,11 +156,28 @@ $font-size-description-info: $base-font-size*1.5;
     
         &__button_play-pause {
             right: 0;
-            bottom: 0.5em; /*~.simple-slider__info*/
+            bottom: 0.5em; 
+        }
+
+        &__container-info {
+            width: auto;
+        }
+
+        &__title-info {
+            font-size: $font-size-title-info-mv;
+        }
+
+        &__description-info {
+            font-size: $font-size-description-info-mv;
+        }
+
+    
+
+            /*~.simple-slider__info*/
             //padding: 0 #{$font-size-button/2} 0 0; /*~.simple-slider__info*/
             //line-height: $base-font-size*2; /*~.simple-slider__info*/
-        }
-    
+
+
         /* &__info {
             bottom: 0; left: 0;
             width: 100%;

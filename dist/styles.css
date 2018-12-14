@@ -36,12 +36,6 @@ ol {
   background-size: cover;
 }
 
-.header {
-  position: fixed;
-  z-index: 100;
-  width: 100%;
-}
-
 .logo {
   background-image: url("./images/logo_color.svg");
   background-repeat: no-repeat;
@@ -50,6 +44,12 @@ ol {
 
 .logo_theme-color-70 {
   background-image: url("./images/logo_color_70.svg");
+}
+
+.header {
+  position: fixed;
+  z-index: 100;
+  width: 100%;
 }
 
 .logotype {
@@ -444,14 +444,13 @@ ol {
   right: 0;
   bottom: 10%;
   margin: auto;
-  width: 40%;
   max-width: 576px;
-  overflow: auto;
+  overflow: hidden;
   z-index: 10;
 }
 
 .simple-slider__title-info {
-  font-size: 32px;
+  font-size: 30px;
   letter-spacing: 0.04em;
   margin: auto;
   display: inline-block;
@@ -460,12 +459,13 @@ ol {
 }
 
 .simple-slider__description-info {
-  font-size: 30px;
+  font-size: 28px;
   padding: 0 0.5em;
 }
 
 @media (max-width: 768px) {
   .simple-slider {
+    /*~.simple-slider__info*/
     /* &__info {
             bottom: 0; left: 0;
             width: 100%;
@@ -504,7 +504,18 @@ ol {
   .simple-slider__button_play-pause {
     right: 0;
     bottom: 0.5em;
-    /*~.simple-slider__info*/
+  }
+
+  .simple-slider__container-info {
+    width: auto;
+  }
+
+  .simple-slider__title-info {
+    font-size: 22px;
+  }
+
+  .simple-slider__description-info {
+    font-size: 20px;
   }
 }
 
