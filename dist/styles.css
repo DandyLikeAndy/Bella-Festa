@@ -36,6 +36,12 @@ ol {
   background-size: cover;
 }
 
+.header {
+  position: fixed;
+  z-index: 100;
+  width: 100%;
+}
+
 .logo {
   background-image: url("./images/logo_color.svg");
   background-repeat: no-repeat;
@@ -44,12 +50,6 @@ ol {
 
 .logo_theme-color-70 {
   background-image: url("./images/logo_color_70.svg");
-}
-
-.header {
-  position: fixed;
-  z-index: 100;
-  width: 100%;
 }
 
 .logotype {

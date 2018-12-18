@@ -5,6 +5,8 @@
 //todo:
 //01. Stop slider if menu is open
 //02. Hide container-info if menu is open and landscape orientation for mobile version
+//03. Add will-change property for currentItem in _initElms()
+
 document.addEventListener('DOMContentLoaded', function () {
 // ------------------------------------------------------------------------
 // Constants and variables
@@ -139,35 +141,48 @@ class SimSlider {
             $slEl = ElU(this.slEl);
 
 
+        //console.log(this._loadImg(firstImg)); //temp
         this._loadImg(firstImg); //load first img
-        currentItem.cssText = "zIndex: 1; will-change: transform"; //todo: для изображения или + transform??
+        currentItem.cssText = "zIndex: 1;"; //todo:will-change
         this._preLoadImgs(this._currentItemNum); //загружаем остальные фотографии (которые должны подгрузиться в данный момент времени)
 
         $slEl.on('click', this._onClick, this);
     }
 
-
+    //return promise
     _loadImg(img) {
 
         const src = img.getAttribute(Attribute.DATA_IMG_SRC),
             imgLoad = document.createElement('img');
 
-        if (!src) { //если загружено, просто показываем - уже как фоновое изображение
-            img.style.opacity = 1;
-            img.isloaded = true;
-            return;
-        }
+        return new Promise((resolve, rejected) => {
 
-        imgLoad.onload = onLoad;
-        imgLoad.src = src;
+            if (!src) { //если загружено, просто показываем - уже как фоновое изображение
+                img.style.opacity = 1;
+                img.isloaded = true;
+                resolve({src, img});
+                return;
+            }
 
-        function onLoad() {
-            img.style.backgroundImage = "url(" + src + ")";
-            img.setAttribute(Attribute.DATA_IMG_SRC, '');
-            img.style.willChange = 'opacity'; //*** !!!
-            img.style.opacity = 1;
-            img.isloaded = true;
-        }
+            imgLoad.onload = onLoad;
+            imgLoad.onerror = onError;
+            imgLoad.src = src;
+
+            function onLoad() {
+                img.style.backgroundImage = "url(" + src + ")";
+                img.setAttribute(Attribute.DATA_IMG_SRC, '');
+                img.style.willChange = 'opacity'; //*** !!!
+                img.style.opacity = 1;
+                img.isloaded = true;
+                resolve({src, img});
+            }
+
+            function onError() {
+                rejected({src, img});
+            }
+
+        });
+        
     }
 
 
