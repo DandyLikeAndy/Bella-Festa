@@ -1,3 +1,10 @@
+// ------------------------------------------------------------------------
+// simple-slider.js
+// ------------------------------------------------------------------------
+
+//todo:
+//01. Stop slider if menu is open
+//02. Hide container-info if menu is open and landscape orientation for mobile version
 document.addEventListener('DOMContentLoaded', function () {
 // ------------------------------------------------------------------------
 // Constants and variables
@@ -27,7 +34,11 @@ const Attribute = {
 // ------------------------------------------------------------------------
 // Dependencies
 // ------------------------------------------------------------------------
-
+const ElU = window.ElU; //$elem
+   if(!ElU) {
+        console.error('for create SimSlider instance need ElU library');
+        return;
+   }
 
 
 // ------------------------------------------------------------------------
