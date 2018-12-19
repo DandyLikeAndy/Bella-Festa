@@ -16,12 +16,11 @@ $font-size-description-info-mv: $base-font-size*1;
     overflow: hidden;
     background: #fff;
 
-
     &__item {
         position: absolute;
         width: 100%;
         height: 100%;
-        opacity: 1;
+        //opacity: 1;
         z-index: -1;
 
         //main animation property
@@ -32,7 +31,7 @@ $font-size-description-info-mv: $base-font-size*1;
         position: absolute;
         width: 100%;
         height: 100%;
-        transition: opacity $transSpeed; 
+        transition: opacity $transSpeed;
         background-size: cover;
         background-position: center center;
         background-repeat: no-repeat;

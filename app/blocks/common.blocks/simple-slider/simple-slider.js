@@ -63,6 +63,7 @@ class SimSlider {
         this._currentItemNum = this.slItems.length - 1; //*** !!! it is number of top element item  in slider
         this._nextItemNum = null;
         this._currentItem = this.slItems[this._currentItemNum]; //*** !!!
+        //this._currentItem._promiseContentLoad = null;//save promise with result of load content
         this._isWork = null;
         this._isAutoPlayOn = null;
         this._timerAutoPlayID = null;
@@ -96,9 +97,9 @@ class SimSlider {
      }
 
     go(dir) {
-        
+        const nextItem = this.slItems[this._getNextItemNum()]
         if (this._isWork) return;
-        if (!SimSlider._getImg(this._currentItem).isloaded) return;
+        if (!SimSlider._getImg(this._currentItem).isLoaded) return;
         
         dir = dir || 1;
         this._isWork = true;
@@ -112,18 +113,19 @@ class SimSlider {
         this._animateMove(dir);
     }
 
-    onAutoPlay() {
+    onAutoPlay() {//исправить логику работы при незагрузке тек/след эл-та
         if( this._isWork ) return; //происходит анимация, автовоспроизв будет запущено ф-ией transitionComplete
         
         const nextItem = this.slItems[this._getNextItemNum()],
-            nextImg = SimSlider._getImg(nextItem),
+            //currentImg = SimSlider._getImg(nextItem),
+            nextImg = SimSlider._getImg(this._currentItem),
             self = this;
-        
-        if(!nextImg.isloaded) {
+
+        if(!nextImg.isLoaded) {
             clearTimeout(this._timerAutoPlayID);
             /*; /!*!!!!*!/
             clearTimeout(timerLoadID);*/
-            this._timerLoadID = setTimeout(function(){ self.onAutoPlay(); }, 1000);//если след. изображ не загружено делаем паузу и пробуем снова todo: сделать параметр
+            nextItem._promiseContentLoad.then(self.onAutoPlay());
             return;
         }
         
@@ -140,9 +142,7 @@ class SimSlider {
             firstImg = SimSlider._getImg(currentItem),
             $slEl = ElU(this.slEl);
 
-
-        //console.log(this._loadImg(firstImg)); //temp
-        this._loadImg(firstImg); //load first img
+        currentItem._promiseContentLoad = this._loadImg(firstImg); //load first img
         currentItem.cssText = "zIndex: 1;"; //todo:will-change
         this._preLoadImgs(this._currentItemNum); //загружаем остальные фотографии (которые должны подгрузиться в данный момент времени)
 
@@ -151,15 +151,16 @@ class SimSlider {
 
     //return promise
     _loadImg(img) {
-
         const src = img.getAttribute(Attribute.DATA_IMG_SRC),
             imgLoad = document.createElement('img');
+
+        img.style.opacity = 0;
 
         return new Promise((resolve, rejected) => {
 
             if (!src) { //если загружено, просто показываем - уже как фоновое изображение
                 img.style.opacity = 1;
-                img.isloaded = true;
+                img.isLoaded = true;
                 resolve({src, img});
                 return;
             }
@@ -173,7 +174,7 @@ class SimSlider {
                 img.setAttribute(Attribute.DATA_IMG_SRC, '');
                 img.style.willChange = 'opacity'; //*** !!!
                 img.style.opacity = 1;
-                img.isloaded = true;
+                img.isLoaded = true;
                 resolve({src, img});
             }
 
@@ -191,21 +192,28 @@ class SimSlider {
         const slItems = this.slItems;
 
         if (qtPreloaded > slItems.length - 1) qtPreloaded = slItems.length - 1;
-        for (let i = itemNum - qtPreloaded; i <= itemNum + qtPreloaded; i++) {
+
+        this._currentItem._promiseContentLoad.then( () => {
+
+            for (let i = itemNum - qtPreloaded; i <= itemNum + qtPreloaded; i++) {
             if (i === itemNum) continue; // т.к.текущ. изобр загружено
 
             let item = slItems[i],
                 img = item && SimSlider._getImg(slItems[i]);
 
             if (!item && i < 0) {
-                img = SimSlider._getImg(slItems[slItems.length + i]);
+                item = slItems[slItems.length + i];
+                img = SimSlider._getImg(item);
             } else if (!item && i > 0) {
-                img = SimSlider._getImg(slItems[i - slItems.length]);
+                item = slItems[i - slItems.length];
+                img = SimSlider._getImg(item);
             }
 
-            if (img.isloaded) continue;
-            this._loadImg(img);
-        }
+            if (img.isLoaded) continue;
+            item._promiseContentLoad = this._loadImg(img);
+            }
+        });
+
     }
 
 
@@ -292,8 +300,10 @@ class SimSlider {
                     if (e.target === animEl && e.propertyName != 'opacity') return;
                     $animEl.off('transitionend.fade');
                     
-                    //reset style for current item
-                    animEl.style.cssText = 'Z-index: 0; will-change: ""';
+                    //reset style for current item after loading nextItem content
+                    nextAnimEl._promiseContentLoad.then( () =>{
+                        animEl.style.cssText = 'Z-index: 0; will-change: ""'
+                    });
                     //preparation transition for next item
                     this.slItems[this._nextItemNum].style.willChange = "opacity";
 
