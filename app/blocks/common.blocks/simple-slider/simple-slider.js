@@ -299,6 +299,7 @@ class SimSlider {
                     nextAnimEl = this.slItems[this._nextItemNum],
                     $animEl = ElU(this._currentItem);
 
+                //triger event of start animation for other module
                 this._createEventAnimate('startAnimation', {currentItem: animEl, nextItem: nextAnimEl});
                     
                 animEl._$el = $animEl;
@@ -321,13 +322,14 @@ class SimSlider {
                     //preparation transition for next item
                     this.slItems[this._nextItemNum].style.willChange = "opacity";
 
+                    //triger event of stop animation 
                     this._createEventAnimate('stopAnimation', {currentItem: animEl, nextItem: nextAnimEl});
 
                     this._currentItemNum = this._nextItemNum;
                     this._currentItem = nextAnimEl;
                     this._isWork = false;
             
-                    
+                
                     if (this._isAutoPlayOn) this.onAutoPlay();
                 }
 
