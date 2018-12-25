@@ -64,12 +64,13 @@ class SimSlider {
         this._currentItemNum = this.slItems.length - 1; //*** !!! it is number of top element item  in slider
         this._nextItemNum = null;
         this._currentItem = this.slItems[this._currentItemNum]; //*** !!!
-        //this._currentItem._promiseContentLoad = null;//save promise with result of load content
         this._isWork = null;
         this._isAutoPlayOn = null;
         this._timerAutoPlayID = null;
         this._qtPreloaded = opts.qtPreloaded || 1;
         this._autoPlayDelay = opts.autoPlayDelay || 3000;
+        this._transSpeed = opts.transSpeed || 1000;
+        //this._currentItem._promiseContentLoad = null;//save promise with result of load content
 
         this._initElms();
         this._initTouchEvent();
@@ -114,7 +115,7 @@ class SimSlider {
     }
 
     onAutoPlay() {
-        if( this._isWork ) return; //происходит анимация, автовоспроизв будет запущено ф-ией transitionComplete
+        if(this._isWork) return; //происходит анимация, автовоспроизв будет запущено ф-ией transitionComplete
         
         const currentItem = this._currentItem,
             nextItem = this.slItems[this._getNextItemNum()],
@@ -165,7 +166,6 @@ class SimSlider {
         img.style.opacity = 0;
 
         return new Promise((resolve, rejected) => {
-
             if (!src) { //если загружено, просто показываем - уже как фоновое изображение
                 img.style.opacity = 1;
                 img.isLoaded = true;
@@ -180,8 +180,7 @@ class SimSlider {
             function onLoad() {
                 img.style.backgroundImage = "url(" + src + ")";
                 img.setAttribute(Attribute.DATA_IMG_SRC, '');
-                img.style.willChange = 'opacity'; //*** !!!
-                img.style.opacity = 1;
+                img.style.opacity = '';
                 img.isLoaded = true;
                 resolve({src, img});
             }
@@ -191,7 +190,6 @@ class SimSlider {
             }
 
         });
-        
     }
 
 
@@ -220,6 +218,7 @@ class SimSlider {
             if (img.isLoaded) continue;
             item._promiseContentLoad = this._loadImg(img);
             }
+
         });
 
     }
@@ -243,7 +242,7 @@ class SimSlider {
         }
     }
 
-    _initTouchEvent() {
+    _initTouchEvent() {//todo
     };
 
     _getNextItemNum(dir) {
@@ -292,6 +291,7 @@ class SimSlider {
 //call OnAutoPlay();
 //set currentItemNum = nextItemNum
 //set currentItem = nextAnimEl;
+//trigger event startAnimation, 
     static get _stSlideAnimate() {
         return {
             fade: function () { //?????
@@ -305,7 +305,7 @@ class SimSlider {
                 animEl._$el = $animEl;
 
                 $animEl.on('transitionend.fade', transitionComplete, this);
-                
+                animEl.style.transition = `opacity ${this._transSpeed/1000}s ease-in`;
                 animEl.style.opacity = 0;
 
                 function transitionComplete(e) {
@@ -317,7 +317,7 @@ class SimSlider {
                     
                     //reset style for current item after loading nextItem content
                     nextAnimEl._promiseContentLoad.then( () =>{
-                        animEl.style.cssText = 'Z-index: 0; will-change: ""'
+                        animEl.style.cssText = 'Z-index: 0';
                     });
                     //preparation transition for next item
                     this.slItems[this._nextItemNum].style.willChange = "opacity";

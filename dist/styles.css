@@ -343,18 +343,6 @@ ol {
   box-shadow: 0 0 1px 1px #F6B7C4;
 }
 
-.dropdown_open {
-  display: block;
-}
-
-.dropdown_transitioning {
-  transition: height .5s;
-  display: block;
-  overflow: hidden;
-}
-
-/*paging speed*/
-
 .simple-slider {
   width: 100%;
   height: 100%;
@@ -368,14 +356,14 @@ ol {
   width: 100%;
   height: 100%;
   z-index: -1;
-  transition: opacity 1s ease-in;
+  background-color: #fff;
 }
 
 .simple-slider__img {
   position: absolute;
   width: 100%;
   height: 100%;
-  transition: opacity 1s;
+  transition: opacity .8s;
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -547,3 +535,13 @@ ol {
     opacity: 1;
     background: #91dd89;
 }*/
+
+.dropdown_open {
+  display: block;
+}
+
+.dropdown_transitioning {
+  transition: height .5s;
+  display: block;
+  overflow: hidden;
+}
