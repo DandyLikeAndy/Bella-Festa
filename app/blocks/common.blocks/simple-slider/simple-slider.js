@@ -75,6 +75,7 @@ class SimSlider {
         this._initElms();
         this._initTouchEvent();
         this._setAnimateFunc(opts.typeAnimation);
+        this._setInfoAnimateFunc(opts.typeInfoAnimation);
 
         if(opts.isAutoPlay) this.toggleAutoPlay(); //todo: to fix autoPlay(true)
 
@@ -137,7 +138,7 @@ class SimSlider {
                 nextItem._promiseContentLoad.then(autoPlay);
                 return;
             }
-
+            
             self.go();
         }
     }
@@ -152,14 +153,14 @@ class SimSlider {
             $slEl = this._$slEl;
 
         currentItem._promiseContentLoad = this._loadImg(firstImg); //load first img
-        currentItem.cssText = "zIndex: 1;"; //todo:will-change
+        currentItem.style.zIndex = 1; //todo:will-change
         this._preLoadImgs(this._currentItemNum); //загружаем остальные фотографии (которые должны подгрузиться в данный момент времени)
 
         $slEl.on('click', this._onClick, this);
     }
 
     //return promise
-    _loadImg(img) {
+    _loadImg(img) { //todo rejected
         const src = img.getAttribute(Attribute.DATA_IMG_SRC),
             imgLoad = document.createElement('img');
 
@@ -278,8 +279,22 @@ class SimSlider {
         this._animateMove = stSlideAnimation instanceof Function ? stSlideAnimation : SimSlider._stSlideAnimate.fade;
     }
 
+    _setInfoAnimateFunc(typeInfoAnimation) {
+        let typeAn = typeInfoAnimation || 'move',
+            stInfoAnimation = SimSlider._stInfoAnimate[typeAn];
+
+        this._animateInfoBlock = stInfoAnimation instanceof Function ? stInfoAnimation : SimSlider._stInfoAnimate.move;
+    }
+
     _createEventAnimate(type, detail) {
         this._$slEl.triggerCustomEvent(type, detail);
+    }
+
+    _setTextInfoBlock() {
+        let currentItem = this._currentItem,
+            infoTitle = currentItem.dataSet.title,
+            infoDescription = currentItem.dataSet.description,
+            infoBlock = this.slInfoBlocks;
     }
 
 
@@ -291,7 +306,7 @@ class SimSlider {
 //call OnAutoPlay();
 //set currentItemNum = nextItemNum
 //set currentItem = nextAnimEl;
-//trigger event startAnimation, 
+//trigger event start/stopAnimation, 
     static get _stSlideAnimate() {
         return {
             fade: function () { //?????
@@ -337,6 +352,13 @@ class SimSlider {
         }
     }
 
+    static get _stInfoAnimate() {
+        return {
+            move: function () { 
+
+            }
+        }
+    }
 
 
 static _getImg(el) {

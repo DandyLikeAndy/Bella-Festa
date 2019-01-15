@@ -35,6 +35,12 @@ ol {
   background-size: cover;
 }
 
+.header {
+  position: fixed;
+  z-index: 100;
+  width: 100%;
+}
+
 .logo {
   background-image: url("./images/logo_color.svg");
   background-repeat: no-repeat;
@@ -43,12 +49,6 @@ ol {
 
 .logo_theme-color-70 {
   background-image: url("./images/logo_color_70.svg");
-}
-
-.header {
-  position: fixed;
-  z-index: 100;
-  width: 100%;
 }
 
 .logotype {
@@ -289,6 +289,16 @@ ol {
 
 .nav-menu_theme-transparent:hover::after {
   opacity: .65;
+}
+
+.dropdown_open {
+  display: block;
+}
+
+.dropdown_transitioning {
+  transition: height .5s;
+  display: block;
+  overflow: hidden;
 }
 
 .button-menu {
@@ -535,13 +545,3 @@ ol {
     opacity: 1;
     background: #91dd89;
 }*/
-
-.dropdown_open {
-  display: block;
-}
-
-.dropdown_transitioning {
-  transition: height .5s;
-  display: block;
-  overflow: hidden;
-}
