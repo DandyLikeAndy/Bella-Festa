@@ -107,7 +107,7 @@ $font-size-description-info-mv: $base-font-size*1;
         bottom: 10%;
         margin: auto;
         max-width: $scr-sm;
-        overflow: hidden;
+        //overflow: hidden;
         z-index: 10;
     }
 
@@ -118,14 +118,24 @@ $font-size-description-info-mv: $base-font-size*1;
         display: inline-block;
         padding: 0 1em;
         border-bottom: 2px solid white;
-        //transform: scale(1.1, 1.1);
+        
+        &_initAnim {
+            transform: translateX(-50%);
+            border-bottom: none;
+        }
     }
     
     &__description-info {
         font-size: $font-size-description-info;
         padding: 0 0.5em;
+
+        &_initAnim {
+            transform: translateX(50%);
+        }
     }
     
+    
+
     //------------------------------------------------------------------------------
     //  mobile version
     //------------------------------------------------------------------------------

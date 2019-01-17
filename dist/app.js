@@ -992,7 +992,9 @@ const CLASS_SL_ELEM = 'simple-slider';
 const ClassNameEl = {
     ITEM: `${CLASS_SL_ELEM}__item`,
     IMG: `${CLASS_SL_ELEM}__img`,
-    INFO: `${CLASS_SL_ELEM}__info`,
+    INFO: `${CLASS_SL_ELEM}__container-info`,
+    INFO_TITLE: `${CLASS_SL_ELEM}__title-info`,
+    INFO_DESCRIPTION: `${CLASS_SL_ELEM}__description-info`,
     BUTTON_PLAY: `${CLASS_SL_ELEM}__button_play-pause`,
     BUTTON_ICO: `${CLASS_SL_ELEM}__icon`,
     BUTTON_NEXT: `${CLASS_SL_ELEM}__button_next`,
@@ -1005,7 +1007,9 @@ const StatusClassName = {
 };
 
 const Attribute = {
-    DATA_IMG_SRC: 'data-img-realsrc'
+    DATA_IMG_SRC: 'data-img-realsrc',
+    DATA_INFO_TITLE: 'data-title',
+    DATA_INFO_DESCRIPTION: 'data-description',
 };
 
 
@@ -1030,7 +1034,7 @@ class SimSlider {
 
         this.slEl = slEl;
         this.slItems = slEl.getElementsByClassName(ClassNameEl.ITEM);
-        this.slInfoBlocks = slEl.getElementsByClassName(ClassNameEl.INFO);
+        this.slInfoBlock = slEl.getElementsByClassName(ClassNameEl.INFO)[0];
         this.buttonPlayIco = slEl.querySelector('.' + ClassNameEl.BUTTON_PLAY + ' .' + ClassNameEl.BUTTON_ICO);
         
         //save instance in element
@@ -1048,10 +1052,12 @@ class SimSlider {
         this._transSpeed = opts.transSpeed || 1000;
         //this._currentItem._promiseContentLoad = null;//save promise with result of load content
 
+        //initialization
         this._initElms();
         this._initTouchEvent();
         this._setAnimateFunc(opts.typeAnimation);
         this._setInfoAnimateFunc(opts.typeInfoAnimation);
+        this._animateInfoBlock();
 
         if(opts.isAutoPlay) this.toggleAutoPlay(); //todo: to fix autoPlay(true)
 
@@ -1256,7 +1262,7 @@ class SimSlider {
     }
 
     _setInfoAnimateFunc(typeInfoAnimation) {
-        let typeAn = typeInfoAnimation || 'move',
+        let typeAn = typeInfoAnimation || 'shift',
             stInfoAnimation = SimSlider._stInfoAnimate[typeAn];
 
         this._animateInfoBlock = stInfoAnimation instanceof Function ? stInfoAnimation : SimSlider._stInfoAnimate.move;
@@ -1268,9 +1274,14 @@ class SimSlider {
 
     _setTextInfoBlock() {
         let currentItem = this._currentItem,
-            infoTitle = currentItem.dataSet.title,
-            infoDescription = currentItem.dataSet.description,
-            infoBlock = this.slInfoBlocks;
+            infoBlock = this.slInfoBlock,
+            textTitle = currentItem.getAttribute(Attribute.DATA_INFO_TITLE),
+            textDescription = currentItem.getAttribute(Attribute.DATA_INFO_DESCRIPTION),
+            titleBlock = infoBlock.getElementsByClassName(ClassNameEl.INFO_TITLE)[0],
+            descriptionBlock = infoBlock.getElementsByClassName(ClassNameEl.INFO_DESCRIPTION)[0];
+
+        titleBlock.innerHTML = textTitle;
+        descriptionBlock.innerHTML = textDescription;
     }
 
 
@@ -1330,7 +1341,10 @@ class SimSlider {
 
     static get _stInfoAnimate() {
         return {
-            move: function () { 
+            shift: function () { 
+
+                this._setTextInfoBlock();
+
 
             }
         }
