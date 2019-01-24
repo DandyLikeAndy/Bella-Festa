@@ -1012,6 +1012,12 @@ const Attribute = {
     DATA_INFO_DESCRIPTION: 'data-description',
 };
 
+//for info animation
+const ClassElModifier = {
+    INFO_TITLE_INITANIM: `${ClassNameEl.INFO_TITLE}_initAnim`,
+    INFO_DESCRIPTION_INITANIM: `${ClassNameEl.INFO_DESCRIPTION}_initAnim`
+}
+
 
 // ------------------------------------------------------------------------
 // Dependencies
@@ -1035,7 +1041,9 @@ class SimSlider {
         this.slEl = slEl;
         this.slItems = slEl.getElementsByClassName(ClassNameEl.ITEM);
         this.slInfoBlock = slEl.getElementsByClassName(ClassNameEl.INFO)[0];
-        this.buttonPlayIco = slEl.querySelector('.' + ClassNameEl.BUTTON_PLAY + ' .' + ClassNameEl.BUTTON_ICO);
+        this.buttonPlayIco = slEl.querySelector('.' + ClassNameEl.BUTTON_PLAY + ' .' + ClassNameEl.BUTTON_ICO),
+        this.titleInfoBlock = this.slInfoBlock.getElementsByClassName(ClassNameEl.INFO_TITLE)[0],
+        this.descrInfoBlock = this.slInfoBlock.getElementsByClassName(ClassNameEl.INFO_DESCRIPTION)[0];;
         
         //save instance in element
         this.slEl._sl = this;
@@ -1273,15 +1281,12 @@ class SimSlider {
     }
 
     _setTextInfoBlock() {
-        let currentItem = this._currentItem,
-            infoBlock = this.slInfoBlock,
+        const currentItem = this._currentItem,
             textTitle = currentItem.getAttribute(Attribute.DATA_INFO_TITLE),
-            textDescription = currentItem.getAttribute(Attribute.DATA_INFO_DESCRIPTION),
-            titleBlock = infoBlock.getElementsByClassName(ClassNameEl.INFO_TITLE)[0],
-            descriptionBlock = infoBlock.getElementsByClassName(ClassNameEl.INFO_DESCRIPTION)[0];
+            textDescr = currentItem.getAttribute(Attribute.DATA_INFO_DESCRIPTION);
 
-        titleBlock.innerHTML = textTitle;
-        descriptionBlock.innerHTML = textDescription;
+        this.titleInfoBlock.innerHTML = textTitle;
+        this.descrInfoBlock.innerHTML = textDescr;
     }
 
 
@@ -1293,7 +1298,7 @@ class SimSlider {
 //call OnAutoPlay();
 //set currentItemNum = nextItemNum
 //set currentItem = nextAnimEl;
-//trigger event start/stopAnimation, 
+//trigger event start/stopSlideAnimation, 
     static get _stSlideAnimate() {
         return {
             fade: function () { //?????
@@ -1302,7 +1307,7 @@ class SimSlider {
                     $animEl = ElU(this._currentItem);
 
                 //triger event of start animation for other module
-                this._createEventAnimate('startAnimation', {currentItem: animEl, nextItem: nextAnimEl});
+                this._createEventAnimate('startSlideAnimation', {currentItem: animEl, nextItem: nextAnimEl});
                     
                 animEl._$el = $animEl;
 
@@ -1324,13 +1329,12 @@ class SimSlider {
                     //preparation transition for next item
                     this.slItems[this._nextItemNum].style.willChange = "opacity";
 
-                    //triger event of stop animation 
-                    this._createEventAnimate('stopAnimation', {currentItem: animEl, nextItem: nextAnimEl});
-
                     this._currentItemNum = this._nextItemNum;
                     this._currentItem = nextAnimEl;
                     this._isWork = false;
             
+                    //triger event of stop animation 
+                    this._createEventAnimate('stopSlideAnimation', {currentItem: animEl, nextItem: nextAnimEl});
                 
                     if (this._isAutoPlayOn) this.onAutoPlay();
                 }
@@ -1342,9 +1346,28 @@ class SimSlider {
     static get _stInfoAnimate() {
         return {
             shift: function () { 
+                const titleInfoBlock = this.titleInfoBlock,
+                    descrInfoBlock = this.descrInfoBlock;
 
                 this._setTextInfoBlock();
 
+                this._$slEl.on('stopSlideAnimation', shiftOn, this);
+
+                function shiftOn(e) {
+                    descrInfoBlock.classList.add(ClassElModifier.INFO_DESCRIPTION_INITANIM);
+                    titleInfoBlock.classList.add(ClassElModifier.INFO_TITLE_INITANIM);
+                    
+
+                    this._setTextInfoBlock();
+
+                    SimSlider.reflow(this.slInfoBlock);
+
+                    descrInfoBlock.classList.remove(ClassElModifier.INFO_DESCRIPTION_INITANIM);
+                    titleInfoBlock.classList.remove(ClassElModifier.INFO_TITLE_INITANIM);
+
+                    console.log(ClassElModifier.INFO_TITLE_INITANIM);
+                    console.log(ClassElModifier.INFO_DESCRIPTION_INITANIM);
+                }
 
             }
         }
@@ -1354,6 +1377,11 @@ class SimSlider {
 static _getImg(el) {
      return el.getElementsByClassName(ClassNameEl.IMG)[0];
 }
+
+static reflow(el) {
+    return el.offsetHeight;
+}
+
 }
 
 

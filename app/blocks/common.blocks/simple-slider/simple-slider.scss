@@ -7,6 +7,9 @@ $font-size-description-info: $base-font-size*1.4;
 $font-size-title-info-mv: $base-font-size*1.1;
 $font-size-description-info-mv: $base-font-size*1;
 
+$tran-duration-info: 0.8s;
+$tran-info-offset: 100px;
+
 .simple-slider {
     width: 100%;
     height: 100%;
@@ -107,7 +110,6 @@ $font-size-description-info-mv: $base-font-size*1;
         bottom: 10%;
         margin: auto;
         max-width: $scr-sm;
-        //overflow: hidden;
         z-index: 10;
     }
 
@@ -117,21 +119,54 @@ $font-size-description-info-mv: $base-font-size*1;
         margin: auto;
         display: inline-block;
         padding: 0 1em;
-        border-bottom: 2px solid white;
-        
-        &_initAnim {
-            transform: translateX(-50%);
-            border-bottom: none;
+        position: relative;
+        transition: opacity 0.9s, transform 0.9s;
+
+    
+        //border-bottom
+        &::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            left: $tran-info-offset;
+            margin-left: -$tran-info-offset;
+            height: 2px;
+            background-color: #fff;
+            transition: width $tran-duration-info, margin-left $tran-duration-info;
+            transform: initial;
         }
+
+        //for animation, initial value
+        &_initAnim {
+            transition: none;
+            opacity: 0;
+            transform: translateX(-$tran-info-offset);
+            //for animation, initial value (bottom line)
+            &::after {
+                transition: none;
+                opacity: 0;
+                width: 0;
+                margin-left: $tran-info-offset;
+            }
+
+        }
+
     }
     
     &__description-info {
         font-size: $font-size-description-info;
         padding: 0 0.5em;
+        transition: opacity $tran-duration-info, transform $tran-duration-info;
 
+        //for animation, initial value
         &_initAnim {
-            transform: translateX(50%);
+            transition: none;
+            opacity: 0;
+            transform: translateX($tran-info-offset);
         }
+
+
     }
     
     
