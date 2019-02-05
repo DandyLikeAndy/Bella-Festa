@@ -377,20 +377,17 @@ class SimSlider {
 
                 this._$slEl.on('stopSlideAnimation', shiftOn, this);
 
+                
                 function shiftOn(e) {
                     descrInfoBlock.classList.add(ClassElModifier.INFO_DESCRIPTION_INITANIM);
                     titleInfoBlock.classList.add(ClassElModifier.INFO_TITLE_INITANIM);
                     
-
                     this._setTextInfoBlock();
 
                     SimSlider.reflow(this.slInfoBlock);
 
                     descrInfoBlock.classList.remove(ClassElModifier.INFO_DESCRIPTION_INITANIM);
                     titleInfoBlock.classList.remove(ClassElModifier.INFO_TITLE_INITANIM);
-
-                    console.log(ClassElModifier.INFO_TITLE_INITANIM);
-                    console.log(ClassElModifier.INFO_DESCRIPTION_INITANIM);
                 }
 
             }

@@ -7,8 +7,8 @@ $font-size-description-info: $base-font-size*1.4;
 $font-size-title-info-mv: $base-font-size*1.1;
 $font-size-description-info-mv: $base-font-size*1;
 
-$tran-duration-info: 0.8s;
-$tran-info-offset: 100px;
+$tran-duration-info: 1s;
+$tran-info-offset: 150px; //not %
 
 .simple-slider {
     width: 100%;
@@ -120,7 +120,7 @@ $tran-info-offset: 100px;
         display: inline-block;
         padding: 0 1em;
         position: relative;
-        transition: opacity 0.9s, transform 0.9s;
+        transition: opacity $tran-duration-info, transform $tran-duration-info;
 
     
         //border-bottom
@@ -129,11 +129,12 @@ $tran-info-offset: 100px;
             position: absolute;
             bottom: 0;
             width: 100%;
-            left: $tran-info-offset;
-            margin-left: -$tran-info-offset;
+            margin: auto;
+            left: 0;
+            right: 0;
             height: 2px;
             background-color: #fff;
-            transition: width $tran-duration-info, margin-left $tran-duration-info;
+            transition: width $tran-duration-info, transform $tran-duration-info;
             transform: initial;
         }
 
@@ -142,12 +143,12 @@ $tran-info-offset: 100px;
             transition: none;
             opacity: 0;
             transform: translateX(-$tran-info-offset);
+
             //for animation, initial value (bottom line)
             &::after {
                 transition: none;
-                opacity: 0;
                 width: 0;
-                margin-left: $tran-info-offset;
+                transform: translateX($tran-info-offset);
             }
 
         }
