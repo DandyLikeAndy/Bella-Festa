@@ -41,6 +41,8 @@ $tran-info-offset: 150px; //not %
         width: 100%;
         height: 100%;
         z-index: 5;
+        will-change: background-color;
+        transition: background-color .5s;
     }
 
     //------------------------------------------------------------------------------

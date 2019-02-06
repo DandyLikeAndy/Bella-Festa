@@ -22,7 +22,8 @@ const ClassNameEl = {
     BUTTON_PLAY: `${CLASS_SL_ELEM}__button_play-pause`,
     BUTTON_ICO: `${CLASS_SL_ELEM}__icon`,
     BUTTON_NEXT: `${CLASS_SL_ELEM}__button_next`,
-    BUTTON_PREV: `${CLASS_SL_ELEM}__button_prev`
+    BUTTON_PREV: `${CLASS_SL_ELEM}__button_prev`,
+    SCRIM: `${CLASS_SL_ELEM}__scrim`
 };
 
 const StatusClassName = {
@@ -34,12 +35,25 @@ const Attribute = {
     DATA_IMG_SRC: 'data-img-realsrc',
     DATA_INFO_TITLE: 'data-title',
     DATA_INFO_DESCRIPTION: 'data-description',
+    DATA_SCRIM_COLOR: 'data-scrim-color'
 };
 
 //for info animation
 const ClassElModifier = {
     INFO_TITLE_INITANIM: `${ClassNameEl.INFO_TITLE}_initAnim`,
     INFO_DESCRIPTION_INITANIM: `${ClassNameEl.INFO_DESCRIPTION}_initAnim`
+}
+
+const DefaultStyleAnim = {
+    SLIDE: 'fade',
+    INFO: 'shift'
+}
+
+const DefaultValues = {
+    SCRIM_COLOR: 'hsla(13, 15%, 66%,.45)',
+    QT_PRELOADED: 1, //number of preload items 
+    AUTO_PlAY_DElAY: 3000, //ms
+    TRANS_SPEED: 1000 //transition duration
 }
 
 
@@ -62,69 +76,87 @@ class SimSlider {
     constructor(opts) {
         const slEl = opts.slEl;
 
+        //SimSlider elements
         this.slEl = slEl;
         this.slItems = slEl.getElementsByClassName(ClassNameEl.ITEM);
         this.slInfoBlock = slEl.getElementsByClassName(ClassNameEl.INFO)[0];
-        this.buttonPlayIco = slEl.querySelector('.' + ClassNameEl.BUTTON_PLAY + ' .' + ClassNameEl.BUTTON_ICO),
-        this.titleInfoBlock = this.slInfoBlock.getElementsByClassName(ClassNameEl.INFO_TITLE)[0],
-        this.descrInfoBlock = this.slInfoBlock.getElementsByClassName(ClassNameEl.INFO_DESCRIPTION)[0];;
+        this.buttonPlayIco = slEl.querySelector('.' + ClassNameEl.BUTTON_PLAY + ' .' + ClassNameEl.BUTTON_ICO);
+        this.titleInfoBlock = this.slInfoBlock.getElementsByClassName(ClassNameEl.INFO_TITLE)[0];
+        this.descrInfoBlock = this.slInfoBlock.getElementsByClassName(ClassNameEl.INFO_DESCRIPTION)[0];
+        this.scrim = slEl.getElementsByClassName(ClassNameEl.SCRIM)[0];
+        
+        //Available to the user properties
+        this.$slEl = ElU(slEl);
+        this.currentItemNum = this.slItems.length - 1; //it is number of top element item  in slider
+        this.currentItem = this.slItems[this.currentItemNum];
+        this.nextItemNum = null; //define go(dir)
+        this.nextItem = null; //define go(dir)
         
         //save instance in element
         this.slEl._sl = this;
 
-        this._$slEl = ElU(slEl);
-        this._currentItemNum = this.slItems.length - 1; //*** !!! it is number of top element item  in slider
-        this._nextItemNum = null;
-        this._currentItem = this.slItems[this._currentItemNum]; //*** !!!
+        //Protected properties
         this._isWork = null;
         this._isAutoPlayOn = null;
         this._timerAutoPlayID = null;
-        this._qtPreloaded = opts.qtPreloaded || 1;
-        this._autoPlayDelay = opts.autoPlayDelay || 3000;
-        this._transSpeed = opts.transSpeed || 1000;
-        //this._currentItem._promiseContentLoad = null;//save promise with result of load content
+        this._qtPreload = opts.qtPreload || DefaultValues.QT_PRELOADED;
+        this._autoPlayDelay = opts.autoPlayDelay || DefaultValues.AUTO_PlAY_DElAY;
+        this._transSpeed = opts.transSpeed || DefaultValues.TRANS_SPEED;
+        //this.currentItem._promiseContentLoad = null;//save promise with result of load content
 
         //initialization
+        this._setScrim();
         this._initElms();
         this._initTouchEvent();
         this._setAnimateFunc(opts.typeAnimation);
         this._setInfoAnimateFunc(opts.typeInfoAnimation);
         this._animateInfoBlock();
 
-        if(opts.isAutoPlay) this.toggleAutoPlay(); //todo: to fix autoPlay(true)
+        if(opts.isAutoPlay) this.startAutoPlay();
 
     }
 
 // ***************************************
 // Public methods
 // ***************************************
-
-    toggleAutoPlay() {
-        
-        if (!this._isAutoPlayOn) {
+    
+    startAutoPlay() {
+        if (!this._isAutoPlayOn) { 
             this._isAutoPlayOn = true;
-            this._setClassButtonPlayIco('pause');//todo: do not change icon - to fix
+            this._setClassButtonPlayIco('pause');
             this.onAutoPlay();
-        } else {
+        };
+    }
+
+    stopAutoPlay() {
+        if (this._isAutoPlayOn) { 
             this._isAutoPlayOn = false;
             this._setClassButtonPlayIco('play');
             clearTimeout(this._timerAutoPlayID);
+        };
+    }
+
+    toggleAutoPlay() {
+        if (!this._isAutoPlayOn) {
+            this.startAutoPlay();
+        } else {
+            this.stopAutoPlay();
         }
-     }
+    }
 
     go(dir) {
-        const nextItem = this.slItems[this._getNextItemNum()]
         if (this._isWork) return;
-        if (!SimSlider._getImg(this._currentItem).isLoaded) return;
+        if (!SimSlider._getImg(this.currentItem).isLoaded) return;
         
         dir = dir || 1;
         this._isWork = true;
-        this._nextItemNum = this._getNextItemNum(dir);
+        this.nextItemNum = this._getNextItemNum(dir);
+        this.nextItem = this.slItems[this.nextItemNum];
 
         //init for current item
-        this._currentItem.style.zIndex = 2;
+        this.currentItem.style.zIndex = 2;
         //init for next item
-        this.slItems[this._nextItemNum].style.zIndex = 1;
+        this.nextItem.style.zIndex = 1;
 
         this._animateMove(dir);
     }
@@ -132,7 +164,7 @@ class SimSlider {
     onAutoPlay() {
         if(this._isWork) return; //происходит анимация, автовоспроизв будет запущено ф-ией transitionComplete
         
-        const currentItem = this._currentItem,
+        const currentItem = this.currentItem,
             nextItem = this.slItems[this._getNextItemNum()],
             currentImg = SimSlider._getImg(currentItem),
             nextImg = SimSlider._getImg(nextItem),
@@ -162,13 +194,13 @@ class SimSlider {
 // ***************************************
 
     _initElms() {
-        const currentItem = this._currentItem,
+        const currentItem = this.currentItem,
             firstImg = SimSlider._getImg(currentItem),
-            $slEl = this._$slEl;
+            $slEl = this.$slEl;
 
         currentItem._promiseContentLoad = this._loadImg(firstImg); //load first img
         currentItem.style.zIndex = 1; //todo:will-change
-        this._preLoadImgs(this._currentItemNum); //загружаем остальные фотографии (которые должны подгрузиться в данный момент времени)
+        this._preLoadImgs(this.currentItemNum); //загружаем остальные фотографии (которые должны подгрузиться в данный момент времени)
 
         $slEl.on('click', this._onClick, this);
     }
@@ -209,14 +241,14 @@ class SimSlider {
 
 
     _preLoadImgs(itemNum) {
-        let qtPreloaded = this._qtPreloaded;
+        let qtPreload = this._qtPreload;
         const slItems = this.slItems;
 
-        if (qtPreloaded > slItems.length - 1) qtPreloaded = slItems.length - 1;
+        if (qtPreload > slItems.length - 1) qtPreload = slItems.length - 1;
 
-        this._currentItem._promiseContentLoad.then( () => {
+        this.currentItem._promiseContentLoad.then( () => {
 
-            for (let i = itemNum - qtPreloaded; i <= itemNum + qtPreloaded; i++) {
+            for (let i = itemNum - qtPreload; i <= itemNum + qtPreload; i++) {
             if (i === itemNum) continue; // т.к.текущ. изобр загружено
 
             let item = slItems[i],
@@ -261,7 +293,7 @@ class SimSlider {
     };
 
     _getNextItemNum(dir) {
-        const curNum = this._currentItemNum,
+        const curNum = this.currentItemNum,
             slItems = this.slItems;
 
         let nextItemNum = null;
@@ -287,30 +319,37 @@ class SimSlider {
     }
 
     _setAnimateFunc(typeAnimation) {
-        let typeAn = typeAnimation || 'fade',
+        const typeAn = typeAnimation || DefaultStyleAnim.SLIDE,
             stSlideAnimation = SimSlider._stSlideAnimate[typeAn];
 
-        this._animateMove = stSlideAnimation instanceof Function ? stSlideAnimation : SimSlider._stSlideAnimate.fade;
+        this._animateMove = stSlideAnimation instanceof Function ? stSlideAnimation : SimSlider._stSlideAnimate[DefaultStyleAnim.SLIDE];
     }
 
     _setInfoAnimateFunc(typeInfoAnimation) {
-        let typeAn = typeInfoAnimation || 'shift',
+        const typeAn = typeInfoAnimation || DefaultStyleAnim.INFO,
             stInfoAnimation = SimSlider._stInfoAnimate[typeAn];
 
-        this._animateInfoBlock = stInfoAnimation instanceof Function ? stInfoAnimation : SimSlider._stInfoAnimate.move;
+        this._animateInfoBlock = stInfoAnimation instanceof Function ? stInfoAnimation : SimSlider._stInfoAnimate[DefaultStyleAnim.INFO];
     }
 
     _createEventAnimate(type, detail) {
-        this._$slEl.triggerCustomEvent(type, detail);
+        this.$slEl.triggerCustomEvent(type, detail);
     }
 
     _setTextInfoBlock() {
-        const currentItem = this._currentItem,
+        const currentItem = this.currentItem,
             textTitle = currentItem.getAttribute(Attribute.DATA_INFO_TITLE),
             textDescr = currentItem.getAttribute(Attribute.DATA_INFO_DESCRIPTION);
 
         this.titleInfoBlock.innerHTML = textTitle;
         this.descrInfoBlock.innerHTML = textDescr;
+    }
+    
+    _setScrim() {
+        const item = this.nextItem || this.currentItem, //this.currentItem - for init slider
+            colorStr = item.getAttribute(Attribute.DATA_SCRIM_COLOR) || DefaultValues.SCRIM_COLOR;
+
+        this.scrim.style.backgroundColor = colorStr;
     }
 
 
@@ -326,9 +365,9 @@ class SimSlider {
     static get _stSlideAnimate() {
         return {
             fade: function () { //?????
-                const animEl = this._currentItem,
-                    nextAnimEl = this.slItems[this._nextItemNum],
-                    $animEl = ElU(this._currentItem);
+                const animEl = this.currentItem,
+                    nextAnimEl = this.nextItem,
+                    $animEl = ElU(this.currentItem);
 
                 //triger event of start animation for other module
                 this._createEventAnimate('startSlideAnimation', {currentItem: animEl, nextItem: nextAnimEl});
@@ -339,8 +378,10 @@ class SimSlider {
                 animEl.style.transition = `opacity ${this._transSpeed/1000}s ease-in`;
                 animEl.style.opacity = 0;
 
+                this._setScrim();
+
                 function transitionComplete(e) {
-                    const animEl = this._currentItem,
+                    const animEl = this.currentItem,
                         $animEl = animEl._$el;
 
                     if (e.target === animEl && e.propertyName != 'opacity') return;
@@ -351,11 +392,13 @@ class SimSlider {
                         animEl.style.cssText = 'Z-index: 0';
                     });
                     //preparation transition for next item
-                    this.slItems[this._nextItemNum].style.willChange = "opacity";
+                    this.nextItem.style.willChange = "opacity";
 
-                    this._currentItemNum = this._nextItemNum;
-                    this._currentItem = nextAnimEl;
+                    this.currentItemNum = this.nextItemNum;
+                    this.currentItem = nextAnimEl;
                     this._isWork = false;
+                    this.nextItem = null;
+                    this.nextItemNum = null;
             
                     //triger event of stop animation 
                     this._createEventAnimate('stopSlideAnimation', {currentItem: animEl, nextItem: nextAnimEl});
@@ -375,7 +418,7 @@ class SimSlider {
 
                 this._setTextInfoBlock();
 
-                this._$slEl.on('stopSlideAnimation', shiftOn, this);
+                this.$slEl.on('stopSlideAnimation', shiftOn, this);
 
                 
                 function shiftOn(e) {
@@ -410,11 +453,11 @@ static reflow(el) {
 // Initialization 
 // ------------------------------------------------------------------------
 
-let simSladers = document.getElementsByClassName(CLASS_SL_ELEM);
+let simSliders = document.getElementsByClassName(CLASS_SL_ELEM);
 
-for (let i=0; i<simSladers.length; i++) {
+for (let i=0; i<simSliders.length; i++) {
     let opts = {
-        slEl: simSladers[i]
+        slEl: simSliders[i]
     }
     window.simSlider = new SimSlider(opts);
      
