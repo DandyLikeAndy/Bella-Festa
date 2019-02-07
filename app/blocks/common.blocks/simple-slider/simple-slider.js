@@ -23,12 +23,15 @@ const ClassNameEl = {
     BUTTON_ICO: `${CLASS_SL_ELEM}__icon`,
     BUTTON_NEXT: `${CLASS_SL_ELEM}__button_next`,
     BUTTON_PREV: `${CLASS_SL_ELEM}__button_prev`,
-    SCRIM: `${CLASS_SL_ELEM}__scrim`
+    SCRIM: `${CLASS_SL_ELEM}__scrim`,
+    BULLETS: `${CLASS_SL_ELEM}__bullets`,
+    BULLETS_ITEM: `${CLASS_SL_ELEM}__bullets-item`
 };
 
 const StatusClassName = {
     ICO_PLAY: 'icon-play',
-    ICO_PAUSE: 'icon-pause'
+    ICO_PAUSE: 'icon-pause',
+    BULLET_ACTIVE:`${ClassNameEl.BULLETS_ITEM}_active`
 };
 
 const Attribute = {
@@ -84,6 +87,7 @@ class SimSlider {
         this.titleInfoBlock = this.slInfoBlock.getElementsByClassName(ClassNameEl.INFO_TITLE)[0];
         this.descrInfoBlock = this.slInfoBlock.getElementsByClassName(ClassNameEl.INFO_DESCRIPTION)[0];
         this.scrim = slEl.getElementsByClassName(ClassNameEl.SCRIM)[0];
+        this.bullets = this.slEl.getElementsByClassName(ClassNameEl.BULLETS)[0];
         
         //Available to the user properties
         this.$slEl = ElU(slEl);
@@ -107,6 +111,8 @@ class SimSlider {
         //initialization
         this._setScrim();
         this._initElms();
+        this._createBullets();
+        this.setActiveBulet(); 
         this._initTouchEvent();
         this._setAnimateFunc(opts.typeAnimation);
         this._setInfoAnimateFunc(opts.typeInfoAnimation);
@@ -187,6 +193,16 @@ class SimSlider {
             
             self.go();
         }
+    }
+
+    setActiveBulet() {
+        const bulNumber = this.slItems.length - 1 - this.currentItemNum;
+        let exActive = this.bullets.getElementsByClassName(StatusClassName.BULLET_ACTIVE)[0],
+            newActive = this.bullets.getElementsByClassName(ClassNameEl.BULLETS_ITEM)[bulNumber];
+
+        if(exActive) exActive.classList.remove(StatusClassName.BULLET_ACTIVE);
+
+        newActive.classList.add(StatusClassName.BULLET_ACTIVE);
     }
 
 // ***************************************
@@ -352,6 +368,38 @@ class SimSlider {
         this.scrim.style.backgroundColor = colorStr;
     }
 
+    _createBullets() {
+        const bullets = this.bullets,
+            bullsWidth = bullets.clientWidth;
+        let  quantity = this.slItems.length;
+
+        let el = createBul(),
+            bullWidth = getWSpaceEl(el);
+        console.log(bullWidth);
+        quantity = bullsWidth > (bullWidth * quantity) ? quantity : Math.floor(bullsWidth / bullWidth);
+
+
+        for (let i=1; i<quantity; i++) {
+            let el = createBul();
+            bullets.appendChild(el);
+        }
+
+
+        function getWSpaceEl(el) {
+            const marginLeft = getComputedStyle(el).marginLeft,
+                marginRight = getComputedStyle(el).marginRight,
+                width = el.offsetWidth;
+            
+                return marginLeft + width + marginRight;
+        };
+
+        function createBul() {
+            let el = document.createElement('li');
+            el.classList.add(ClassNameEl.BULLETS_ITEM);
+            bullets.appendChild(el);
+            return el;
+        }
+    }
 
 // ***************************************
 // Static methods
@@ -399,6 +447,8 @@ class SimSlider {
                     this._isWork = false;
                     this.nextItem = null;
                     this.nextItemNum = null;
+
+                    this.setActiveBulet();
             
                     //triger event of stop animation 
                     this._createEventAnimate('stopSlideAnimation', {currentItem: animEl, nextItem: nextAnimEl});

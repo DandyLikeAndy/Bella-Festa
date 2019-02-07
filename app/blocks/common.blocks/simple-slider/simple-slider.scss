@@ -10,6 +10,10 @@ $font-size-description-info-mv: $base-font-size*1;
 $tran-duration-info: 1s;
 $tran-info-offset: 150px; //not %
 
+$bullet-size: 1.2em;
+$bullet-margin: 1em;
+$bullet-border-width: 2px;
+
 .simple-slider {
     width: 100%;
     height: 100%;
@@ -169,8 +173,31 @@ $tran-info-offset: 150px; //not %
             transform: translateX($tran-info-offset);
         }
 
-
     }
+
+    //***Bullets 
+
+    &__bullets {
+        display: flex;
+        justify-content: center;
+    }
+
+    &__bullets-item {
+        display: inline-block;
+        box-sizing: border-box;
+        list-style-type: none;
+        width: $bullet-size;
+        height: $bullet-size;
+        border: $bullet-border-width solid white;
+        border-radius: $bullet-size/2; //calc(#{$bullet-size} + 2px/2)
+        margin: $bullet-size $bullet-margin 0 $bullet-margin;
+        transition: background-color $tran-duration-info;
+
+        &_active {
+            background-color: white;
+        }
+    }
+    
     
     
 
@@ -213,51 +240,10 @@ $tran-info-offset: 150px; //not %
             font-size: $font-size-description-info-mv;
         }
 
-    
-
-            /*~.simple-slider__info*/
-            //padding: 0 #{$font-size-button/2} 0 0; /*~.simple-slider__info*/
-            //line-height: $base-font-size*2; /*~.simple-slider__info*/
-
-
-        /* &__info {
-            bottom: 0; left: 0;
-            width: 100%;
-            transition: opacity .2s, background-color .1s;
-            background: rgba(255,255,255,.3);
-            color: #333;
-            font: 20px/40px 'Roboto-Regular', Arial, Helvetica, sans-serif;
-        }
-        &__link {
-            padding: 0 10px;
-        }
-        &__info:hover {
-            background: rgba(255,255,255,.5);
-        }
-    
-        &__info_hidden {
-            transform: translateY(0);
-        } */
     }
 
 }
 
-
-
-
-
-
-/*!*background for info*! (for transparent background)
-.simple-slider__info::before {
-    content: "";
-    background: #AAFFA2;
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    opacity: 1;
-    z-index: -1;
-    transition: opacity .2s;
-    border-radius: 3px;
-}*/
 
 .simple-slider__info:hover {
     background: #91dd89;
@@ -272,9 +258,4 @@ $tran-info-offset: 150px; //not %
     padding: 0 25px;
     display: block;
 }
-
-/*.simple-slider__info:hover::before { (for transparent background)
-    opacity: 1;
-    background: #91dd89;
-}*/
 
