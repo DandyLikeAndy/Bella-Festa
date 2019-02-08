@@ -373,19 +373,20 @@ class SimSlider {
     }
 
     _createBullets() { //todo: handler for resize
-        const bullets = this.bullets,
-            bullsWidth = bullets.clientWidth;
-
-        let  quantity = this.slItems.length,
+        const bullets = this.bullets;
+            
+        let bullsWidth = bullets.clientWidth,
+            quantityItems = this.slItems.length,
             el = createBul(),
-            bullWidth = getWSpaceEl(el);
-
-        quantity = bullsWidth > (bullWidth * quantity) ? quantity : Math.floor(bullsWidth / bullWidth);
+            bullWidth = getWSpaceEl(el),
+            quantity = getQuantity();
+        
 
         for (let i=1; i<quantity; i++) { //i==1 - because one bullet already exist
-            let el = createBul();
-            bullets.appendChild(el);
+            bullets.appendChild(createBul());
         }
+
+        window.addEventListener('resize', onResize);
 
         function getWSpaceEl(el) {
             const marginLeft = parseInt(getComputedStyle(el).marginLeft),
@@ -400,6 +401,32 @@ class SimSlider {
             el.classList.add(ClassNameEl.BULLETS_ITEM);
             bullets.appendChild(el);
             return el;
+        }
+
+        function getQuantity() {
+            return bullsWidth > (bullWidth * quantityItems) ? quantityItems : Math.floor(bullsWidth / bullWidth);
+        }
+
+        function onResize() {
+            bullsWidth = bullets.clientWidth;
+
+            console.log(quantity);
+            let oldQuantity = quantity,
+                newQuantity = getQuantity(),
+                delta = newQuantity - oldQuantity,
+                bulletsCollection = bullets.getElementsByClassName(ClassNameEl.BULLETS_ITEM);
+
+            quantity = newQuantity;
+
+            if(delta < 0) {
+                for (let j=bulletsCollection.length-1; j>newQuantity; j--) {
+                    bullets.removeChild(bulletsCollection[j]);
+                }
+            } else {
+                for (let j=0; j<delta; j++) {
+                    bullets.appendChild(createBul());
+                }
+            }
         }
     }
 

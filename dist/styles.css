@@ -29,18 +29,6 @@ ol {
   padding: 0;
 }
 
-.page {
-  font-family: 'PT Sans', sans-serif;
-  height: 100%;
-  background-size: cover;
-}
-
-.header {
-  position: fixed;
-  z-index: 100;
-  width: 100%;
-}
-
 .logo {
   background-image: url("./images/logo_color.svg");
   background-repeat: no-repeat;
@@ -49,6 +37,12 @@ ol {
 
 .logo_theme-color-70 {
   background-image: url("./images/logo_color_70.svg");
+}
+
+.page {
+  font-family: 'PT Sans', sans-serif;
+  height: 100%;
+  background-size: cover;
 }
 
 .logotype {
@@ -136,6 +130,12 @@ ol {
   .logotype__logo-occupation {
     font-size: 20px;
   }
+}
+
+.header {
+  position: fixed;
+  z-index: 100;
+  width: 100%;
 }
 
 .nav-menu {
@@ -341,16 +341,6 @@ ol {
 
 .button-menu:hover .button-menu__line {
   box-shadow: 0 0 1px 1px #F6B7C4;
-}
-
-.dropdown_open {
-  display: block;
-}
-
-.dropdown_transitioning {
-  transition: height .5s;
-  display: block;
-  overflow: hidden;
 }
 
 .simple-slider {
@@ -561,4 +551,14 @@ ol {
   height: 100%;
   padding: 0 25px;
   display: block;
+}
+
+.dropdown_open {
+  display: block;
+}
+
+.dropdown_transitioning {
+  transition: height .5s;
+  display: block;
+  overflow: hidden;
 }
