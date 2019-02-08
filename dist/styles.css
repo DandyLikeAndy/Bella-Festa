@@ -29,6 +29,18 @@ ol {
   padding: 0;
 }
 
+.page {
+  font-family: 'PT Sans', sans-serif;
+  height: 100%;
+  background-size: cover;
+}
+
+.header {
+  position: fixed;
+  z-index: 100;
+  width: 100%;
+}
+
 .logo {
   background-image: url("./images/logo_color.svg");
   background-repeat: no-repeat;
@@ -37,12 +49,6 @@ ol {
 
 .logo_theme-color-70 {
   background-image: url("./images/logo_color_70.svg");
-}
-
-.header {
-  position: fixed;
-  z-index: 100;
-  width: 100%;
 }
 
 .logotype {
@@ -285,12 +291,6 @@ ol {
   opacity: .65;
 }
 
-.page {
-  font-family: 'PT Sans', sans-serif;
-  height: 100%;
-  background-size: cover;
-}
-
 .button-menu {
   cursor: pointer;
 }
@@ -507,7 +507,7 @@ ol {
   height: 1.2em;
   border: 2px solid white;
   border-radius: 0.6em;
-  margin: 1.2em 1em 0 1em;
+  margin: 1.2em 0.8em 0 0.8em;
   transition: background-color 1s;
 }
 

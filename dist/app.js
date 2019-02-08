@@ -1021,19 +1021,19 @@ const Attribute = {
 const ClassElModifier = {
     INFO_TITLE_INITANIM: `${ClassNameEl.INFO_TITLE}_initAnim`,
     INFO_DESCRIPTION_INITANIM: `${ClassNameEl.INFO_DESCRIPTION}_initAnim`
-}
+};
 
 const DefaultStyleAnim = {
     SLIDE: 'fade',
     INFO: 'shift'
-}
+};
 
 const DefaultValues = {
     SCRIM_COLOR: 'hsla(13, 15%, 66%,.45)',
     QT_PRELOADED: 1, //number of preload items 
     AUTO_PlAY_DElAY: 3000, //ms
     TRANS_SPEED: 1000 //transition duration
-}
+};
 
 
 // ------------------------------------------------------------------------
@@ -1087,12 +1087,18 @@ class SimSlider {
         //initialization
         this._setScrim();
         this._initElms();
-        this._createBullets();
-        this.setActiveBulet(); 
+        if (this.bullets) {
+            this._createBullets();
+            this.setActiveBullet();
+        }
         this._initTouchEvent();
         this._setAnimateFunc(opts.typeAnimation);
-        this._setInfoAnimateFunc(opts.typeInfoAnimation);
-        this._animateInfoBlock();
+
+        if (this.slInfoBlock) {
+            this._setInfoAnimateFunc(opts.typeInfoAnimation);//todo: merge into one ???
+            this._animateInfoBlock();
+        }
+
 
         if(opts.isAutoPlay) this.startAutoPlay();
 
@@ -1107,7 +1113,7 @@ class SimSlider {
             this._isAutoPlayOn = true;
             this._setClassButtonPlayIco('pause');
             this.onAutoPlay();
-        };
+        }
     }
 
     stopAutoPlay() {
@@ -1115,7 +1121,7 @@ class SimSlider {
             this._isAutoPlayOn = false;
             this._setClassButtonPlayIco('play');
             clearTimeout(this._timerAutoPlayID);
-        };
+        }
     }
 
     toggleAutoPlay() {
@@ -1171,14 +1177,14 @@ class SimSlider {
         }
     }
 
-    setActiveBulet() {
+    setActiveBullet() {
         const bulNumber = this.slItems.length - 1 - this.currentItemNum;
         let exActive = this.bullets.getElementsByClassName(StatusClassName.BULLET_ACTIVE)[0],
             newActive = this.bullets.getElementsByClassName(ClassNameEl.BULLETS_ITEM)[bulNumber];
 
         if(exActive) exActive.classList.remove(StatusClassName.BULLET_ACTIVE);
 
-        newActive.classList.add(StatusClassName.BULLET_ACTIVE);
+        if(newActive) newActive.classList.add(StatusClassName.BULLET_ACTIVE);
     }
 
 // ***************************************
@@ -1338,36 +1344,32 @@ class SimSlider {
     }
     
     _setScrim() {
-        const item = this.nextItem || this.currentItem, //this.currentItem - for init slider
-            colorStr = item.getAttribute(Attribute.DATA_SCRIM_COLOR) || DefaultValues.SCRIM_COLOR;
-
-        this.scrim.style.backgroundColor = colorStr;
+        const item = this.nextItem || this.currentItem; //this.currentItem - for init slider
+        this.scrim.style.backgroundColor = item.getAttribute(Attribute.DATA_SCRIM_COLOR) || DefaultValues.SCRIM_COLOR;
     }
 
-    _createBullets() {
+    _createBullets() { //todo: handler for resize
         const bullets = this.bullets,
             bullsWidth = bullets.clientWidth;
-        let  quantity = this.slItems.length;
 
-        let el = createBul(),
+        let  quantity = this.slItems.length,
+            el = createBul(),
             bullWidth = getWSpaceEl(el);
-        console.log(bullWidth);
+
         quantity = bullsWidth > (bullWidth * quantity) ? quantity : Math.floor(bullsWidth / bullWidth);
 
-
-        for (let i=1; i<quantity; i++) {
+        for (let i=1; i<quantity; i++) { //i==1 - because one bullet already exist
             let el = createBul();
             bullets.appendChild(el);
         }
 
-
         function getWSpaceEl(el) {
-            const marginLeft = getComputedStyle(el).marginLeft,
-                marginRight = getComputedStyle(el).marginRight,
+            const marginLeft = parseInt(getComputedStyle(el).marginLeft),
+                marginRight = parseInt(getComputedStyle(el).marginRight),
                 width = el.offsetWidth;
             
                 return marginLeft + width + marginRight;
-        };
+        }
 
         function createBul() {
             let el = document.createElement('li');
@@ -1388,12 +1390,12 @@ class SimSlider {
 //trigger event start/stopSlideAnimation, 
     static get _stSlideAnimate() {
         return {
-            fade: function () { //?????
+            fade: function () {
                 const animEl = this.currentItem,
                     nextAnimEl = this.nextItem,
                     $animEl = ElU(this.currentItem);
 
-                //triger event of start animation for other module
+                //trigger event of start animation for other module
                 this._createEventAnimate('startSlideAnimation', {currentItem: animEl, nextItem: nextAnimEl});
                     
                 animEl._$el = $animEl;
@@ -1408,11 +1410,10 @@ class SimSlider {
                     const animEl = this.currentItem,
                         $animEl = animEl._$el;
 
-                    if (e.target === animEl && e.propertyName != 'opacity') return;
+                    if (e.target === animEl && e.propertyName != 'opacity') return; //todo: audit e.propertyName != 'opacity'
                     $animEl.off('transitionend.fade');
-                    
-                    //reset style for current item after loading nextItem content
-                    nextAnimEl._promiseContentLoad.then( () =>{
+                    //reset style for current item after loading nextItem content if nextItem is loaded
+                    nextAnimEl._promiseContentLoad.then( () =>{ //todo: protected???
                         animEl.style.cssText = 'Z-index: 0';
                     });
                     //preparation transition for next item
@@ -1420,16 +1421,19 @@ class SimSlider {
 
                     this.currentItemNum = this.nextItemNum;
                     this.currentItem = nextAnimEl;
-                    this._isWork = false;
+                    this._isWork = false; //todo: protected???
                     this.nextItem = null;
                     this.nextItemNum = null;
 
-                    this.setActiveBulet();
+                    if (this.bullets) this.setActiveBullet();
             
                     //triger event of stop animation 
-                    this._createEventAnimate('stopSlideAnimation', {currentItem: animEl, nextItem: nextAnimEl});
+                    this._createEventAnimate('stopSlideAnimation', {currentItem: animEl, nextItem: nextAnimEl}); //todo: protected???
                 
                     if (this._isAutoPlayOn) this.onAutoPlay();
+
+                    //preload next imgs
+                    this._preLoadImgs(this.currentItemNum); //todo: protected???
                 }
 
             }
@@ -1484,7 +1488,7 @@ let simSliders = document.getElementsByClassName(CLASS_SL_ELEM);
 for (let i=0; i<simSliders.length; i++) {
     let opts = {
         slEl: simSliders[i]
-    }
+    };
     window.simSlider = new SimSlider(opts);
      
 }
