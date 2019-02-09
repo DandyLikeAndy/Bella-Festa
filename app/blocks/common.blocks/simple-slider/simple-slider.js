@@ -55,8 +55,9 @@ const DefaultStyleAnim = {
 const DefaultValues = {
     SCRIM_COLOR: 'hsla(13, 15%, 66%,.45)',
     QT_PRELOADED: 1, //number of preload items 
-    AUTO_PlAY_DElAY: 3000, //ms
-    TRANS_SPEED: 1000 //transition duration
+    AUTO_PlAY_DElAY: 5000, //ms
+    TRANS_SPEED: 1000, //transition duration
+    IS_AUTO_PlAY: true
 };
 
 
@@ -124,7 +125,7 @@ class SimSlider {
         }
 
 
-        if(opts.isAutoPlay) this.startAutoPlay();
+        if(opts.isAutoPlay || DefaultValues.IS_AUTO_PlAY) this.startAutoPlay();
 
     }
 
@@ -410,7 +411,6 @@ class SimSlider {
         function onResize() {
             bullsWidth = bullets.clientWidth;
 
-            console.log(quantity);
             let oldQuantity = quantity,
                 newQuantity = getQuantity(),
                 delta = newQuantity - oldQuantity,
@@ -419,10 +419,10 @@ class SimSlider {
             quantity = newQuantity;
 
             if(delta < 0) {
-                for (let j=bulletsCollection.length-1; j>newQuantity; j--) {
-                    bullets.removeChild(bulletsCollection[j]);
+                for (let j=0; j>delta; j--) {
+                    bullets.removeChild(bulletsCollection[bulletsCollection.length+j-1]);
                 }
-            } else {
+            } else if (delta > 0) {
                 for (let j=0; j<delta; j++) {
                     bullets.appendChild(createBul());
                 }

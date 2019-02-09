@@ -10,8 +10,8 @@ $font-size-description-info-mv: $base-font-size*1;
 $tran-duration-info: 1s;
 $tran-info-offset: 150px; //not %
 
-$bullet-size: 1.2em;
-$bullet-margin: .8em;
+$bullet-size: 1.1em;
+$bullet-margin: .4em;
 $bullet-border-width: 2px;
 
 .simple-slider {
@@ -189,9 +189,10 @@ $bullet-border-width: 2px;
         width: $bullet-size;
         height: $bullet-size;
         border: $bullet-border-width solid white;
-        border-radius: $bullet-size/2; //calc(#{$bullet-size} + 2px/2)
+        border-radius: $bullet-size/2;
         margin: $bullet-size $bullet-margin 0 $bullet-margin;
         transition: background-color $tran-duration-info;
+        flex-shrink: 0;
 
         &_active {
             background-color: white;
@@ -238,6 +239,10 @@ $bullet-border-width: 2px;
 
         &__description-info {
             font-size: $font-size-description-info-mv;
+        }
+
+        &__bullets {
+            display: none;
         }
 
     }
