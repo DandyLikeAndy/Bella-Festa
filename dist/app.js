@@ -1092,11 +1092,12 @@ class SimSlider {
             this._createBullets();
             this.setActiveBullet();
         }
+
         this._initTouchEvent();
-        this._setAnimateFunc(opts.typeAnimation);
+        this._setAnimateFunc(opts.typeAnimation);//todo: Исправить определение параметра
 
         if (this.slInfoBlock) {
-            this._setInfoAnimateFunc(opts.typeInfoAnimation);//todo: merge into one ???
+            this._setInfoAnimateFunc(opts.typeInfoAnimation);//todo: Исправить определение параметра //todo: merge into one ???
             this._animateInfoBlock();
         }
 
@@ -1192,16 +1193,25 @@ class SimSlider {
 // Private methods
 // ***************************************
 
-    _initElms() {
+    _initElms() {//todo: обработать ошибки загрузки
         const currentItem = this.currentItem,
             firstImg = SimSlider._getImg(currentItem),
             $slEl = this.$slEl;
 
         currentItem._promiseContentLoad = this._loadImg(firstImg); //load first img
-        currentItem.style.zIndex = 1; //todo:will-change
-        this._preLoadImgs(this.currentItemNum); //загружаем остальные фотографии (которые должны подгрузиться в данный момент времени)
+
+        /*if (!firstImg.isLoaded) {
+            this._deleteItems(this.currentItemNum);
+            this.currentItemNum = this.slItems.length - 1;
+            this.currentItem = this.slItems[this.currentItemNum];
+            this._initElms();
+            return;
+        }*/
+        currentItem.style.zIndex = 1;
 
         $slEl.on('click', this._onClick, this);
+
+        this._preLoadImgs(this.currentItemNum); //загружаем остальные фотографии (которые должны подгрузиться в данный момент времени)
     }
 
     //return promise
@@ -1239,7 +1249,7 @@ class SimSlider {
     }
 
 
-    _preLoadImgs(itemNum) {
+    _preLoadImgs(itemNum) {//todo: обработать ошибки загрузки
         let qtPreload = this._qtPreload;
         const slItems = this.slItems;
 
@@ -1404,6 +1414,10 @@ class SimSlider {
                 }
             }
         }
+    }
+
+    _deleteItems(itemNumber) {
+        this.slEl.removeChild(this.slItems[itemNumber]);
     }
 
 // ***************************************
