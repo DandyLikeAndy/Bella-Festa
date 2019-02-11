@@ -981,7 +981,7 @@ document.addEventListener('DOMContentLoaded', function () {
 //todo:
 //01. Stop slider if menu is open
 //02. Hide container-info if menu is open and landscape orientation for mobile version
-//03. Add will-change property for currentItem in _initElms()
+//03. Add will-change property for currentItem in _initSlider()
 
 document.addEventListener('DOMContentLoaded', function () {
 // ------------------------------------------------------------------------
@@ -1031,7 +1031,7 @@ const DefaultStyleAnim = {
 const DefaultValues = {
     SCRIM_COLOR: 'hsla(13, 15%, 66%,.45)',
     QT_PRELOADED: 1, //number of preload items 
-    AUTO_PlAY_DElAY: 5000, //ms
+    AUTO_PlAY_DElAY: 3000, //ms
     TRANS_SPEED: 1000, //transition duration
     IS_AUTO_PlAY: true
 };
@@ -1086,24 +1086,7 @@ class SimSlider {
         //this.currentItem._promiseContentLoad = null;//save promise with result of load content
 
         //initialization
-        this._setScrim();
-        this._initElms();
-        if (this.bullets) {
-            this._createBullets();
-            this.setActiveBullet();
-        }
-
-        this._initTouchEvent();
-        this._setAnimateFunc(opts.typeAnimation);//todo: Исправить определение параметра
-
-        if (this.slInfoBlock) {
-            this._setInfoAnimateFunc(opts.typeInfoAnimation);//todo: Исправить определение параметра //todo: merge into one ???
-            this._animateInfoBlock();
-        }
-
-
-        if(opts.isAutoPlay || DefaultValues.IS_AUTO_PlAY) this.startAutoPlay();
-
+        this._initSlider(opts);
     }
 
 // ***************************************
@@ -1193,25 +1176,60 @@ class SimSlider {
 // Private methods
 // ***************************************
 
-    _initElms() {//todo: обработать ошибки загрузки
+    _initSlider(opts) {
+        this._setScrim();
+
+        this._initElems(opts);
+
+        this.$slEl.on('click', this._onClick, this);
+        this._initTouchEvent();
+
+        this._setAnimateFunc(opts.typeAnimation);
+
+    }
+
+    _initElems(opts) {
         const currentItem = this.currentItem,
-            firstImg = SimSlider._getImg(currentItem),
-            $slEl = this.$slEl;
+            firstImg = SimSlider._getImg(currentItem);
+        
+            initOtherEls = initOtherEls.bind(this);
+            errorLoad = errorLoad.bind(this);
 
-        currentItem._promiseContentLoad = this._loadImg(firstImg); //load first img
+            currentItem._promiseContentLoad = this._loadImg(firstImg); //load first img
+            currentItem._promiseContentLoad.then(initOtherEls, errorLoad);
+    
+            function initOtherEls() {
+                currentItem.style.zIndex = 1; 
+            
+                this._preLoadImgs(this.currentItemNum); //загружаем остальные фотографии (которые должны подгрузиться в данный момент времени)
+                
+                this._initBullets(opts);
+                this._initslInfoBlock(opts);
+                if(opts.isAutoPlay || DefaultValues.IS_AUTO_PlAY) this.startAutoPlay();
+            }
+    
+            function errorLoad() {
+                this._deleteItems(this.currentItemNum);
+    
+                this.currentItem = this.slItems[this.slItems.length - 1];
+                this.currentItemNum = this.slItems.length - 1;
+    
+                this._initElems(opts);   
+            }
+    };
 
-        /*if (!firstImg.isLoaded) {
-            this._deleteItems(this.currentItemNum);
-            this.currentItemNum = this.slItems.length - 1;
-            this.currentItem = this.slItems[this.currentItemNum];
-            this._initElms();
-            return;
-        }*/
-        currentItem.style.zIndex = 1;
+    _initBullets() {
+        if (!this.bullets) return;
 
-        $slEl.on('click', this._onClick, this);
+        this._createBullets();
+        this.setActiveBullet();
+    }
 
-        this._preLoadImgs(this.currentItemNum); //загружаем остальные фотографии (которые должны подгрузиться в данный момент времени)
+    _initslInfoBlock(opts) {
+        if (!this.slInfoBlock) return;
+
+        this._setInfoAnimateFunc(opts.typeInfoAnimation);//todo: merge into one ???
+        this._animateInfoBlock();
     }
 
     //return promise
@@ -1249,7 +1267,7 @@ class SimSlider {
     }
 
 
-    _preLoadImgs(itemNum) {//todo: обработать ошибки загрузки
+    _preLoadImgs(itemNum) {
         let qtPreload = this._qtPreload;
         const slItems = this.slItems;
 
@@ -1397,6 +1415,7 @@ class SimSlider {
         function onResize() {
             bullsWidth = bullets.clientWidth;
 
+            console.log(quantity);
             let oldQuantity = quantity,
                 newQuantity = getQuantity(),
                 delta = newQuantity - oldQuantity,
