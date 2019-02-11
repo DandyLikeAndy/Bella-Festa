@@ -1414,13 +1414,13 @@ class SimSlider {
 
         function onResize() {
             bullsWidth = bullets.clientWidth;
-
-            console.log(quantity);
+            console.log(quantity, bullsWidth);
+            if (!bullsWidth) return;
             let oldQuantity = quantity,
                 newQuantity = getQuantity(),
                 delta = newQuantity - oldQuantity,
                 bulletsCollection = bullets.getElementsByClassName(ClassNameEl.BULLETS_ITEM);
-
+            console.log(newQuantity);
             quantity = newQuantity;
 
             if(delta < 0) {
