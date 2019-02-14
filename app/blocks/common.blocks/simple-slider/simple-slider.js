@@ -201,10 +201,11 @@ class SimSlider {
 // ***************************************
 
     _initSlider(opts) {
-        this._setScrim();
 
+        this._setScrim();
         this._initElems(opts);
 
+        //init click and touch interface
         this.$slEl.on('click', this._onClick, this);
         this._initTouchEvent();
 
@@ -214,32 +215,26 @@ class SimSlider {
 
     _initElems(opts) {
         const currentItem = this.currentItem,
-            firstImg = SimSlider._getImg(currentItem);
-        
-            initOtherEls = initOtherEls.bind(this);
-            errorLoad = errorLoad.bind(this);
+            firstImg = SimSlider._getImg(currentItem),
 
-            currentItem._promiseContentLoad = this._loadImg(firstImg); //load first img
-            currentItem._promiseContentLoad.then(initOtherEls, errorLoad);
-    
-            function initOtherEls() {
+            initDependentEls = function () {
                 currentItem.style.zIndex = 1; 
-            
-                this._preLoadImgs(this.currentItemNum); //загружаем остальные фотографии (которые должны подгрузиться в данный момент времени)
-                
+                this._preLoadImgs(this.currentItemNum); //загружаем остальные фотографии (которые должны подгрузиться в данный момент времени)   
                 this._initBullets(opts);
                 this._initslInfoBlock(opts);
                 if(opts.isAutoPlay || DefaultValues.IS_AUTO_PlAY) this.startAutoPlay();
-            }
-    
-            function errorLoad() {
+            }.bind(this),
+
+            errorLoad = function () {
                 this._deleteItems(this.currentItemNum);
-    
                 this.currentItem = this.slItems[this.slItems.length - 1];
                 this.currentItemNum = this.slItems.length - 1;
+                this._initElems(opts); 
+            }.bind(this);
+
+        currentItem._promiseContentLoad = this._loadImg(firstImg); //load first img
+        currentItem._promiseContentLoad.then(initDependentEls, errorLoad);
     
-                this._initElems(opts);   
-            }
     };
 
     _initBullets() {
@@ -438,13 +433,14 @@ class SimSlider {
 
         function onResize() {
             bullsWidth = bullets.clientWidth;
-            console.log(quantity, bullsWidth);
+            
             if (!bullsWidth) return;
+
             let oldQuantity = quantity,
                 newQuantity = getQuantity(),
                 delta = newQuantity - oldQuantity,
                 bulletsCollection = bullets.getElementsByClassName(ClassNameEl.BULLETS_ITEM);
-            console.log(newQuantity);
+            
             quantity = newQuantity;
 
             if(delta < 0) {
