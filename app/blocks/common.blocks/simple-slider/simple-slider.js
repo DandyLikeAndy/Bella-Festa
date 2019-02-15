@@ -111,6 +111,7 @@ class SimSlider {
 
         //initialization
         this._initSlider(opts);
+        console.log('slItems-before ',this.slItems);//temp
     }
 
 // ***************************************
@@ -158,7 +159,7 @@ class SimSlider {
         this._animateMove(dir);
     }
 
-    onAutoPlay() {
+    onAutoPlay() {//todo: error processing - написать ф-ию удаление item + доп. действия
         if(this._isWork) return; //происходит анимация, автовоспроизв будет запущено ф-ией transitionComplete
         
         const currentItem = this.currentItem,
@@ -221,7 +222,7 @@ class SimSlider {
                 currentItem.style.zIndex = 1; 
                 this._preLoadImgs(this.currentItemNum); //загружаем остальные фотографии (которые должны подгрузиться в данный момент времени)   
                 this._initBullets(opts);
-                this._initslInfoBlock(opts);
+                this._initInfoBlock(opts);
                 if(opts.isAutoPlay || DefaultValues.IS_AUTO_PlAY) this.startAutoPlay();
             }.bind(this),
 
@@ -234,7 +235,6 @@ class SimSlider {
 
         currentItem._promiseContentLoad = this._loadImg(firstImg); //load first img
         currentItem._promiseContentLoad.then(initDependentEls, errorLoad);
-    
     };
 
     _initBullets() {
@@ -244,7 +244,7 @@ class SimSlider {
         this.setActiveBullet();
     }
 
-    _initslInfoBlock(opts) {
+    _initInfoBlock(opts) {
         if (!this.slInfoBlock) return;
 
         this._setInfoAnimateFunc(opts.typeInfoAnimation);//todo: merge into one ???
@@ -309,7 +309,12 @@ class SimSlider {
             }
 
             if (img.isLoaded) continue;
+
             item._promiseContentLoad = this._loadImg(img);
+            item._promiseContentLoad.catch( ()=>{//см. onAutoPlay
+                    this._deleteItems(i);
+                    console.log('slItems-after ',this.slItems);//temp
+                } );
             }
 
         });
@@ -396,7 +401,7 @@ class SimSlider {
         this.scrim.style.backgroundColor = item.getAttribute(Attribute.DATA_SCRIM_COLOR) || DefaultValues.SCRIM_COLOR;
     }
 
-    _createBullets() { //todo: handler for resize
+    _createBullets() {
         const bullets = this.bullets;
             
         let bullsWidth = bullets.clientWidth,
