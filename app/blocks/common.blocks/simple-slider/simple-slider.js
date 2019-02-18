@@ -111,7 +111,6 @@ class SimSlider {
 
         //initialization
         this._initSlider(opts);
-        console.log('slItems-before ',this.slItems);//temp
     }
 
 // ***************************************
@@ -143,8 +142,9 @@ class SimSlider {
     }
 
     go(dir) {
+        console.log('go(dir)');
         if (this._isWork) return;
-        if (!SimSlider._getImg(this.currentItem).isLoaded) return;
+        if (!SimSlider._getImg(this.currentItem).isLoaded) return;//теперь не надо
         
         dir = dir || 1;
         this._isWork = true;
@@ -162,7 +162,7 @@ class SimSlider {
     onAutoPlay() {//todo: error processing - написать ф-ию удаление item + доп. действия
         if(this._isWork) return; //происходит анимация, автовоспроизв будет запущено ф-ией transitionComplete
         
-        const currentItem = this.currentItem,
+        let currentItem = this.currentItem,
             nextItem = this.slItems[this._getNextItemNum()],
             currentImg = SimSlider._getImg(currentItem),
             nextImg = SimSlider._getImg(nextItem),
@@ -172,17 +172,26 @@ class SimSlider {
         this._timerAutoPlayID = setTimeout(autoPlay, this._autoPlayDelay);
 
         function autoPlay() {
+            const errorLoadNextItem = function() {
+                    console.log('errorLoadNextItem');
+                    if (this.nextItem) this._deleteItems(this.currentItemNum);
+                    nextItem = this.slItems[ this.currentItemNum-1 === 0 ? (slItems.length - 2) : this.currentItemNum - 2 ];
+                    nextImg = SimSlider._getImg(nextItem),
+                    autoPlay();
+                }.bind(self);
+                
             if(!currentImg.isLoaded) {
                 clearTimeout(self._timerAutoPlayID);
                 currentItem._promiseContentLoad.then(autoPlay);
                 return;
             }
+
             if(!nextImg.isLoaded) {
                 clearTimeout(self._timerAutoPlayID);
-                nextItem._promiseContentLoad.then(autoPlay);
+                nextItem._promiseContentLoad.then(autoPlay, errorLoadNextItem);
                 return;
             }
-            
+
             self.go();
         }
     }
@@ -313,7 +322,6 @@ class SimSlider {
             item._promiseContentLoad = this._loadImg(img);
             item._promiseContentLoad.catch( ()=>{//см. onAutoPlay
                     this._deleteItems(i);
-                    console.log('slItems-after ',this.slItems);//temp
                 } );
             }
 
@@ -350,9 +358,9 @@ class SimSlider {
         let nextItemNum = null;
 
         if (dir === -1) {
-            return nextItemNum = curNum >= slItems.length - 1 ? 0 : curNum + 1;
+            return nextItemNum = curNum >= (slItems.length - 1) ? 0 : curNum + 1;
         } else {
-            return nextItemNum = curNum === 0 ? slItems.length - 1 : curNum - 1;
+            return nextItemNum = curNum === 0 ? (slItems.length - 1) : curNum - 1;
         }
     }
 
