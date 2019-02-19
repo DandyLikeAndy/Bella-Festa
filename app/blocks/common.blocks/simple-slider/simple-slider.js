@@ -143,7 +143,7 @@ class SimSlider {
 
     go(dir) {
         if (this._isWork) return;
-        if (!SimSlider._getImg(this.currentItem).isLoaded) return;
+        if (!this.currentItem.isContentLoaded) return;
         
         dir = dir || 1;
         this._isWork = true;
@@ -162,43 +162,44 @@ class SimSlider {
         if(this._isWork) return; //происходит анимация, автовоспроизв будет запущено ф-ией transitionComplete
         
         const currentItem = this.currentItem,
-            currentImg = SimSlider._getImg(currentItem),
             self = this;
 
         let nextItemNum = this._getNextItemNum(),
-            nextItem = this.slItems[nextItemNum],
-            nextImg = SimSlider._getImg(nextItem);
-
+            nextItem = this.slItems[nextItemNum];
 
         clearTimeout(this._timerAutoPlayID);//д.б. запущен только один таймер - перед запуском следущего отменяем текущий(если сущ)
         this._timerAutoPlayID = setTimeout(autoPlay, this._autoPlayDelay);
 
         function autoPlay() {
-            const errorLoadNextItem = function () {
+
+            /* const errorLoadNextItem = function () {
                 nextItemNum = nextItemNum === 0 ? (this.slItems.length - 1) : nextItemNum - 1;
 
                 if (this.nextItem) {
                     this._deleteItems(this.currentItemNum);
                 }
-
                 this.currentItemNum = this.currentItemNum === 0 ? 0 : this.currentItemNum - 1;
-
                 nextItem = this.slItems[nextItemNum];
                 nextImg = SimSlider._getImg(nextItem);
 
-                nextItem._promiseContentLoad = this._loadImg(nextImg);
-                nextItem._promiseContentLoad.then(autoPlay, autoPlay);
-            }.bind(self);
+                if (!nextImg.isLoaded) {
+                    nextItem._promiseContentLoad = this._loadContent(nextItem);
+                    nextItem._promiseContentLoad.then(autoPlay, autoPlay);
+                    return;
+                }
+                autoPlay();
+
+            }.bind(self); */
                 
-            if(!currentImg.isLoaded) {
+            if(!currentItem.isContentLoaded) {
                 clearTimeout(self._timerAutoPlayID);
                 currentItem._promiseContentLoad.then(autoPlay);
                 return;
             }
 
-            if(!nextImg.isLoaded) {
+            if(!nextItem.isContentLoaded) {
                 clearTimeout(self._timerAutoPlayID);
-                nextItem._promiseContentLoad.then(autoPlay, errorLoadNextItem);
+                nextItem._promiseContentLoad.then(autoPlay/* , errorLoadNextItem */);
                 return;
             }
 
@@ -243,17 +244,17 @@ class SimSlider {
                 this._initBullets(opts);
                 this._initInfoBlock(opts);
                 if(opts.isAutoPlay || DefaultValues.IS_AUTO_PlAY) this.startAutoPlay();
-            }.bind(this),
+            }.bind(this)/* ,
 
             errorLoad = function () {
                 this._deleteItems(this.currentItemNum);
                 this.currentItem = this.slItems[this.slItems.length - 1];
                 this.currentItemNum = this.slItems.length - 1;
                 this._initElems(opts); 
-            }.bind(this);
+            }.bind(this) */;
 
-        currentItem._promiseContentLoad = this._loadImg(firstImg); //load first img
-        currentItem._promiseContentLoad.then(initDependentEls, errorLoad);
+        currentItem._promiseContentLoad = this._loadContent(currentItem); //load first img
+        currentItem._promiseContentLoad.then(initDependentEls/* , errorLoad */);
     };
 
     _initBullets() {
@@ -271,16 +272,18 @@ class SimSlider {
     }
 
     //return promise
-    _loadImg(img) {
-        const src = img.getAttribute(Attribute.DATA_IMG_SRC),
+    _loadContent(item) { //todo: catching error
+        const img = SimSlider._getImg(item),
+            src = img.getAttribute(Attribute.DATA_IMG_SRC),
             imgLoad = document.createElement('img');
 
         img.style.opacity = 0;
 
-        return new Promise((resolve, rejected) => {
+        item._promiseContentLoad = new Promise((resolve, rejected) => {
             if (!src) { //если загружено, просто показываем - уже как фоновое изображение
                 img.style.opacity = 1;
-                img.isLoaded = true;
+                img.isLoaded = true;//temp
+                item.isContentLoaded = true;
                 resolve({src, img});
                 return;
             }
@@ -293,15 +296,18 @@ class SimSlider {
                 img.style.backgroundImage = "url(" + src + ")";
                 img.setAttribute(Attribute.DATA_IMG_SRC, '');
                 img.style.opacity = '';
-                img.isLoaded = true;
-                resolve({src, img});
+                img.isLoaded = true;//temp
+                item.isContentLoaded = true;
+                resolve({item, src});
             }
 
             function onError() {
-                rejected({src, img});
+                rejected({item, src});
             }
 
         });
+
+        return item._promiseContentLoad;
     }
 
 
@@ -316,24 +322,21 @@ class SimSlider {
             for (let i = itemNum - qtPreload; i <= itemNum + qtPreload; i++) {
             if (i === itemNum) continue; // т.к.текущ. изобр загружено
 
-            let item = slItems[i],
-                img = item && SimSlider._getImg(slItems[i]);
+            let item = slItems[i];
 
             if (!item && i < 0) {
                 item = slItems[slItems.length + i];
-                img = SimSlider._getImg(item);
             } else if (!item && i > 0) {
                 item = slItems[i - slItems.length];
-                img = SimSlider._getImg(item);
             }
 
-            if (img.isLoaded) continue;
+            if (item.isContentLoaded) continue;
 
-            item._promiseContentLoad = this._loadImg(img);
-            item._promiseContentLoad.catch( ()=>{
+            item._promiseContentLoad = this._loadContent(item);
+            /* item._promiseContentLoad.catch( ()=>{
                     this._deleteItems(i);
                     console.log('удалаю item - _preLoadImgs');
-                } );
+                } ); */
             }
 
         });
@@ -480,11 +483,14 @@ class SimSlider {
 
     _deleteItems(itemNumber) {
         const bullets = this.bullets;
+        console.log('slEl ', this.slEl);
+        console.log('slItem ', this.slItems[itemNumber]);
+        console.log('NItem ', itemNumber);
         this.slEl.removeChild(this.slItems[itemNumber]);
 
         if (bullets) {
             const bulletsCollection = bullets.getElementsByClassName(ClassNameEl.BULLETS_ITEM);
-            bullets.removeChild(bulletsCollection[bulletsCollection.length-1]);
+                if (bulletsCollection) bullets.removeChild(bulletsCollection[bulletsCollection.length-1]);
         }
 
     }
