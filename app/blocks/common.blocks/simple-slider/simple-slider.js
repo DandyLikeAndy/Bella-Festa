@@ -142,9 +142,8 @@ class SimSlider {
     }
 
     go(dir) {
-        console.log('go(dir)');
         if (this._isWork) return;
-        if (!SimSlider._getImg(this.currentItem).isLoaded) return;//теперь не надо
+        if (!SimSlider._getImg(this.currentItem).isLoaded) return;
         
         dir = dir || 1;
         this._isWork = true;
@@ -162,23 +161,34 @@ class SimSlider {
     onAutoPlay() {//todo: error processing - написать ф-ию удаление item + доп. действия
         if(this._isWork) return; //происходит анимация, автовоспроизв будет запущено ф-ией transitionComplete
         
-        let currentItem = this.currentItem,
-            nextItem = this.slItems[this._getNextItemNum()],
+        const currentItem = this.currentItem,
             currentImg = SimSlider._getImg(currentItem),
-            nextImg = SimSlider._getImg(nextItem),
             self = this;
+
+        let nextItemNum = this._getNextItemNum(),
+            nextItem = this.slItems[nextItemNum],
+            nextImg = SimSlider._getImg(nextItem);
+
 
         clearTimeout(this._timerAutoPlayID);//д.б. запущен только один таймер - перед запуском следущего отменяем текущий(если сущ)
         this._timerAutoPlayID = setTimeout(autoPlay, this._autoPlayDelay);
 
         function autoPlay() {
-            const errorLoadNextItem = function() {
-                    console.log('errorLoadNextItem');
-                    if (this.nextItem) this._deleteItems(this.currentItemNum);
-                    nextItem = this.slItems[ this.currentItemNum-1 === 0 ? (slItems.length - 2) : this.currentItemNum - 2 ];
-                    nextImg = SimSlider._getImg(nextItem),
-                    autoPlay();
-                }.bind(self);
+            const errorLoadNextItem = function () {
+                nextItemNum = nextItemNum === 0 ? (this.slItems.length - 1) : nextItemNum - 1;
+
+                if (this.nextItem) {
+                    this._deleteItems(this.currentItemNum);
+                }
+
+                this.currentItemNum = this.currentItemNum === 0 ? 0 : this.currentItemNum - 1;
+
+                nextItem = this.slItems[nextItemNum];
+                nextImg = SimSlider._getImg(nextItem);
+
+                nextItem._promiseContentLoad = this._loadImg(nextImg);
+                nextItem._promiseContentLoad.then(autoPlay, autoPlay);
+            }.bind(self);
                 
             if(!currentImg.isLoaded) {
                 clearTimeout(self._timerAutoPlayID);
@@ -229,7 +239,7 @@ class SimSlider {
 
             initDependentEls = function () {
                 currentItem.style.zIndex = 1; 
-                this._preLoadImgs(this.currentItemNum); //загружаем остальные фотографии (которые должны подгрузиться в данный момент времени)   
+                this._preLoadImgs(this.currentItemNum); //загружаем остальные фотографии (которые должны подгрузиться в данный момент времени)
                 this._initBullets(opts);
                 this._initInfoBlock(opts);
                 if(opts.isAutoPlay || DefaultValues.IS_AUTO_PlAY) this.startAutoPlay();
@@ -261,7 +271,7 @@ class SimSlider {
     }
 
     //return promise
-    _loadImg(img) { //todo rejected
+    _loadImg(img) {
         const src = img.getAttribute(Attribute.DATA_IMG_SRC),
             imgLoad = document.createElement('img');
 
@@ -320,8 +330,9 @@ class SimSlider {
             if (img.isLoaded) continue;
 
             item._promiseContentLoad = this._loadImg(img);
-            item._promiseContentLoad.catch( ()=>{//см. onAutoPlay
+            item._promiseContentLoad.catch( ()=>{
                     this._deleteItems(i);
+                    console.log('удалаю item - _preLoadImgs');
                 } );
             }
 
@@ -354,7 +365,6 @@ class SimSlider {
     _getNextItemNum(dir) {
         const curNum = this.currentItemNum,
             slItems = this.slItems;
-
         let nextItemNum = null;
 
         if (dir === -1) {
@@ -469,7 +479,14 @@ class SimSlider {
     }
 
     _deleteItems(itemNumber) {
+        const bullets = this.bullets;
         this.slEl.removeChild(this.slItems[itemNumber]);
+
+        if (bullets) {
+            const bulletsCollection = bullets.getElementsByClassName(ClassNameEl.BULLETS_ITEM);
+            bullets.removeChild(bulletsCollection[bulletsCollection.length-1]);
+        }
+
     }
 
 // ***************************************
