@@ -27,6 +27,6 @@
     "mathsass": "^0.10.1"
   },
   "dependencies": {
-    "npm": "^6.2.0"
+    "npm": "^6.8.0"
   }
 }

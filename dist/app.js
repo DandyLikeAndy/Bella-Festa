@@ -1030,7 +1030,7 @@ const DefaultStyleAnim = {
 
 const DefaultValues = {
     SCRIM_COLOR: 'hsla(13, 15%, 66%,.45)',
-    QT_PRELOADED: 1, //number of preload items 
+    QT_PRELOADED: 2, //number of preload items 
     AUTO_PlAY_DElAY: 3000, //ms
     TRANS_SPEED: 1000, //transition duration
     IS_AUTO_PlAY: true
@@ -1119,7 +1119,7 @@ class SimSlider {
 
     go(dir) {
         if (this._isWork) return;
-        if (!this.currentItem.isContentLoaded) return;
+        if (!this.currentItem.isContentLoaded) return;//!!!!!!!!!!!!!nextItem????????????????
         
         dir = dir || 1;
         this._isWork = true;
@@ -1130,11 +1130,15 @@ class SimSlider {
         this.currentItem.style.zIndex = 2;
         //init for next item
         this.nextItem.style.zIndex = 1;
+        console.log('currentItemNum= ', this.currentItemNum);//temp
+        console.log(this.currentItem.dataset.num);//temp
+        console.log(this.nextItem.dataset.num);//temp
 
         this._animateMove(dir);
+
     }
 
-    onAutoPlay() {//todo: error processing - написать ф-ию удаление item + доп. действия
+    onAutoPlay() {
         if(this._isWork) return; //происходит анимация, автовоспроизв будет запущено ф-ией transitionComplete
 
         const autoPlay = function autoPlay() {
@@ -1142,6 +1146,9 @@ class SimSlider {
             const currentItem = this.currentItem;
             let nextItemNum = this._getNextItemNum(),
                 nextItem = this.slItems[nextItemNum];
+
+                console.log('onAutoPlay nextItemNum ', nextItemNum); //temp
+                console.log('onAutoPlay slItems ', this.slItems); //temp
             /* const errorLoadNextItem = function () {
                 //nextItemNum = nextItemNum === 0 ? (this.slItems.length - 1) : nextItemNum - 1;
                 //this.currentItemNum = this.currentItemNum === 0 ? 0 : this.currentItemNum - 1;
@@ -1215,14 +1222,14 @@ class SimSlider {
                 this._initBullets(opts);
                 this._initInfoBlock(opts);
                 if(opts.isAutoPlay || DefaultValues.IS_AUTO_PlAY) this.startAutoPlay();
-            }.bind(this) ,
+            }.bind(this),
 
             errorLoad = function () {
                 this._initElems(opts); 
-            }.bind(this) ;
+            }.bind(this);
 
-        currentItem._promiseContentLoad = this._loadContent(currentItem); //load first img
-        currentItem._promiseContentLoad.then(initDependentEls , errorLoad );
+        this._loadContent(currentItem); //load first img
+        currentItem._promiseContentLoad.then(initDependentEls , errorLoad);
     };
 
     _initBullets() {
@@ -1235,7 +1242,7 @@ class SimSlider {
     _initInfoBlock(opts) {
         if (!this.slInfoBlock) return;
 
-        this._setInfoAnimateFunc(opts.typeInfoAnimation);//todo: merge into one ???
+        this._setInfoAnimateFunc(opts.typeInfoAnimation);
         this._animateInfoBlock();
     }
 
@@ -1271,6 +1278,7 @@ class SimSlider {
             }
 
             function onError() {
+                console.log('deleteItems', item); //temp
                 self._deleteItems(item);
                 rejected({item, src});
             }
@@ -1283,37 +1291,29 @@ class SimSlider {
 
     _preLoadImgs(itemNum) {
         let qtPreload = this._qtPreload,
-            slItems = this.slItems;
-
+            slItems = [].slice.call(this.slItems);
+            console.log('slItemsArr ', slItems); //temp
         if (qtPreload > slItems.length - 1) qtPreload = slItems.length - 1;
-
-        this.currentItem._promiseContentLoad.then(() => {
+        console.log('qtPreload= ', qtPreload); //temp
 
             for (let i = itemNum - qtPreload; i <= itemNum + qtPreload; i++) {
-                if (i === itemNum) continue; // т.к.текущ. изобр загружено
+                if (i === itemNum) continue; //т.к.текущ. изобр загружено
 
                 let item = slItems[i];
-
+                console.log('preLoadImgs i= ', i); //temp
                 if (!item && i < 0) {
                     item = slItems[slItems.length + i];
                 } else if (!item && i > 0) {
                     item = slItems[i - slItems.length];
                 }
-
+                console.log('preLoadImgs item ->', item); //temp
                 if (item.isContentLoaded) continue;
 
-                this._loadContent(item).catch(() => this._preLoadImgs(itemNum));
-
-                /* item._promiseContentLoad.catch( ()=>{
-                        this._deleteItems(i);
-                        console.log('удалаю item - _preLoadImgs');
-                    } ); */
+                this._loadContent(item);
+                //this._loadContent(item).catch(() => this._preLoadImgs(itemNum));
             }
 
-        });
-
     }
-
 
     _onClick(e) { 
         if (e.target.closest('.' + ClassNameEl.BUTTON_PLAY)) {
@@ -1454,8 +1454,9 @@ class SimSlider {
 
     _deleteItems(item) {
         const bullets = this.bullets;
-        console.log('slEl ', this.slEl);
-        console.log('slItem ', item);
+
+        console.log('slEl ', this.slEl);//temp
+        console.log('slItem ', item);//temp
 
         this.slEl.removeChild(item);
 
@@ -1468,7 +1469,12 @@ class SimSlider {
             this.currentItemNum = this._getNextItemNum();
             this.currentItem = this.slItems[this.currentItemNum];
         } else {
-            this.currentItemNum = this.currentItemNum === 0 ? 0 : this.currentItemNum--;
+            this.currentItemNum = this.currentItemNum === 0 ? 0 : this.currentItemNum - 1;//!!!FIX!!!!!
+            console.log('currentItemNum--', this.currentItemNum); //temp
+            if (this.nextItemNum) {
+                this.nextItemNum--;
+                console.log('nextItemNum--'); //temp
+            };
             /*let items = [].slice.call(this.slItems),
             itemNumber = items.indexOf(item);*/
 
@@ -1508,7 +1514,7 @@ class SimSlider {
                         $animEl = animEl._$el;
 
                     if (e.target === animEl && e.propertyName !== 'opacity') return; //todo: audit e.propertyName != 'opacity'
-                    console.log('transitionComplete');
+                    console.log('transitionComplete');//temp
                     $animEl.off('transitionend.fade');
                     //reset style for current item after loading nextItem content if nextItem is loaded
                     nextAnimEl._promiseContentLoad.then( () =>{ //todo: protected???
