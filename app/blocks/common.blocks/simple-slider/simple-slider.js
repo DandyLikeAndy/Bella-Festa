@@ -160,25 +160,16 @@ class SimSlider {
 
     onAutoPlay() {//todo: error processing - написать ф-ию удаление item + доп. действия
         if(this._isWork) return; //происходит анимация, автовоспроизв будет запущено ф-ией transitionComplete
-        
-        const currentItem = this.currentItem,
-            self = this;
 
-        let nextItemNum = this._getNextItemNum(),
-            nextItem = this.slItems[nextItemNum];
+        const autoPlay = function autoPlay() {
 
-        clearTimeout(this._timerAutoPlayID);//д.б. запущен только один таймер - перед запуском следущего отменяем текущий(если сущ)
-        this._timerAutoPlayID = setTimeout(autoPlay, this._autoPlayDelay);
-
-        function autoPlay() {
-
+            const currentItem = this.currentItem;
+            let nextItemNum = this._getNextItemNum(),
+                nextItem = this.slItems[nextItemNum];
             /* const errorLoadNextItem = function () {
-                nextItemNum = nextItemNum === 0 ? (this.slItems.length - 1) : nextItemNum - 1;
+                //nextItemNum = nextItemNum === 0 ? (this.slItems.length - 1) : nextItemNum - 1;
+                //this.currentItemNum = this.currentItemNum === 0 ? 0 : this.currentItemNum - 1;
 
-                if (this.nextItem) {
-                    this._deleteItems(this.currentItemNum);
-                }
-                this.currentItemNum = this.currentItemNum === 0 ? 0 : this.currentItemNum - 1;
                 nextItem = this.slItems[nextItemNum];
                 nextImg = SimSlider._getImg(nextItem);
 
@@ -190,21 +181,25 @@ class SimSlider {
                 autoPlay();
 
             }.bind(self); */
-                
+
             if(!currentItem.isContentLoaded) {
-                clearTimeout(self._timerAutoPlayID);
+                clearTimeout(this._timerAutoPlayID);
                 currentItem._promiseContentLoad.then(autoPlay);
                 return;
             }
-
             if(!nextItem.isContentLoaded) {
-                clearTimeout(self._timerAutoPlayID);
-                nextItem._promiseContentLoad.then(autoPlay/* , errorLoadNextItem */);
+                clearTimeout(this._timerAutoPlayID);
+                nextItem._promiseContentLoad.finally(autoPlay);
                 return;
             }
+            this.go();
+        }.bind(this);
 
-            self.go();
-        }
+
+        clearTimeout(this._timerAutoPlayID);//д.б. запущен только один таймер - перед запуском следущего отменяем текущий(если сущ)
+        this._timerAutoPlayID = setTimeout(autoPlay, this._autoPlayDelay);
+
+
     }
 
     setActiveBullet() {
@@ -244,17 +239,14 @@ class SimSlider {
                 this._initBullets(opts);
                 this._initInfoBlock(opts);
                 if(opts.isAutoPlay || DefaultValues.IS_AUTO_PlAY) this.startAutoPlay();
-            }.bind(this)/* ,
+            }.bind(this) ,
 
             errorLoad = function () {
-                this._deleteItems(this.currentItemNum);
-                this.currentItem = this.slItems[this.slItems.length - 1];
-                this.currentItemNum = this.slItems.length - 1;
                 this._initElems(opts); 
-            }.bind(this) */;
+            }.bind(this) ;
 
         currentItem._promiseContentLoad = this._loadContent(currentItem); //load first img
-        currentItem._promiseContentLoad.then(initDependentEls/* , errorLoad */);
+        currentItem._promiseContentLoad.then(initDependentEls , errorLoad );
     };
 
     _initBullets() {
@@ -275,7 +267,8 @@ class SimSlider {
     _loadContent(item) { //todo: catching error
         const img = SimSlider._getImg(item),
             src = img.getAttribute(Attribute.DATA_IMG_SRC),
-            imgLoad = document.createElement('img');
+            imgLoad = document.createElement('img')
+            self = this;
 
         img.style.opacity = 0;
 
@@ -302,6 +295,7 @@ class SimSlider {
             }
 
             function onError() {
+                self._deleteItems(item);
                 rejected({item, src});
             }
 
@@ -312,31 +306,32 @@ class SimSlider {
 
 
     _preLoadImgs(itemNum) {
-        let qtPreload = this._qtPreload;
-        const slItems = this.slItems;
+        let qtPreload = this._qtPreload,
+            slItems = this.slItems;
 
         if (qtPreload > slItems.length - 1) qtPreload = slItems.length - 1;
 
-        this.currentItem._promiseContentLoad.then( () => {
+        this.currentItem._promiseContentLoad.then(() => {
 
             for (let i = itemNum - qtPreload; i <= itemNum + qtPreload; i++) {
-            if (i === itemNum) continue; // т.к.текущ. изобр загружено
+                if (i === itemNum) continue; // т.к.текущ. изобр загружено
 
-            let item = slItems[i];
+                let item = slItems[i];
 
-            if (!item && i < 0) {
-                item = slItems[slItems.length + i];
-            } else if (!item && i > 0) {
-                item = slItems[i - slItems.length];
-            }
+                if (!item && i < 0) {
+                    item = slItems[slItems.length + i];
+                } else if (!item && i > 0) {
+                    item = slItems[i - slItems.length];
+                }
 
-            if (item.isContentLoaded) continue;
+                if (item.isContentLoaded) continue;
 
-            item._promiseContentLoad = this._loadContent(item);
-            /* item._promiseContentLoad.catch( ()=>{
-                    this._deleteItems(i);
-                    console.log('удалаю item - _preLoadImgs');
-                } ); */
+                this._loadContent(item).catch(() => this._preLoadImgs(itemNum));
+
+                /* item._promiseContentLoad.catch( ()=>{
+                        this._deleteItems(i);
+                        console.log('удалаю item - _preLoadImgs');
+                    } ); */
             }
 
         });
@@ -481,16 +476,26 @@ class SimSlider {
         }
     }
 
-    _deleteItems(itemNumber) {
+    _deleteItems(item) {
         const bullets = this.bullets;
         console.log('slEl ', this.slEl);
-        console.log('slItem ', this.slItems[itemNumber]);
-        console.log('NItem ', itemNumber);
-        this.slEl.removeChild(this.slItems[itemNumber]);
+        console.log('slItem ', item);
+
+        this.slEl.removeChild(item);
 
         if (bullets) {
             const bulletsCollection = bullets.getElementsByClassName(ClassNameEl.BULLETS_ITEM);
-                if (bulletsCollection) bullets.removeChild(bulletsCollection[bulletsCollection.length-1]);
+            if (bulletsCollection.length) bullets.removeChild(bulletsCollection[bulletsCollection.length-1]);
+        }
+
+        if (this.currentItem === item) {
+            this.currentItemNum = this._getNextItemNum();
+            this.currentItem = this.slItems[this.currentItemNum];
+        } else {
+            this.currentItemNum = this.currentItemNum === 0 ? 0 : this.currentItemNum--;
+            /*let items = [].slice.call(this.slItems),
+            itemNumber = items.indexOf(item);*/
+
         }
 
     }
@@ -526,11 +531,12 @@ class SimSlider {
                     const animEl = this.currentItem,
                         $animEl = animEl._$el;
 
-                    if (e.target === animEl && e.propertyName != 'opacity') return; //todo: audit e.propertyName != 'opacity'
+                    if (e.target === animEl && e.propertyName !== 'opacity') return; //todo: audit e.propertyName != 'opacity'
+                    console.log('transitionComplete');
                     $animEl.off('transitionend.fade');
                     //reset style for current item after loading nextItem content if nextItem is loaded
                     nextAnimEl._promiseContentLoad.then( () =>{ //todo: protected???
-                        animEl.style.cssText = 'Z-index: 0';
+                        animEl.style.cssText = ''; //Z-index: 0
                     });
                     //preparation transition for next item
                     this.nextItem.style.willChange = "opacity";
@@ -543,7 +549,7 @@ class SimSlider {
 
                     if (this.bullets) this.setActiveBullet();
             
-                    //triger event of stop animation 
+                    //trigger event of stop animation
                     this._createEventAnimate('stopSlideAnimation', {currentItem: animEl, nextItem: nextAnimEl}); //todo: protected???
                 
                     if (this._isAutoPlayOn) this.onAutoPlay();
