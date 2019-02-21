@@ -168,30 +168,25 @@ class SimSlider {
 
             if(!currentItem.isContentLoaded) {
                 clearTimeout(this._timerAutoPlayID);
-                currentItem._promiseContentLoad.then(autoPlay);
+                if(currentItem._promiseContentLoad || this._loadContent(currentItem)) { //last expression is just download the content
+                    currentItem._promiseContentLoad.finally(autoPlay);
+                }
                 return;
             }
 
             if(!nextItem.isContentLoaded) {
                 clearTimeout(this._timerAutoPlayID);
-
-                if(nextItem._promiseContentLoad) {
+                if(nextItem._promiseContentLoad || this._loadContent(nextItem)) { //last expression is just download the content
                     nextItem._promiseContentLoad.finally(autoPlay);
-                } else {
-                    this._loadContent(nextItem).finally(autoPlay);
                 }
-
                 return;
             }
             this.go();
 
         }.bind(this);
 
-
         clearTimeout(this._timerAutoPlayID);//д.б. запущен только один таймер - перед запуском следущего отменяем текущий(если сущ)
         this._timerAutoPlayID = setTimeout(autoPlay, this._autoPlayDelay);
-
-
     }
 
     setActiveBullet() {
@@ -294,7 +289,7 @@ class SimSlider {
 
     _preLoadContent(itemNum) {
         let qtPreload = this._qtPreload,
-            slItems = [].slice.call(this.slItems);
+            slItems = this.slItems;//[].slice.call(this.slItems);
 
         if (qtPreload*2 > slItems.length - 1) qtPreload = Math.floor((slItems.length - 1)/2);
 
@@ -322,7 +317,7 @@ class SimSlider {
                 item = slItems[i];
             }
             if (item.isContentLoaded) continue;
-            this._loadContent(item);
+            this._loadContent(item).catch( ()=>this._preLoadContent(itemNum) );
         }
 
         for (let i = itemNum+1; i <= itemNum + qtPreload; i++) {
@@ -334,6 +329,7 @@ class SimSlider {
             }
             if (item.isContentLoaded) continue;
             this._loadContent(item);
+            //this._loadContent(item).catch( ()=>this._preLoadContent(itemNum) );
         }
 
     }
@@ -362,12 +358,11 @@ class SimSlider {
     _getNextItemNum(dir) {
         const curNum = this.currentItemNum,
             slItems = this.slItems;
-        let nextItemNum = null;
 
         if (dir === -1) {
-            return nextItemNum = curNum >= (slItems.length - 1) ? 0 : curNum + 1;
+            return curNum >= (slItems.length - 1) ? 0 : curNum + 1;
         } else {
-            return nextItemNum = curNum === 0 ? (slItems.length - 1) : curNum - 1;
+            return curNum === 0 ? (slItems.length - 1) : curNum - 1;
         }
     }
 
