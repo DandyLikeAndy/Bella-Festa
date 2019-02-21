@@ -54,7 +54,7 @@ const DefaultStyleAnim = {
 
 const DefaultValues = {
     SCRIM_COLOR: 'hsla(13, 15%, 66%,.45)',
-    QT_PRELOADED: 2, //number of preload items 
+    QT_PRELOAD: 1, //number of preload items
     AUTO_PlAY_DElAY: 3000, //ms
     TRANS_SPEED: 1000, //transition duration
     IS_AUTO_PlAY: true
@@ -104,7 +104,7 @@ class SimSlider {
         this._isWork = null;
         this._isAutoPlayOn = null;
         this._timerAutoPlayID = null;
-        this._qtPreload = opts.qtPreload || DefaultValues.QT_PRELOADED;
+        this._qtPreload = opts.qtPreload || DefaultValues.QT_PRELOAD;
         this._autoPlayDelay = opts.autoPlayDelay || DefaultValues.AUTO_PlAY_DElAY;
         this._transSpeed = opts.transSpeed || DefaultValues.TRANS_SPEED;
         //this.currentItem._promiseContentLoad = null;//save promise with result of load content
@@ -143,7 +143,7 @@ class SimSlider {
 
     go(dir) {
         if (this._isWork) return;
-        if (!this.currentItem.isContentLoaded) return;//!!!!!!!!!!!!!nextItem????????????????
+        if (!this.currentItem.isContentLoaded) return;
         
         dir = dir || 1;
         this._isWork = true;
@@ -154,52 +154,37 @@ class SimSlider {
         this.currentItem.style.zIndex = 2;
         //init for next item
         this.nextItem.style.zIndex = 1;
-        console.log('currentItemNum= ', this.currentItemNum);//temp
-        console.log(this.currentItem.dataset.num);//temp
-        console.log(this.nextItem.dataset.num);//temp
 
         this._animateMove(dir);
-
     }
 
     onAutoPlay() {
         if(this._isWork) return; //происходит анимация, автовоспроизв будет запущено ф-ией transitionComplete
 
-        const autoPlay = function autoPlay() {
-
+        const autoPlay = function () {
             const currentItem = this.currentItem;
             let nextItemNum = this._getNextItemNum(),
                 nextItem = this.slItems[nextItemNum];
-
-                console.log('onAutoPlay nextItemNum ', nextItemNum); //temp
-                console.log('onAutoPlay slItems ', this.slItems); //temp
-            /* const errorLoadNextItem = function () {
-                //nextItemNum = nextItemNum === 0 ? (this.slItems.length - 1) : nextItemNum - 1;
-                //this.currentItemNum = this.currentItemNum === 0 ? 0 : this.currentItemNum - 1;
-
-                nextItem = this.slItems[nextItemNum];
-                nextImg = SimSlider._getImg(nextItem);
-
-                if (!nextImg.isLoaded) {
-                    nextItem._promiseContentLoad = this._loadContent(nextItem);
-                    nextItem._promiseContentLoad.then(autoPlay, autoPlay);
-                    return;
-                }
-                autoPlay();
-
-            }.bind(self); */
 
             if(!currentItem.isContentLoaded) {
                 clearTimeout(this._timerAutoPlayID);
                 currentItem._promiseContentLoad.then(autoPlay);
                 return;
             }
+
             if(!nextItem.isContentLoaded) {
                 clearTimeout(this._timerAutoPlayID);
-                nextItem._promiseContentLoad.finally(autoPlay);
+
+                if(nextItem._promiseContentLoad) {
+                    nextItem._promiseContentLoad.finally(autoPlay);
+                } else {
+                    this._loadContent(nextItem).finally(autoPlay);
+                }
+
                 return;
             }
             this.go();
+
         }.bind(this);
 
 
@@ -238,11 +223,9 @@ class SimSlider {
 
     _initElems(opts) {
         const currentItem = this.currentItem,
-            firstImg = SimSlider._getImg(currentItem),
-
             initDependentEls = function () {
                 currentItem.style.zIndex = 1; 
-                this._preLoadImgs(this.currentItemNum); //загружаем остальные фотографии (которые должны подгрузиться в данный момент времени)
+                this._preLoadContent(this.currentItemNum); //загружаем остальные фотографии (которые должны подгрузиться в данный момент времени)
                 this._initBullets(opts);
                 this._initInfoBlock(opts);
                 if(opts.isAutoPlay || DefaultValues.IS_AUTO_PlAY) this.startAutoPlay();
@@ -271,7 +254,7 @@ class SimSlider {
     }
 
     //return promise
-    _loadContent(item) { //todo: catching error
+    _loadContent(item) {
         const img = SimSlider._getImg(item),
             src = img.getAttribute(Attribute.DATA_IMG_SRC),
             imgLoad = document.createElement('img')
@@ -282,7 +265,6 @@ class SimSlider {
         item._promiseContentLoad = new Promise((resolve, rejected) => {
             if (!src) { //если загружено, просто показываем - уже как фоновое изображение
                 img.style.opacity = 1;
-                img.isLoaded = true;//temp
                 item.isContentLoaded = true;
                 resolve({src, img});
                 return;
@@ -296,13 +278,11 @@ class SimSlider {
                 img.style.backgroundImage = "url(" + src + ")";
                 img.setAttribute(Attribute.DATA_IMG_SRC, '');
                 img.style.opacity = '';
-                img.isLoaded = true;//temp
                 item.isContentLoaded = true;
                 resolve({item, src});
             }
 
             function onError() {
-                console.log('deleteItems', item); //temp
                 self._deleteItems(item);
                 rejected({item, src});
             }
@@ -312,30 +292,49 @@ class SimSlider {
         return item._promiseContentLoad;
     }
 
-
-    _preLoadImgs(itemNum) {
+    _preLoadContent(itemNum) {
         let qtPreload = this._qtPreload,
             slItems = [].slice.call(this.slItems);
-            console.log('slItemsArr ', slItems); //temp
-        if (qtPreload > slItems.length - 1) qtPreload = slItems.length - 1;
-        console.log('qtPreload= ', qtPreload); //temp
 
-            for (let i = itemNum - qtPreload; i <= itemNum + qtPreload; i++) {
+        if (qtPreload*2 > slItems.length - 1) qtPreload = Math.floor((slItems.length - 1)/2);
+
+           /* for (let i = itemNum - qtPreload; i <= itemNum + qtPreload; i++) {
                 if (i === itemNum) continue; //т.к.текущ. изобр загружено
 
                 let item = slItems[i];
-                console.log('preLoadImgs i= ', i); //temp
+
                 if (!item && i < 0) {
                     item = slItems[slItems.length + i];
                 } else if (!item && i > 0) {
                     item = slItems[i - slItems.length];
                 }
-                console.log('preLoadImgs item ->', item); //temp
+
                 if (item.isContentLoaded) continue;
 
                 this._loadContent(item);
-                //this._loadContent(item).catch(() => this._preLoadImgs(itemNum));
+            }*/
+
+        for (let i = itemNum-1; i >= itemNum - qtPreload; i--) {
+            let item;
+             if (i < 0) {
+                item = slItems[slItems.length + i]
+            } else {
+                item = slItems[i];
             }
+            if (item.isContentLoaded) continue;
+            this._loadContent(item);
+        }
+
+        for (let i = itemNum+1; i <= itemNum + qtPreload; i++) {
+            let item;
+            if (i >= slItems.length) {
+                item = slItems[i - slItems.length]
+            } else {
+                item = slItems[i];
+            }
+            if (item.isContentLoaded) continue;
+            this._loadContent(item);
+        }
 
     }
 
@@ -478,10 +477,6 @@ class SimSlider {
 
     _deleteItems(item) {
         const bullets = this.bullets;
-
-        console.log('slEl ', this.slEl);//temp
-        console.log('slItem ', item);//temp
-
         this.slEl.removeChild(item);
 
         if (bullets) {
@@ -493,15 +488,10 @@ class SimSlider {
             this.currentItemNum = this._getNextItemNum();
             this.currentItem = this.slItems[this.currentItemNum];
         } else {
-            this.currentItemNum = this.currentItemNum === 0 ? 0 : this.currentItemNum - 1;//!!!FIX!!!!!
-            console.log('currentItemNum--', this.currentItemNum); //temp
-            if (this.nextItemNum) {
-                this.nextItemNum--;
-                console.log('nextItemNum--'); //temp
-            };
-            /*let items = [].slice.call(this.slItems),
-            itemNumber = items.indexOf(item);*/
-
+            let items = [].slice.call(this.slItems),
+                itemNumber = items.indexOf(item),
+                currentItemNum = this.currentItemNum;
+            this.currentItemNum = currentItemNum < itemNumber ? currentItemNum : currentItemNum - 1;
         }
 
     }
@@ -538,7 +528,7 @@ class SimSlider {
                         $animEl = animEl._$el;
 
                     if (e.target === animEl && e.propertyName !== 'opacity') return; //todo: audit e.propertyName != 'opacity'
-                    console.log('transitionComplete');//temp
+
                     $animEl.off('transitionend.fade');
                     //reset style for current item after loading nextItem content if nextItem is loaded
                     nextAnimEl._promiseContentLoad.then( () =>{ //todo: protected???
@@ -561,7 +551,7 @@ class SimSlider {
                     if (this._isAutoPlayOn) this.onAutoPlay();
 
                     //preload next imgs
-                    this._preLoadImgs(this.currentItemNum); //todo: protected???
+                    this._preLoadContent(this.currentItemNum); //todo: protected???
                 }
 
             }
