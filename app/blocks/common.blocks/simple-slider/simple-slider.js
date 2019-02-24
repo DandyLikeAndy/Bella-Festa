@@ -293,22 +293,6 @@ class SimSlider {
 
         if (qtPreload*2 > slItems.length - 1) qtPreload = Math.floor((slItems.length - 1)/2);
 
-           /* for (let i = itemNum - qtPreload; i <= itemNum + qtPreload; i++) {
-                if (i === itemNum) continue; //т.к.текущ. изобр загружено
-
-                let item = slItems[i];
-
-                if (!item && i < 0) {
-                    item = slItems[slItems.length + i];
-                } else if (!item && i > 0) {
-                    item = slItems[i - slItems.length];
-                }
-
-                if (item.isContentLoaded) continue;
-
-                this._loadContent(item);
-            }*/
-
         for (let i = itemNum-1; i >= itemNum - qtPreload; i--) {
             let item;
              if (i < 0) {
@@ -415,22 +399,24 @@ class SimSlider {
         const bullets = this.bullets;
         let bullsWidth = bullets.clientWidth,
             self = this,
-            el = null;
-
+            el = null,
+            quantityItems = null,
+            bullWidth =null,
+            quantity = null;
 
         window.addEventListener('resize', onResize);
 
-        if (!bullsWidth) {
+        if (!bullsWidth) { //for mobile
             return;
         } else {
-            bullets.isCreated= true;
-        };
+            bullets.isCreated = true;
+        }
 
         el = createBul();
 
-        let quantityItems = this.slItems.length,
-            bullWidth = getWSpaceEl(el),
-            quantity = getQuantity();
+        quantityItems = this.slItems.length;
+        bullWidth = getWSpaceEl(el);
+        quantity = getQuantity();
 
         for (let i=1; i<quantity; i++) { //i==1 - because one bullet already exist
             bullets.appendChild(createBul());
@@ -440,7 +426,6 @@ class SimSlider {
             const marginLeft = parseInt(getComputedStyle(el).marginLeft),
                 marginRight = parseInt(getComputedStyle(el).marginRight),
                 width = el.offsetWidth;
-                console.log(el, marginLeft);//debug
                 return marginLeft + width + marginRight;
         }
 
@@ -456,18 +441,14 @@ class SimSlider {
         }
 
         function onResize() {
-            console.log(bullets.clientWidth, bullsWidth, bullets.isCreated);//debug
             if (!bullets.clientWidth) return;
             if (bullets.clientWidth && !bullets.isCreated) {
                 self._createBullets();
                 self.setActiveBullet();
                 return;
             }
-            console.log('onResize');//debug
 
-            bullWidth = getWSpaceEl(el); //if the width to change
-
-            console.log(el);//debug
+            if (el) bullWidth = getWSpaceEl(el); //if the width to change
 
             let oldQuantity = quantity,
                 newQuantity = getQuantity(),

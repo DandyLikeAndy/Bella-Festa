@@ -200,9 +200,7 @@ $bullet-border-width: 2px;
             background-color: white;
         }
     }
-    
-    
-    
+
 
     //------------------------------------------------------------------------------
     //  mobile version
@@ -241,6 +239,7 @@ $bullet-border-width: 2px;
 
         &__description-info {
             font-size: $font-size-description-info-mv;
+            padding: 0 1em;
         }
 
         &__bullets {
