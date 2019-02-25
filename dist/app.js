@@ -1134,6 +1134,31 @@ class SimSlider {
         this._animateMove(dir);
     }
 
+    moveTo(itemNumber) {
+        if (this._isWork) return;//todo
+
+        const dir = (itemNumber < this.currentItemNum) ? 1 : -1;
+        this._isWork = true;
+
+        clearTimeout(this._timerAutoPlayID);
+
+        this.nextItem = this.slItems[itemNumber];
+        this.nextItemNum = itemNumber;
+        
+        if(!this.nextItem.isContentLoaded && (this.nextItem._promiseContentLoad || this._loadContent(this.nextItem) )) { //last expression is just download the content
+            this.nextItem._promiseContentLoad.finally( ()=>this.moveTo(itemNumber) );
+            this._isWork = false;
+            return;
+        }
+
+        //init for current item
+        this.currentItem.style.zIndex = 2;
+        //init for next item
+        this.nextItem.style.zIndex = 1;
+
+        this._animateMove(dir);
+    }
+
     onAutoPlay() {
         if(this._isWork) return; //происходит анимация, автовоспроизв будет запущено ф-ией transitionComplete
 
@@ -1303,13 +1328,20 @@ class SimSlider {
             return;
 
         } else if (e.target.closest('.' + ClassNameEl.BUTTON_NEXT)) {
-            let dir = 1;
+            const dir = 1;
             this.go(dir);
             
         } else if (e.target.closest('.' + ClassNameEl.BUTTON_PREV)) {
-            let dir = -1;
+            const dir = -1;
             this.go(dir);
-        }
+
+        } else if (e.target.closest('.' + ClassNameEl.BULLETS_ITEM)) {
+            const item = e.target.closest('.' + ClassNameEl.BULLETS_ITEM),
+                items = [].slice.call(this.bullets.children),
+                itemNumber =items.length - 1 - items.indexOf(item);
+            
+            this.moveTo(itemNumber);
+        } 
     }
 
     _initTouchEvent() {//todo

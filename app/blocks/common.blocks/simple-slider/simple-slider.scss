@@ -199,6 +199,10 @@ $bullet-border-width: 2px;
         &_active {
             background-color: white;
         }
+        &:hover {
+            background-color: rgba(255,255,255, .3);
+            cursor: pointer;
+        }
     }
 
 

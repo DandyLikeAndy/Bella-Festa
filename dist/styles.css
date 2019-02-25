@@ -518,6 +518,11 @@ ol {
   background-color: white;
 }
 
+.simple-slider__bullets-item:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+}
+
 @media (max-width: 768px) {
   .simple-slider__button {
     font-size: 25px;
