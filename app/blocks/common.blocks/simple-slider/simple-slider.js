@@ -159,12 +159,15 @@ class SimSlider {
     }
 
     moveTo(itemNumber) {
-        if (this._isWork) return;//todo
-
+        if (this._isWork) return;
+        if (itemNumber === this.currentItemNum) return;
+        
         const dir = (itemNumber < this.currentItemNum) ? 1 : -1;
+
         this._isWork = true;
 
         clearTimeout(this._timerAutoPlayID);
+
 
         this.nextItem = this.slItems[itemNumber];
         this.nextItemNum = itemNumber;
@@ -362,7 +365,9 @@ class SimSlider {
         } else if (e.target.closest('.' + ClassNameEl.BULLETS_ITEM)) {
             const item = e.target.closest('.' + ClassNameEl.BULLETS_ITEM),
                 items = [].slice.call(this.bullets.children),
-                itemNumber =items.length - 1 - items.indexOf(item);
+                itemNumber = items.length - 1 - items.indexOf(item);
+
+            if (itemNumber === this.currentItemNum) return;
             
             this.moveTo(itemNumber);
         } 
