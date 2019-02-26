@@ -3,9 +3,8 @@
 // ------------------------------------------------------------------------
 
 //todo:
-//01. Stop slider if menu is open
-//02. Hide container-info if menu is open and landscape orientation for mobile version
-//03. Add will-change property for currentItem in _initSlider()
+//01. Stop slider if menu is open - for manager
+//02. Hide container-info if menu is open and landscape orientation for mobile version -- for manager
 
 document.addEventListener('DOMContentLoaded', function () {
 // ------------------------------------------------------------------------
@@ -373,7 +372,32 @@ class SimSlider {
         } 
     }
 
-    _initTouchEvent() {//todo
+    _initTouchEvent() {
+        let startTouchX = null,
+            startTouchY = null;
+
+        this.$slEl.on('touchstart', startTouchMove);
+        this.$slEl.on('touchmove', touchMove, this);
+        this.$slEl.on('touchend', cancelTouchMove);
+
+
+        function startTouchMove(e) {
+            startTouchX = e.targetTouches[0].clientX;
+            startTouchY = e.targetTouches[0].clientY;
+        }
+
+        function cancelTouchMove(e) {
+            startTouchX = null;
+            startTouchY = null;
+        }
+
+        function touchMove(e) {
+            if (e.targetTouches.length != 1) return;
+            let deltaX = startTouchX - e.targetTouches[0].clientX,
+                deltaY = startTouchY - e.targetTouches[0].clientY;
+            if (Math.abs(deltaX) < 30 || Math.abs(deltaY) > 25) return;
+            this.go(deltaX > 0 ? 1 : -1);
+        }
     };
 
     _getNextItemNum(dir) {
