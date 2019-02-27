@@ -74,8 +74,11 @@ const ElU = window.ElU; //$elem
 // Class Definition
 // ------------------------------------------------------------------------
 
-class SimSlider {
-
+    class SimSlider {
+    /**
+     *
+     * @param opts
+     */
     constructor(opts) {
         const slEl = opts.slEl;
 
@@ -140,6 +143,10 @@ class SimSlider {
         }
     }
 
+    /**
+     *
+     * @param dir
+     */
     go(dir) {
         if (this._isWork) return;
         if (!this.currentItem.isContentLoaded) return;
@@ -157,6 +164,10 @@ class SimSlider {
         this._animateMove(dir);
     }
 
+    /**
+     *
+     * @param itemNumber
+     */
     moveTo(itemNumber) {
         if (this._isWork) return;
         if (itemNumber === this.currentItemNum) return;
@@ -185,6 +196,9 @@ class SimSlider {
         this._animateMove(dir);
     }
 
+    /**
+     *
+     */
     onAutoPlay() {
         if(this._isWork) return; //происходит анимация, автовоспроизв будет запущено ф-ией transitionComplete
 
@@ -216,6 +230,9 @@ class SimSlider {
         this._timerAutoPlayID = setTimeout(autoPlay, this._autoPlayDelay);
     }
 
+    /**
+     *
+     */
     setActiveBullet() {
         const bulNumber = this.slItems.length - 1 - this.currentItemNum;
         let exActive = this.bullets.getElementsByClassName(StatusClassName.BULLET_ACTIVE)[0],
@@ -230,6 +247,11 @@ class SimSlider {
 // Private methods
 // ***************************************
 
+    /**
+     *
+     * @param opts
+     * @private
+     */
     _initSlider(opts) {
 
         this._setScrim();
@@ -243,6 +265,11 @@ class SimSlider {
 
     }
 
+    /**
+     *
+     * @param opts
+     * @private
+     */
     _initElems(opts) {
         const currentItem = this.currentItem,
             initDependentEls = function () {
@@ -261,6 +288,10 @@ class SimSlider {
         currentItem._promiseContentLoad.then(initDependentEls , errorLoad);
     };
 
+    /**
+     *
+     * @private
+     */
     _initBullets() {
         if (!this.bullets) return;
 
@@ -275,11 +306,17 @@ class SimSlider {
         this._animateInfoBlock();
     }
 
+    /**
+     *
+     * @param item
+     * @returns {Promise|Promise<any>}
+     * @private
+     */
     //return promise
     _loadContent(item) {
         const img = SimSlider._getImg(item),
             src = img.getAttribute(Attribute.DATA_IMG_SRC),
-            imgLoad = document.createElement('img')
+            imgLoad = document.createElement('img'),
             self = this;
 
         img.style.opacity = 0;
@@ -314,6 +351,11 @@ class SimSlider {
         return item._promiseContentLoad;
     }
 
+    /**
+     *
+     * @param itemNum
+     * @private
+     */
     _preLoadContent(itemNum) {
         let qtPreload = this._qtPreload,
             slItems = this.slItems;//[].slice.call(this.slItems);
@@ -424,12 +466,23 @@ class SimSlider {
         }
     }
 
+    /**
+     *
+     * @param typeAnimation
+     * @private
+     */
     _setAnimateFunc(typeAnimation) {
         const typeAn = typeAnimation || DefaultStyleAnim.SLIDE,
             stSlideAnimation = SimSlider._stSlideAnimate[typeAn];
 
         this._animateMove = stSlideAnimation instanceof Function ? stSlideAnimation : SimSlider._stSlideAnimate[DefaultStyleAnim.SLIDE];
     }
+
+    /**
+     *
+     * @param typeInfoAnimation
+     * @private
+     */
 
     _setInfoAnimateFunc(typeInfoAnimation) {
         const typeAn = typeInfoAnimation || DefaultStyleAnim.INFO,
@@ -438,24 +491,40 @@ class SimSlider {
         this._animateInfoBlock = stInfoAnimation instanceof Function ? stInfoAnimation : SimSlider._stInfoAnimate[DefaultStyleAnim.INFO];
     }
 
+    /**
+     *
+     * @param type
+     * @param detail
+     * @private
+     */
     _createEventAnimate(type, detail) {
         this.$slEl.triggerCustomEvent(type, detail);
     }
 
+    /**
+     *
+     * @private
+     */
     _setTextInfoBlock() {
-        const currentItem = this.currentItem,
-            textTitle = currentItem.getAttribute(Attribute.DATA_INFO_TITLE),
-            textDescr = currentItem.getAttribute(Attribute.DATA_INFO_DESCRIPTION);
+        const currentItem = this.currentItem;
 
-        this.titleInfoBlock.innerHTML = textTitle;
-        this.descrInfoBlock.innerHTML = textDescr;
+        this.titleInfoBlock.innerHTML = currentItem.getAttribute(Attribute.DATA_INFO_TITLE);
+        this.descrInfoBlock.innerHTML = currentItem.getAttribute(Attribute.DATA_INFO_DESCRIPTION);
     }
-    
+
+    /**
+     *
+     * @private
+     */
     _setScrim() {
         const item = this.nextItem || this.currentItem; //this.currentItem - for init slider
         this.scrim.style.backgroundColor = item.getAttribute(Attribute.DATA_SCRIM_COLOR) || DefaultValues.SCRIM_COLOR;
     }
 
+    /**
+     *
+     * @private
+     */
     _createBullets() {
         const bullets = this.bullets;
         let bullsWidth = bullets.clientWidth,
@@ -530,6 +599,11 @@ class SimSlider {
         }
     }
 
+    /**
+     *
+     * @param item
+     * @private
+     */
     _deleteItems(item) {
         const bullets = this.bullets;
         this.slEl.removeChild(item);
@@ -559,7 +633,12 @@ class SimSlider {
 //call OnAutoPlay();
 //set currentItemNum = nextItemNum
 //set currentItem = nextAnimEl;
-//trigger event start/stopSlideAnimation, 
+//trigger event start/stopSlideAnimation,
+    /**
+     *
+     * @returns {{fade: fade}}
+     * @private
+     */
     static get _stSlideAnimate() {
         return {
             fade: function () {
@@ -613,6 +692,11 @@ class SimSlider {
         }
     }
 
+    /**
+     *
+     * @returns {{shift: shift}}
+     * @private
+     */
     static get _stInfoAnimate() {
         return {
             shift: function () { 
@@ -640,12 +724,22 @@ class SimSlider {
         }
     }
 
-
-static _getImg(el) {
+    /**
+     *
+     * @param el
+     * @returns {Node | Element}
+     * @private
+     */
+    static _getImg(el) {
      return el.getElementsByClassName(ClassNameEl.IMG)[0];
 }
 
-static reflow(el) {
+    /**
+     *
+     * @param el
+     * @returns {number}
+     */
+    static reflow(el) {
     return el.offsetHeight;
 }
 
