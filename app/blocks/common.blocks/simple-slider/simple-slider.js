@@ -40,7 +40,7 @@ const Attribute = {
     DATA_SCRIM_COLOR: 'data-scrim-color'
 };
 
-//for info animation
+//for infoBlock animation
 const ClassElModifier = {
     INFO_TITLE_INITANIM: `${ClassNameEl.INFO_TITLE}_initAnim`,
     INFO_DESCRIPTION_INITANIM: `${ClassNameEl.INFO_DESCRIPTION}_initAnim`
@@ -76,8 +76,15 @@ const ElU = window.ElU; //$elem
 
     class SimSlider {
     /**
-     *
-     * @param opts
+     * 
+     * @param {Object} opts - options
+     * @param {HTMLElement} opt.slEl - slider element
+     * @param {Number} opt.qtPreload - quantity preload items
+     * @param {Number} opt.autoPlayDelay - Delay for auto play (sec) 
+     * @param {Number} opt.transSpeed - duration of animation item (sec)
+     * @param {String} opt.typeAnimation - type(name) of animation 
+     * @param {Boolean} opt.isAutoPlay - start animation after loading slider
+     * @param {String} opt.typeInfoAnimation - type(name) of animation infoBlock
      */
     constructor(opts) {
         const slEl = opts.slEl;
@@ -144,8 +151,8 @@ const ElU = window.ElU; //$elem
     }
 
     /**
-     *
-     * @param dir
+     * slider movement to the left/right
+     * @param {number} [dir] direction of movement: 1 -> right, -1 -> left, default - right
      */
     go(dir) {
         if (this._isWork) return;
@@ -165,8 +172,8 @@ const ElU = window.ElU; //$elem
     }
 
     /**
-     *
-     * @param itemNumber
+     * slider movement to the item
+     * @param {number} itemNumber - number of item
      */
     moveTo(itemNumber) {
         if (this._isWork) return;
@@ -197,7 +204,7 @@ const ElU = window.ElU; //$elem
     }
 
     /**
-     *
+     * autoplay launch
      */
     onAutoPlay() {
         if(this._isWork) return; //происходит анимация, автовоспроизв будет запущено ф-ией transitionComplete
@@ -231,7 +238,7 @@ const ElU = window.ElU; //$elem
     }
 
     /**
-     *
+     * sets the bullet active
      */
     setActiveBullet() {
         const bulNumber = this.slItems.length - 1 - this.currentItemNum;
@@ -248,8 +255,8 @@ const ElU = window.ElU; //$elem
 // ***************************************
 
     /**
-     *
-     * @param opts
+     * slider initialization
+     * @param {Object} opts options for slider
      * @private
      */
     _initSlider(opts) {
@@ -266,8 +273,8 @@ const ElU = window.ElU; //$elem
     }
 
     /**
-     *
-     * @param opts
+     * slider elements initialization
+     * @param {Object} opts options for slider
      * @private
      */
     _initElems(opts) {
@@ -289,7 +296,7 @@ const ElU = window.ElU; //$elem
     };
 
     /**
-     *
+     * Bullets initialization
      * @private
      */
     _initBullets() {
@@ -299,6 +306,10 @@ const ElU = window.ElU; //$elem
         this.setActiveBullet();
     }
 
+    /**
+     * InfoBlock initialization
+     * @private
+     */
     _initInfoBlock(opts) {
         if (!this.slInfoBlock) return;
 
@@ -307,12 +318,11 @@ const ElU = window.ElU; //$elem
     }
 
     /**
-     *
-     * @param item
-     * @returns {Promise|Promise<any>}
+     * Load content of item
+     * @param {HTMLelement} item 
+     * @returns {Promise} Promise of load content
      * @private
      */
-    //return promise
     _loadContent(item) {
         const img = SimSlider._getImg(item),
             src = img.getAttribute(Attribute.DATA_IMG_SRC),
@@ -352,8 +362,8 @@ const ElU = window.ElU; //$elem
     }
 
     /**
-     *
-     * @param itemNum
+     * Preload content of item
+     * @param {Number} itemNum - central item number
      * @private
      */
     _preLoadContent(itemNum) {
@@ -467,8 +477,8 @@ const ElU = window.ElU; //$elem
     }
 
     /**
-     *
-     * @param typeAnimation
+     * Set animation function for item
+     * @param {String} typeAnimation
      * @private
      */
     _setAnimateFunc(typeAnimation) {
@@ -479,7 +489,7 @@ const ElU = window.ElU; //$elem
     }
 
     /**
-     *
+     * Set animation function for infoBlock
      * @param typeInfoAnimation
      * @private
      */
@@ -492,9 +502,9 @@ const ElU = window.ElU; //$elem
     }
 
     /**
-     *
-     * @param type
-     * @param detail
+     * Create Event of Animate
+     * @param {String} type
+     * @param {Object} details of Event
      * @private
      */
     _createEventAnimate(type, detail) {
@@ -502,7 +512,7 @@ const ElU = window.ElU; //$elem
     }
 
     /**
-     *
+     * Set text in InfoBlock
      * @private
      */
     _setTextInfoBlock() {
@@ -513,7 +523,7 @@ const ElU = window.ElU; //$elem
     }
 
     /**
-     *
+     * Set scrim for Slider
      * @private
      */
     _setScrim() {
@@ -522,7 +532,7 @@ const ElU = window.ElU; //$elem
     }
 
     /**
-     *
+     * create bullets and handler bullets for resize
      * @private
      */
     _createBullets() {
@@ -600,7 +610,7 @@ const ElU = window.ElU; //$elem
     }
 
     /**
-     *
+     * Delete items from slider
      * @param item
      * @private
      */
@@ -635,8 +645,8 @@ const ElU = window.ElU; //$elem
 //set currentItem = nextAnimEl;
 //trigger event start/stopSlideAnimation,
     /**
-     *
-     * @returns {{fade: fade}}
+     * function animation for item
+     * @returns {Object} {typeAnimation: function}
      * @private
      */
     static get _stSlideAnimate() {
@@ -693,8 +703,8 @@ const ElU = window.ElU; //$elem
     }
 
     /**
-     *
-     * @returns {{shift: shift}}
+     * function animation and initialization for infoBlock
+     * @returns {Object} {typeInfoAnimation: function}
      * @private
      */
     static get _stInfoAnimate() {
@@ -725,8 +735,8 @@ const ElU = window.ElU; //$elem
     }
 
     /**
-     *
-     * @param el
+     * get content(img) from item
+     * @param {HTMLelement} item
      * @returns {Node | Element}
      * @private
      */
@@ -735,9 +745,9 @@ const ElU = window.ElU; //$elem
 }
 
     /**
-     *
+     * reflow
      * @param el
-     * @returns {number}
+     * @returns {number} 
      */
     static reflow(el) {
     return el.offsetHeight;
