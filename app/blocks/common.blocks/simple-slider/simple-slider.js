@@ -1,10 +1,11 @@
 // ------------------------------------------------------------------------
 // simple-slider.js
 // ------------------------------------------------------------------------
-
-//todo:
-//01. Stop slider if menu is open - for manager
-//02. Hide container-info if menu is open and landscape orientation for mobile version -- for manager
+// The essence of the slider:
+// There is a deck of elements, the current item at the top (currentItem.style.zIndex = 2), 
+// the next item below it (nextItem.style.zIndex = 1). 
+// Next, the upper (current) item moves(animation) and returns to its native position (zIndex = 0).
+// Then the next item will turn into the current item and everything will repeat again
 
 document.addEventListener('DOMContentLoaded', function () {
 // ------------------------------------------------------------------------
@@ -253,7 +254,6 @@ document.addEventListener('DOMContentLoaded', function () {
         /**
          * Preload content of item
          * @param {Number} itemNum - central item number
-         * @private
          */
         preLoadContent(itemNum) {
             let qtPreload = this._qtPreload,
@@ -290,7 +290,6 @@ document.addEventListener('DOMContentLoaded', function () {
          * Create Event of Animate
          * @param {String} type
          * @param {Object} detail - details of Event
-         * @private
          */
         createEventAnimate(type, detail) {
             this.$slEl.triggerCustomEvent(type, detail);
@@ -298,12 +297,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
         /**
          * Set scrim for Slider
-         * @private
          */
         setScrim() {
             const item = this.nextItem || this.currentItem; //this.currentItem - for init slider
             this.scrim.style.backgroundColor = item.getAttribute(Attribute.DATA_SCRIM_COLOR) || DefaultValues.SCRIM_COLOR;
         }
+
+        /**
+         * Hide infoBlock
+         */
+        hideInfo() {
+            this.slInfoBlock.style.display = 'none';
+        }
+
+        /**
+         * Show infoBlock
+         */
+        showInfo() {
+            this.slInfoBlock.style.display = '';
+        }
+
+
 
 // ***************************************
 // Private methods
@@ -532,7 +546,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         /**
-         * create bullets and handler bullets for window.resize
+         * create bullets and set handler bullets for window.resize
          * @private
          */
         _createBullets() {
