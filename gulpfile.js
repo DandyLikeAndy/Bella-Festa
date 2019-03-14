@@ -69,7 +69,6 @@ gulp.task('sass', function () {
                 strModules += '@import "' + path.relative(params.sassDir, absPath).replace(/\\/g, '/') + '";\n';
             });
 
-            console.log('files', files);
             //write to file _modules.scss imports of bem blocks
             fs.writeFileSync(params.sassDir + "/_modules.scss", strModules);
 
