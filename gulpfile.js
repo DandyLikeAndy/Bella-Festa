@@ -16,7 +16,8 @@ const gulp = require('gulp'),
 
 let params = { //html2bl and others
         out: 'dist',
-        htmlSrc: 'app/pages.html/index.html', //'app/pages.html/aboutMe.html'
+        htmlSrc: ['app/pages.html/index.html', 'app/pages.html/aboutMe.html'], //['app/pages.html/index.html', 'app/pages.html/aboutMe.html'], //for html2bl
+        htmlBrowserSync: 'app/pages.html/aboutMe.html', //'app/pages.html/aboutMe.html'
         levels: ['app/blocks/library.blocks', 'app/blocks/common.blocks'],
         extCssFiles: 'scss',
         sassDir: 'app/sass',
@@ -40,7 +41,7 @@ gulp.task('build', ['clean', 'html', 'sass', 'js', 'images', 'fonts', 'fontello'
 
 
 gulp.task('html', function () {
-    return gulp.src(params.htmlSrc)
+    return gulp.src(params.htmlBrowserSync)
         .pipe(rename('index.html'))
         .pipe(gulp.dest(params.out))
         .pipe(reload({
@@ -48,19 +49,6 @@ gulp.task('html', function () {
         }));
 });
 
-// gulp.task('sass', function () {
-//     getFileNames.then(function (files) {//html2bl
-//         gulp.src(files.dirs.map(dir => dir + '/**/*.scss'))
-//             .pipe(concat('styles.scss'))
-//             .pipe(sass().on('error', sass.logError))
-//             .pipe(rename('styles.css'))
-//             .pipe(gulp.dest(params.out))
-//             //.pipe(autoprefixer({browsers: ['last 2 versions']}))
-//             .pipe(urlAdjust({prepend: './images/'}))
-//             .pipe(reload({stream: true}));
-//     })
-//         .done();
-// });
 
 gulp.task('sass', function () {
     return getFileNames.then(function (files) {
@@ -68,7 +56,7 @@ gulp.task('sass', function () {
             files.scss.forEach(function (absPath) { //collect @imports bem blocks
                 strModules += '@import "' + path.relative(params.sassDir, absPath).replace(/\\/g, '/') + '";\n';
             });
-
+            console.log(files.scss);
             //write to file _modules.scss imports of bem blocks
             fs.writeFileSync(params.sassDir + "/_modules.scss", strModules);
 
