@@ -23,10 +23,10 @@
     "gulp-rename": "^1.4.0",
     "gulp-sass": "^3.2.1",
     "gulp-uglify": "^3.0.1",
-    "html2bl": "git://github.com/DandyLikeAndy/html2bl.git",
+    "html2bl": "git+https://github.com/DandyLikeAndy/html2bl.git",
     "mathsass": "^0.10.1"
   },
   "dependencies": {
-    "npm": "^6.8.0"
+    "npm": "^6.9.0"
   }
 }

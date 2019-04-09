@@ -40,7 +40,7 @@ gulp.task('build', ['clean', 'html', 'sass', 'js', 'images', 'fonts', 'fontello'
 
 
 
-gulp.task('html', function () {
+gulp.task('html', function () {//BrowserSync
     return gulp.src(params.htmlBrowserSync)
         .pipe(rename('index.html'))
         .pipe(gulp.dest(params.out))
