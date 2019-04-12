@@ -41,6 +41,16 @@ ol {
   width: 100%;
 }
 
+.logo {
+  background-image: url("./images/logo_color.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.logo_theme-color-70 {
+  background-image: url("./images/logo_color_70.svg");
+}
+
 .logotype {
   display: flex;
   justify-content: center;
@@ -126,16 +136,6 @@ ol {
   .logotype__logo-occupation {
     font-size: 20px;
   }
-}
-
-.logo {
-  background-image: url("./images/logo_color.svg");
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-.logo_theme-color-70 {
-  background-image: url("./images/logo_color_70.svg");
 }
 
 .nav-menu {
@@ -574,4 +574,25 @@ ol {
   height: 100%;
   padding: 0 25px;
   display: block;
+}
+
+.container-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  max-width: 1570px;
+  margin: auto;
+  flex-wrap: wrap;
+}
+
+.text-block {
+  height: 300px;
+  background-color: aqua;
+}
+
+@media (max-width: 768px) {
+  .text-block {
+    width: 1570px;
+  }
 }

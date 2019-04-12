@@ -1,0 +1,5 @@
+.text-block {
+    @include col($num-cal: 16);
+    height: 300px;//temp
+    background-color: aqua; //temp
+}

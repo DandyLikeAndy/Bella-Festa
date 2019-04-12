@@ -54,9 +54,9 @@ $grid-cont-max-width: $max-bp - $grid-gutter-width !default;
 }
 
 @mixin col(
-  $bp: $base-bp, //screen size
   $num-cal: 1, //num of col grid, optional
   $width: null, //width col, optional
+  $bp: $base-bp, //screen size
   $padding: false //set margin right ($grid-gutter-width)
 ) {
   @media (max-width: $bp) {
