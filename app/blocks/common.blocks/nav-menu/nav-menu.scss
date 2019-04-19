@@ -26,6 +26,7 @@
         }
     }
 
+    
 
     //------------------------------------------------------------------------------
     //  children
@@ -131,7 +132,6 @@
             position: fixed;
             top: 1.5em;
             right: 1.5em;
-            opacity: .8;
         }
 
         &__link {
@@ -169,7 +169,19 @@
         &:hover::after {
             opacity: .65;
         }
+
+        @media (max-width: $base-bp) {
+            .nav-menu__button {
+                opacity: .8;
+            }
+        }
     }
 
+    &_theme-lightgrey {
+        &::after {
+            opacity: 1;
+            background: $light-gray;
+        }
+    }
     
 }

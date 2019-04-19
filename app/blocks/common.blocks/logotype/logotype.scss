@@ -1,28 +1,25 @@
 .logotype {
 
     //variables
-    $grid-rows: 6; //количество ячеек сетки по высоте
-    $height-logotype: $grid-height*$grid-rows; //высота строки логотипа
-    $height-img-logotype: $height-logotype - $grid-gutter-width/1.5; //высота изображения логотипа
-    $logo-name-font-size: $base-font-size*$grid-rows/3;
-    $occupation-font-size: $base-font-size*$grid-rows/4.5;
-    $offset-bottom-line: .3em;
+    $logotype-img-height: $logotype-height - $grid-gutter-width/1.5; //высота изображения логотипа
+    $logo-name-font-size: $base-font-size*($logotype-height/$grid-height)/3; //в скобках кол-во ячеек сетки grid
+    $occupation-font-size: $base-font-size*($logotype-height/$grid-height)/4.5;
+    $bottom-line-offset: .3em;
 
     //flex
     @include fluid-container;
 
     position: relative;
     white-space: nowrap;
-    padding-top: $grid-height*.5;
-    padding-bottom: $grid-height*.5;
+    height: $logotype-height;
 
     //------------------------------------------------------------------------------
     //  children
     //------------------------------------------------------------------------------
 
     &__logo-img {
-        height: $height-img-logotype;
-        width: $height-img-logotype;
+        height: $logotype-img-height;
+        width: $logotype-img-height;
         margin-right: $grid-gutter-width*0.8;
         flex-shrink: 0;
         
@@ -43,7 +40,7 @@
     &__logo-name {
         font-size: $logo-name-font-size;
         line-height: 1.05em;
-        padding: 0 $offset-bottom-line 0;
+        padding: 0 $bottom-line-offset 0;
 
         //bottom line
         border-bottom: 3px solid white;
@@ -61,10 +58,7 @@
         right: 20px;
         color: white;
         font-size: $base-font-size*1.1;
-        //font-weight: bold;
-        //border-bottom: $border-bottom-width solid transparent;
         text-decoration: none;
-        //line-height: 1;
         transition: color .3s;
         opacity: .8;
 
@@ -75,7 +69,6 @@
         &:hover {
             color: $pink-text;
         }
-
     }
 
     //------------------------------------------------------------------------------
@@ -84,10 +77,13 @@
 
     @media (max-width: $base-bp) {
 
+        height: auto;
+        padding-top: $grid-height*.5;
+        padding-bottom: $grid-height*.5;
+
         &__logo-img {
-            height: $height-img-logotype*.75;
-            width: $height-img-logotype*.75;
-            //margin-right: 0;
+            height: $logotype-img-height*.75;
+            width: $logotype-img-height*.75;
             margin-bottom: $gutter-vertical/3;
         }
 
@@ -99,5 +95,27 @@
             font-size: $occupation-font-size*.75;
         }
     }
+
+
+    //------------------------------------------------------------------------------
+    //  mods
+    //------------------------------------------------------------------------------
+    &_theme-grey {
+        .logotype__logo-text {
+            color: $dark-gray;
+        }
+        .logotype__logo-name {
+            //bottom line
+            border-bottom-color: $dark-gray;
+        }
+        .logotype__tel {
+            color: $dark-gray;
+            
+            &:hover {
+                color: $pink-text;
+            }
+        }
+    }
+
 
 }

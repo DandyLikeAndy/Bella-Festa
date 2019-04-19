@@ -41,16 +41,6 @@ ol {
   width: 100%;
 }
 
-.logo {
-  background-image: url("./images/logo_color.svg");
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-.logo_theme-color-70 {
-  background-image: url("./images/logo_color_70.svg");
-}
-
 .logotype {
   display: flex;
   justify-content: center;
@@ -59,8 +49,7 @@ ol {
   flex-wrap: wrap;
   position: relative;
   white-space: nowrap;
-  padding-top: 9px;
-  padding-bottom: 9px;
+  height: 108px;
 }
 
 .logotype__logo-img {
@@ -123,6 +112,12 @@ ol {
 }
 
 @media (max-width: 768px) {
+  .logotype {
+    height: auto;
+    padding-top: 9px;
+    padding-bottom: 9px;
+  }
+
   .logotype__logo-img {
     height: 66px;
     width: 66px;
@@ -136,6 +131,32 @@ ol {
   .logotype__logo-occupation {
     font-size: 20px;
   }
+}
+
+.logotype_theme-grey .logotype__logo-text {
+  color: #555;
+}
+
+.logotype_theme-grey .logotype__logo-name {
+  border-bottom-color: #555;
+}
+
+.logotype_theme-grey .logotype__tel {
+  color: #555;
+}
+
+.logotype_theme-grey .logotype__tel:hover {
+  color: #fc90b8;
+}
+
+.logo {
+  background-image: url("./images/logo_color.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.logo_theme-color-70 {
+  background-image: url("./images/logo_color_70.svg");
 }
 
 .nav-menu {
@@ -261,7 +282,6 @@ ol {
     position: fixed;
     top: 1.5em;
     right: 1.5em;
-    opacity: .8;
   }
 
   .nav-menu__link {
@@ -289,6 +309,17 @@ ol {
 
 .nav-menu_theme-transparent:hover::after {
   opacity: .65;
+}
+
+@media (max-width: 768px) {
+  .nav-menu_theme-transparent .nav-menu__button {
+    opacity: .8;
+  }
+}
+
+.nav-menu_theme-lightgrey::after {
+  opacity: 1;
+  background: #f0f0f0;
 }
 
 .button-menu {
@@ -341,6 +372,10 @@ ol {
 
 .button-menu:hover .button-menu__line {
   box-shadow: 0 0 1px 1px #F6B7C4;
+}
+
+.button-menu_theme-grey .button-menu__line {
+  background: #555;
 }
 
 .dropdown_open {
@@ -588,11 +623,19 @@ ol {
 
 .text-block {
   height: 300px;
-  background-color: aqua;
+  background-color: #bbb;
+  margin-top: 171px;
+}
+
+@media (min-width: 768px) {
+  .text-block {
+    width: 770px;
+  }
 }
 
 @media (max-width: 768px) {
   .text-block {
-    width: 1570px;
+    width: 100%;
+    background-color: #ddd;
   }
 }

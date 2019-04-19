@@ -27,8 +27,13 @@ $grid-columns: 16;
 $grid-cont-max-width: $max-bp - $grid-gutter-width;
 
 
-$light-gray: #bbb;
+$light-gray: rgb(240, 240, 240);
 $gray: #666;
+$dark-gray: #555;
 $pink: #F6B7C4;
 $pink-text: #fc90b8;
 $dark-pink: #f27a8a;
+
+//base dimentions
+$nav-menu-height: $grid-height*3.5; //высота строки меню
+$logotype-height: $grid-height*6; //высота строки логотипа

@@ -59,7 +59,7 @@ $grid-cont-max-width: $max-bp - $grid-gutter-width !default;
   $bp: $base-bp, //screen size
   $padding: false //set margin right ($grid-gutter-width)
 ) {
-  @media (max-width: $bp) {
+  @media (min-width: $bp) {
     @if ($width != null) {
       width: $width;
     } @else {
