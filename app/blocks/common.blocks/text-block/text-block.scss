@@ -1,11 +1,13 @@
 .text-block {
-    @include col($num-cal: 8);
-    height: 300px;//temp
+    height: 100%;//temp
     background-color:  #bbb; //temp
-    margin-top: $logotype-height + $nav-menu-height;
-
     @include col-row {
         background-color:  #ddd;
       };
+
+    &_half {
+        @include col($num-cal: 8);
+    }
+
 }
 

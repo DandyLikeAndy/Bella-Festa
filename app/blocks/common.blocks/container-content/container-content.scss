@@ -1,3 +1,8 @@
+//variables
+$content-offset: $logotype-height + $nav-menu-height;
+
 .container-content{
     @include flex-container;
+    margin-top: $content-offset; //отделяем контент от хидера
+    height: calc(100% - #{$content-offset});
 }

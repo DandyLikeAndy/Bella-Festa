@@ -33,6 +33,7 @@ ol {
   font-family: 'PT Sans', sans-serif;
   height: 100%;
   background-size: cover;
+  overflow: auto;
 }
 
 .header {
@@ -619,23 +620,47 @@ ol {
   max-width: 1570px;
   margin: auto;
   flex-wrap: wrap;
+  margin-top: 171px;
+  height: calc(100% - 171px);
 }
 
 .text-block {
-  height: 300px;
+  height: 100%;
   background-color: #bbb;
-  margin-top: 171px;
-}
-
-@media (min-width: 768px) {
-  .text-block {
-    width: 770px;
-  }
 }
 
 @media (max-width: 768px) {
   .text-block {
     width: 100%;
     background-color: #ddd;
+  }
+}
+
+@media (min-width: 768px) {
+  .text-block_half {
+    width: 770px;
+  }
+}
+
+.photo-block {
+  height: 100%;
+  background-color: #f1c8c8;
+}
+
+@media (max-width: 768px) {
+  .photo-block {
+    width: 100%;
+    background-color: #fd6868;
+  }
+}
+
+.photo-block__single-img {
+  height: 100%;
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .photo-block_half {
+    width: 770px;
   }
 }

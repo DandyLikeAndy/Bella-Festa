@@ -18,6 +18,7 @@ let params = { //html2bl and others
         out: 'dist',
         htmlSrc: ['app/pages.html/index.html', 'app/pages.html/aboutMe.html'], //['app/pages.html/index.html', 'app/pages.html/aboutMe.html'], //for html2bl
         htmlBrowserSync: 'app/pages.html/aboutMe.html', //'app/pages.html/aboutMe.html'
+        htmlDirs: 'app/pages.html',
         levels: ['app/blocks/library.blocks', 'app/blocks/common.blocks'],
         extCssFiles: 'scss',
         sassDir: 'app/sass',
@@ -56,7 +57,7 @@ gulp.task('sass', function () {
             files.scss.forEach(function (absPath) { //collect @imports bem blocks
                 strModules += '@import "' + path.relative(params.sassDir, absPath).replace(/\\/g, '/') + '";\n';
             });
-            console.log(files.scss);
+            //console.log(files.scss);
             //write to file _modules.scss imports of bem blocks
             fs.writeFileSync(params.sassDir + "/_modules.scss", strModules);
 
@@ -92,7 +93,8 @@ gulp.task('js', function () {
 
 gulp.task('images', function () {
     return getFileNames.then(function (source) {
-            gulp.src(source.dirs.map(dir => dir + '/*.{jpg,png,svg}'))
+        console.log(source.dirs);//temp
+            gulp.src( [params.htmlDirs + '/*.{jpg,png,svg}'].concat(source.dirs.map(dir => dir + '/*.{jpg,png,svg}')) )
                 .pipe(gulp.dest(path.join(params.out + '/' + params.outImgDir)));
         })
         .done();
