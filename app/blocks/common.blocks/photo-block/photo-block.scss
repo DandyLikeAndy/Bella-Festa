@@ -1,28 +1,34 @@
 .photo-block {
     height: 100%;//temp
     background-color:  rgb(241, 200, 200); //temp
-    //text-align: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 10% 20%;
     
-
-    @include col-row {
-        background-color:  rgb(253, 104, 104);
-      };
 
 //------------------------------------------------------------------------------
 //  children
 //------------------------------------------------------------------------------
 
-      &__single-img {
+      &__img-hide {
           height: 100%;
           //display: inline-block;
           display: block;
+          opacity: 0;
       }
 
 //------------------------------------------------------------------------------
 //  mods
 //------------------------------------------------------------------------------
       &_half {
-        @include col($num-cal: 8);
-    }
+        width: 50%;
+        }
+
+//------------------------------------------------------------------------------
+//  mobile
+//------------------------------------------------------------------------------
+    @include single-col {
+        background-color:  rgb(253, 104, 104);
+      };
 }
 

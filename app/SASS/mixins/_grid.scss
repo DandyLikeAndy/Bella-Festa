@@ -43,8 +43,8 @@ $grid-cont-max-width: $max-bp - $grid-gutter-width !default;
   flex-wrap: wrap;
 }
 
-//col == row mode
-@mixin col-row(
+//single-col mode
+@mixin single-col(
   $bp: $base-bp
 ) {
   @media ( max-width: $bp) {
@@ -59,7 +59,7 @@ $grid-cont-max-width: $max-bp - $grid-gutter-width !default;
   $bp: $base-bp, //screen size
   $padding: false //set margin right ($grid-gutter-width)
 ) {
-  @media (min-width: $bp) {
+  @media (min-width: $bp) {//Зачем??
     @if ($width != null) {
       width: $width;
     } @else {

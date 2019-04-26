@@ -30,7 +30,7 @@
     }
 
     &__logo-text {
-        @include col-row($scr-sm);
+        @include single-col($scr-sm);
 
         text-align: center;
         color: white;
