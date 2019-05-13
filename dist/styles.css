@@ -29,14 +29,11 @@ ol {
   padding: 0;
 }
 
-.logo {
-  background-image: url("./images/logo_color.svg");
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-.logo_theme-color-70 {
-  background-image: url("./images/logo_color_70.svg");
+h1,
+h2,
+h3 {
+  font-weight: normal;
+  margin: 0;
 }
 
 .page {
@@ -44,6 +41,12 @@ ol {
   height: 100%;
   background-size: cover;
   overflow: auto;
+}
+
+.header {
+  position: fixed;
+  z-index: 100;
+  width: 100%;
 }
 
 .logotype {
@@ -154,10 +157,14 @@ ol {
   color: #fc90b8;
 }
 
-.header {
-  position: fixed;
-  z-index: 100;
-  width: 100%;
+.logo {
+  background-image: url("./images/logo_color.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.logo_theme-color-70 {
+  background-image: url("./images/logo_color_70.svg");
 }
 
 .nav-menu {
@@ -612,31 +619,6 @@ ol {
   display: block;
 }
 
-.photo-block {
-  height: 100%;
-  background-color: #f1c8c8;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: 10% 20%;
-}
-
-.photo-block__img-hide {
-  height: 100%;
-  display: block;
-  opacity: 0;
-}
-
-.photo-block_half {
-  width: 50%;
-}
-
-@media (max-width: 768px) {
-  .photo-block {
-    width: 100%;
-    background-color: #fd6868;
-  }
-}
-
 .container-content {
   display: flex;
   justify-content: center;
@@ -650,17 +632,77 @@ ol {
 }
 
 .text-block {
-  height: 100%;
-  background-color: #bbb;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.text-block__title-main {
+  color: #555;
+  font-size: 32px;
+  text-align: center;
+  margin: 18px;
+}
+
+.text-block__title {
+  color: #fc90b8;
+  font-size: 30px;
+  text-align: center;
+  margin: 18px;
+}
+
+.text-block__text {
+  color: #555;
+  font-size: 20px;
+  text-align: center;
+  margin: 19.8px;
+  font-weight: bold;
 }
 
 .text-block_half {
   width: 50%;
 }
 
+.text-block_FS {
+  height: 100%;
+}
+
 @media (max-width: 768px) {
   .text-block {
     width: 100%;
     background-color: #ddd;
+  }
+}
+
+.photo-block {
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: 0 20%;
+}
+
+.photo-block__img-hide {
+  display: block;
+  opacity: 0;
+  height: 100%;
+}
+
+.photo-block_half {
+  width: 50%;
+}
+
+.photo-block_FS {
+  height: 100%;
+}
+
+@media (max-width: 768px) {
+  .photo-block {
+    width: 100%;
+    background-color: #fd6868;
+  }
+}
+
+@media (max-height: 800px) {
+  .photo-block {
+    background-size: cover;
   }
 }

@@ -1,15 +1,45 @@
 .text-block {
-    height: 100%;//temp
-    background-color:  #bbb; //temp
+    //background-color:  #bbb; //temp
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 
 
-    
+//------------------------------------------------------------------------------
+//  children
+//------------------------------------------------------------------------------
+    &__title-main {
+        color: $dark-gray;
+        font-size: $base-font-size*1.6;
+        text-align: center;
+        margin: $gutter-vertical;
+    }
+    &__title {
+        color: $pink-text;
+        font-size: $base-font-size*1.5;
+        text-align: center;
+        //font-weight: bold;
+        margin: $gutter-vertical;
+    }
+    &__text {
+        color: $dark-gray;
+        font-size: $base-font-size;
+        text-align: center;
+        margin: $gutter-vertical*1.1;
+        font-weight: bold;
+    }
+
+
 //------------------------------------------------------------------------------
 //  mods
 //------------------------------------------------------------------------------
     &_half {
         width: 50%;
     }
+    &_FS {
+        height: 100%;
+    }
+
 
 
 //------------------------------------------------------------------------------
@@ -18,5 +48,6 @@
     @include single-col {
         background-color:  #ddd;
       };
+
 }
 

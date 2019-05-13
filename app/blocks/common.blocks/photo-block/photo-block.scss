@@ -1,9 +1,8 @@
 .photo-block {
-    height: 100%;//temp
-    background-color:  rgb(241, 200, 200); //temp
+    //background-color:  rgb(241, 200, 200); //temp
     background-repeat: no-repeat;
-    background-size: cover;
-    background-position: 10% 20%;
+    background-size: contain;
+    background-position: 0 20%;
     
 
 //------------------------------------------------------------------------------
@@ -11,10 +10,10 @@
 //------------------------------------------------------------------------------
 
       &__img-hide {
-          height: 100%;
-          //display: inline-block;
           display: block;
           opacity: 0;
+          height: 100%;
+          
       }
 
 //------------------------------------------------------------------------------
@@ -22,7 +21,12 @@
 //------------------------------------------------------------------------------
       &_half {
         width: 50%;
-        }
+      }
+      &_FS {
+        height: 100%;
+      }
+    
+        
 
 //------------------------------------------------------------------------------
 //  mobile
@@ -30,5 +34,8 @@
     @include single-col {
         background-color:  rgb(253, 104, 104);
       };
+    @media (max-height: 800px) {
+        background-size: cover;
+        }
 }
 
