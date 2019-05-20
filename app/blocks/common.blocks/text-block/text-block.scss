@@ -26,9 +26,27 @@
         font-size: $base-font-size;
         text-align: center;
         margin: $gutter-vertical*1.1;
-        font-weight: bold;
+        //font-weight: bold;
+        line-height: 1.6em;
     }
 
+    &__list {
+        margin: $gutter-vertical*1.3;///?????
+        
+    }
+
+    &__list-item {
+        color: $dark-gray;
+        font-size: $base-font-size;
+        margin: $gutter-vertical*0.4;
+        padding-left: 1.8em;
+        //text-align: center;
+        list-style-type: none;
+        position: relative;
+        display: inline-block;
+        background: url("pink-heart.png") no-repeat;
+        background-size: contain;
+    }
 
 //------------------------------------------------------------------------------
 //  mods
