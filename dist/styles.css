@@ -49,23 +49,6 @@ h3 {
   overflow: auto;
 }
 
-.header {
-  position: fixed;
-  z-index: 100;
-  width: 100%;
-  background: white;
-}
-
-.logo {
-  background-image: url("./images/logo_color.svg");
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-.logo_theme-color-70 {
-  background-image: url("./images/logo_color_70.svg");
-}
-
 .logotype {
   display: flex;
   justify-content: center;
@@ -173,6 +156,23 @@ h3 {
 
 .logotype_theme-grey .logotype__tel:hover {
   color: #fc90b8;
+}
+
+.header {
+  position: fixed;
+  z-index: 100;
+  width: 100%;
+  background: white;
+}
+
+.logo {
+  background-image: url("./images/logo_color.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.logo_theme-color-70 {
+  background-image: url("./images/logo_color_70.svg");
 }
 
 .nav-menu {
@@ -627,6 +627,18 @@ h3 {
   display: block;
 }
 
+.container-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  max-width: 1570px;
+  margin: auto;
+  flex-wrap: wrap;
+  margin-top: 171px;
+  height: calc(100% - 171px);
+}
+
 .text-block {
   display: flex;
   flex-direction: column;
@@ -689,18 +701,6 @@ h3 {
     width: 100%;
     background-color: #ddd;
   }
-}
-
-.container-content {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-sizing: border-box;
-  max-width: 1570px;
-  margin: auto;
-  flex-wrap: wrap;
-  margin-top: 171px;
-  height: calc(100% - 171px);
 }
 
 .photo-block {

@@ -27,6 +27,7 @@
     "mathsass": "^0.10.1"
   },
   "dependencies": {
+    "natives": "^1.1.6",
     "npm": "^6.9.0"
   }
 }
