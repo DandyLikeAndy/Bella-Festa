@@ -34,8 +34,12 @@
     @include single-col {
         background-color:  rgb(253, 104, 104);
       };
-    @media (max-height: 800px) {
+    /* @media (max-height: 800px) {
         background-size: cover;
-        }
+        background-position: center center;
+        } */
+    @media (max-width: 800px) {
+        background-position: center;
+          }
 }
 
