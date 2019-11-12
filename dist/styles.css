@@ -49,6 +49,16 @@ h3 {
   overflow: auto;
 }
 
+.header {
+  position: fixed;
+  z-index: 100;
+  width: 100%;
+}
+
+.header_theme-white {
+  background: white;
+}
+
 .logotype {
   display: flex;
   justify-content: center;
@@ -158,11 +168,20 @@ h3 {
   color: #fc90b8;
 }
 
-.header {
-  position: fixed;
-  z-index: 100;
-  width: 100%;
-  background: white;
+.logotype_theme-white .logotype__logo-text {
+  color: #555;
+}
+
+.logotype_theme-white .logotype__logo-name {
+  border-bottom-color: #555;
+}
+
+.logotype_theme-white .logotype__tel {
+  color: #555;
+}
+
+.logotype_theme-white .logotype__tel:hover {
+  color: #fc90b8;
 }
 
 .logo {
@@ -241,13 +260,6 @@ h3 {
   position: relative;
 }
 
-@media (max-width: 768px) {
-  .nav-menu {
-    height: auto;
-    padding: .5em 0;
-  }
-}
-
 .nav-menu::after {
   content: "";
   position: absolute;
@@ -257,12 +269,6 @@ h3 {
   bottom: 0;
   right: 0;
   z-index: -1;
-}
-
-@media (max-width: 768px) {
-  .nav-menu::after {
-    display: none;
-  }
 }
 
 .nav-menu__list {
@@ -279,15 +285,6 @@ h3 {
   display: inline-block;
   text-align: center;
   font-size: 22px;
-}
-
-@media (max-width: 768px) {
-  .nav-menu__item {
-    display: block;
-    margin: 0;
-    height: auto;
-    padding: .2em 0;
-  }
 }
 
 .nav-menu__item_active .nav-menu__link-text {
@@ -337,6 +334,15 @@ h3 {
 }
 
 @media (max-width: 768px) {
+  .nav-menu {
+    height: auto;
+    padding: .5em 0;
+  }
+
+  .nav-menu::after {
+    display: none;
+  }
+
   .nav-menu__list {
     margin-top: 9px;
     display: none;
@@ -356,12 +362,8 @@ h3 {
     right: 1.5em;
   }
 
-  .nav-menu__link {
-    color: white;
-  }
-
   .nav-menu__item_active .nav-menu__link-text {
-    border-bottom-color: white;
+    border-bottom-color: #fc90b8;
   }
 
   .nav-menu__list:hover .nav-menu__link-text {
@@ -369,7 +371,7 @@ h3 {
   }
 
   .nav-menu__item:hover .nav-menu__link-text {
-    border-bottom-color: white;
+    border-bottom-color: #fc90b8;
   }
 }
 
@@ -384,14 +386,36 @@ h3 {
 }
 
 @media (max-width: 768px) {
+  .nav-menu_theme-transparent .nav-menu::after {
+    display: block;
+  }
+
   .nav-menu_theme-transparent .nav-menu__button {
     opacity: .8;
+  }
+
+  .nav-menu_theme-transparent .nav-menu__link {
+    color: white;
+  }
+
+  .nav-menu_theme-transparent .nav-menu__item_active .nav-menu__link-text {
+    border-bottom-color: white;
+  }
+
+  .nav-menu_theme-transparent .nav-menu__item:hover .nav-menu__link-text {
+    border-bottom-color: white;
   }
 }
 
 .nav-menu_theme-lightgrey::after {
   opacity: 1;
   background: #f0f0f0;
+}
+
+@media (max-width: 768px) {
+  .nav-menu_theme-lightgrey .nav-menu__link {
+    color: #fc90b8;
+  }
 }
 
 .dropdown_open {

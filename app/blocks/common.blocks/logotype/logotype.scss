@@ -118,5 +118,22 @@
         }
     }
 
+    &_theme-white {
+        .logotype__logo-text {
+            color: $dark-gray;
+        }
+        .logotype__logo-name {
+            //bottom line
+            border-bottom-color: $dark-gray;
+        }
+        .logotype__tel {
+            color: $dark-gray;
+            
+            &:hover {
+                color: $pink-text;
+            }
+        }
+    }
+
 
 }

@@ -5,11 +5,6 @@
     @include fluid-container;
     position: relative;
 
-    @media (max-width: $scr-md) {
-        height: auto;
-        padding: .5em 0;
-    }
-
     //background for nav-menu
     &::after {
         content: "";
@@ -21,12 +16,8 @@
         right: 0;
         z-index: -1;
 
-        @media(max-width: $base-bp) {
-            display: none;
-        }
     }
 
-    
 
     //------------------------------------------------------------------------------
     //  children
@@ -49,13 +40,6 @@
         display: inline-block;
         text-align: center;
         font-size: $base-font-size*1.1;
-
-        @media (max-width: $scr-md) {
-            display: block;
-            margin: 0;
-            height: auto;
-            padding: .2em 0;
-        }
     }
 
     //bottom line for active
@@ -74,6 +58,7 @@
         padding: 0 1em;
         color: $pink-text;
 
+        //for medium screen
         @media (max-width: $scr-lg) {
             padding: 0 $grid-gutter-width/2;
         }
@@ -102,6 +87,7 @@
     }
 
     &__button {
+        //for desktop version
         @media (min-width: $base-bp + 1px) {
             display: none;
         }
@@ -114,6 +100,14 @@
 
 
     @media (max-width: $base-bp) {
+
+        height: auto;
+        padding: .5em 0;
+
+        //background for nav-menu
+        &::after {
+            display: none;
+        }
 
         &__list {
             margin-top: $grid-height/2;
@@ -134,13 +128,9 @@
             right: 1.5em;
         }
 
-        &__link {
-            color: white;
-        } 
-
         //bottom line for active
         &__item_active &__link-text {
-            border-bottom-color: white;
+            border-bottom-color: $pink-text;
         } 
         
         //hide line for hover another item
@@ -150,7 +140,7 @@
 
          //bottom line for hover
          &__item:hover .nav-menu__link-text {
-            border-bottom-color: white ; 
+            border-bottom-color: $pink-text ; 
             //text-decoration: underline;
         }
     }
@@ -171,9 +161,28 @@
         }
 
         @media (max-width: $base-bp) {
+
+            //background for nav-menu
+            .nav-menu::after {
+                display: block;
+            }
+
             .nav-menu__button {
                 opacity: .8;
             }
+            .nav-menu__link {
+                color: white;
+            } 
+
+             //bottom line for active
+            .nav-menu__item_active .nav-menu__link-text {
+                border-bottom-color: white;
+            }    
+            //bottom line for hover
+            .nav-menu__item:hover .nav-menu__link-text {
+                border-bottom-color: white ; 
+                //text-decoration: underline;
+            } 
         }
     }
 
@@ -181,6 +190,12 @@
         &::after {
             opacity: 1;
             background: $light-gray;
+        }
+
+        @media (max-width: $base-bp) {
+            .nav-menu__link {
+                color: $pink-text;
+            } 
         }
     }
     
