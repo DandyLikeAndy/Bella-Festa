@@ -17,7 +17,7 @@ const gulp = require('gulp'),
 let params = { //html2bl and others
         out: 'dist',
         htmlSrc: ['app/pages.html/index.html', 'app/pages.html/aboutMe.html'], //['app/pages.html/index.html', 'app/pages.html/aboutMe.html'], //for html2bl
-        htmlBrowserSync: 'app/pages.html/index.html', //'app/pages.html/aboutMe.html'
+        htmlBrowserSync: 'app/pages.html/aboutMe.html', //'app/pages.html/aboutMe.html'
         htmlDirs: 'app/pages.html',
         levels: ['app/blocks/library.blocks', 'app/blocks/common.blocks'],
         extCssFiles: 'scss',

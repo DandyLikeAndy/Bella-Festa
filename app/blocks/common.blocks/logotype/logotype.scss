@@ -14,6 +14,7 @@
     height: $logotype-height;
     font-family: PT Sans, sans-serif;
 
+    
     //------------------------------------------------------------------------------
     //  children
     //------------------------------------------------------------------------------
@@ -101,23 +102,6 @@
     //------------------------------------------------------------------------------
     //  mods
     //------------------------------------------------------------------------------
-    &_theme-grey {
-        .logotype__logo-text {
-            color: $dark-gray;
-        }
-        .logotype__logo-name {
-            //bottom line
-            border-bottom-color: $dark-gray;
-        }
-        .logotype__tel {
-            color: $dark-gray;
-            
-            &:hover {
-                color: $pink-text;
-            }
-        }
-    }
-
     &_theme-white {
         .logotype__logo-text {
             color: $dark-gray;
@@ -133,7 +117,19 @@
                 color: $pink-text;
             }
         }
+
+        //background
+    &::after {
+        content: "";
+        position: absolute;
+        background: #fff;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        z-index: -1;
     }
 
+    }
 
 }

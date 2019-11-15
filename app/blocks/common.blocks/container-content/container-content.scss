@@ -1,8 +1,18 @@
 //variables
-$content-offset: $logotype-height + $nav-menu-height;
+$content-offset-desktop: $logotype-height + $nav-menu-height;
+$content-offset-mobile: $logotype-height;
 
 .container-content{
     @include flex-container;
-    margin-top: $content-offset; //отделяем контент от хидера
-    height: calc(100% - #{$content-offset});
+    margin-top: $content-offset-desktop; //отделяем контент от хидера
+    height: calc(100% - #{$content-offset-desktop});
+
+    //------------------------------------------------------------------------------
+    //  mobile version
+    //------------------------------------------------------------------------------
+
+    @media (max-width: $base-bp) {
+        margin-top: $content-offset-mobile; //отделяем контент от хидера
+        height: calc(100% - #{$content-offset-mobile});
+    }
 }

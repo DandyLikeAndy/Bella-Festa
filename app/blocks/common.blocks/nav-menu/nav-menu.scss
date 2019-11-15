@@ -102,7 +102,7 @@
     @media (max-width: $base-bp) {
 
         height: auto;
-        padding: .5em 0;
+        //padding: .5em 0;
 
         //background for nav-menu
         &::after {
@@ -110,7 +110,8 @@
         }
 
         &__list {
-            margin-top: $grid-height/2;
+            margin-top: $grid-height;
+            margin-bottom: $grid-height/2;
             display: none;
         }
 
@@ -163,9 +164,9 @@
         @media (max-width: $base-bp) {
 
             //background for nav-menu
-            .nav-menu::after {
+            /* .nav-menu::after {
                 display: block;
-            }
+            } */
 
             .nav-menu__button {
                 opacity: .8;
